@@ -13,16 +13,15 @@ public class StubServer {
 	public static final int PORT = 6666;
 	private List<Call> calls = Lists.newArrayList();
 	private List<Stub> stubs = Lists.newArrayList();
+	private HttpServer simpleServer;
 
 
 	public StubServer(Stub... stubs) {
 		this.stubs = Arrays.asList(stubs);
+		simpleServer = HttpServer.createSimpleServer(".", PORT);
 	}
 
 	public StubServer run() {
-
-
-		HttpServer simpleServer = HttpServer.createSimpleServer(".", PORT);
 		simpleServer.getServerConfiguration().addHttpHandler(
 				new HttpHandler() {
 					@Override
@@ -51,6 +50,7 @@ public class StubServer {
 	}
 
 	public StubServer stop() {
+		simpleServer.stop();
 		return this;
 	}
 
