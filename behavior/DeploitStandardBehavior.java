@@ -63,6 +63,12 @@ public class DeploitStandardBehavior implements Behavior {
 						withMethod(Method.POST).
 						withUri("/deployit/task/2eb8bbee-f462-4bf5-9e2b-d61bb5f22a6a/start").
 						forSuccess().
+						build(),
+				new StubBuilder().
+						withMethod(Method.GET).
+						withUri("/deployit/deployment/prepare/undeploy").
+						withParameter("deployedApplication", "Environments/myEnv/importDarMojoPomTest").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.deployment.prepare.undeploy.xml").
 						build()
 		));
 	}
