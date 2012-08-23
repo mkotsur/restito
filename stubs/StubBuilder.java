@@ -10,8 +10,8 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 public class StubBuilder {
 
@@ -21,38 +21,31 @@ public class StubBuilder {
 		this.stub = new Stub();
 	}
 
-	public StubBuilder withMethod(final Method m) {
-		this.stub.setWhen(new Predicate<Request>() {
-			@Override
-			public boolean apply(@Nullable Request input) {
-				return m.equals(input.getMethod());
-			}
-		});
-		return this;
+	public StubBuilder forSuccess() {
+		return forStatus(HttpStatus.OK_200);
 	}
 
-
-	public StubBuilder forSuccess() {
+	public StubBuilder forStatus(final HttpStatus status) {
 		this.stub.setWhat(new Function<Response, Response>() {
 			@Override
 			public Response apply(@Nullable Response input) {
-				input.setStatus(HttpStatus.OK_200);
+				input.setStatus(status);
 				return input;
 			}
 		});
 		return this;
 	}
 
-	public StubBuilder withXmlResourceContent(String resourcePath) {
+	public StubBuilder forXmlResourceContent(String resourcePath) {
 		try {
 			String asd = Resources.toString(Resources.getResource(resourcePath), Charset.defaultCharset());
-			return withXmlContent(asd);
+			return forStringContent(asd);
 		} catch (IOException e) {
 			throw new RuntimeException("Can not read resource for restito stubbing.");
 		}
 	}
 
-	private StubBuilder withXmlContent(final String content) {
+	public StubBuilder forStringContent(final String content) {
 		this.stub.setWhat(new Function<Response, Response>() {
 			@Override
 			public Response apply(@Nullable Response input) {
@@ -72,12 +65,47 @@ public class StubBuilder {
 	}
 
 	public StubBuilder withUri(final String uri) {
-		stub.setWhen(new Predicate<Request>() {
+		withPredicate(new Predicate<Request>() {
 			@Override
 			public boolean apply(@Nullable Request input) {
 				return input.getRequestURI().endsWith(uri);
 			}
 		});
+		return this;
+	}
+
+
+	public StubBuilder withMethod(final Method m) {
+		withPredicate(new Predicate<Request>() {
+			@Override
+			public boolean apply(@Nullable Request input) {
+				return m.equals(input.getMethod());
+			}
+		});
+		return this;
+	}
+
+	public StubBuilder withParameter(final String parameterName, final String... parameterValues) {
+
+		return withPredicate(new Predicate<Request>() {
+			@Override
+			public boolean apply(@Nullable Request input) {
+				return Arrays.equals(input.getParameterValues(parameterName), parameterValues);
+			}
+		});
+	}
+
+	public StubBuilder withPredicate(final Predicate<Request> newPredicate) {
+
+		final Predicate<Request> currentPredicate = this.stub.getWhen();
+
+		this.stub.setWhen(new Predicate<Request>() {
+			@Override
+			public boolean apply(@Nullable Request input) {
+				return newPredicate.apply(input) && currentPredicate.apply(input);
+			}
+		});
+
 		return this;
 	}
 

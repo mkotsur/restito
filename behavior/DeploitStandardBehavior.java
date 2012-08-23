@@ -2,6 +2,8 @@ package com.xebialabs.restito.behavior;
 
 import com.xebialabs.restito.stubs.Stub;
 import com.xebialabs.restito.stubs.StubBuilder;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.util.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,23 +16,53 @@ public class DeploitStandardBehavior implements Behavior {
 		return new ArrayList<Stub>(Arrays.asList(
 				new StubBuilder().
 						withUri("/deployit/server/info").
-						withXmlResourceContent("com/xebialabs/restito/stubs/deployit.server.info.xml").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.server.info.xml").
 						build(),
 				new StubBuilder().
 						withUri("/deployit/metadata/type").
-						withXmlResourceContent("com/xebialabs/restito/stubs/deployit.metadata.type.xml").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.metadata.type.xml").
 						build(),
 				new StubBuilder().
 						withUri("/deployit/package/upload/importDarMojoPomTest-1.0.dar").
-						withXmlResourceContent("com/xebialabs/restito/stubs/deployit.package.upload.importDarMojoPomTest-1.0.dar.xml").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.package.upload.importDarMojoPomTest-1.0.dar.xml").
 						build(),
 				new StubBuilder().
 						withUri("/deployit/package/import").
-						withXmlResourceContent("com/xebialabs/restito/stubs/deployit.package.upload.import.xml").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.package.upload.import.xml").
 						build(),
 				new StubBuilder().
 						withUri("/deployit/repository/ci/Environments/myEnv").
-						withXmlResourceContent("com/xebialabs/restito/stubs/deployit.repository.ci.Environments.myEnv.xml").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.repository.ci.Environments.myEnv.xml").
+						build(),
+				new StubBuilder().
+						withUri("/deployit/repository/ci/Environments/myEnvironment/importDarMojoPomTest").
+						forStatus(HttpStatus.NOT_FOUND_404).
+						build(),
+				new StubBuilder().
+						withUri("/deployit/deployment/prepare/initial").
+						withParameter("environment", "Environments/myEnv").
+						withParameter("version", "Applications/importDarMojoPomTest/1.0").
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.deployment.prepare.initial.xml").
+						build(),
+				new StubBuilder().
+						withUri("/deployit/deployment/generate/all").
+						withMethod(Method.POST).
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.deployment.generate.all.xml").
+						build(),
+				new StubBuilder().
+						withUri("/deployit/deployment/validate").
+						withMethod(Method.POST).
+						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.deployment.validate.xml").
+						build(),
+				new StubBuilder().
+						withMethod(Method.POST).
+						withUri("/deployit/deployment").
+						forStringContent("2eb8bbee-f462-4bf5-9e2b-d61bb5f22a6a").
+						build(),
+				new StubBuilder().
+						withMethod(Method.POST).
+						withUri("/deployit/task/2eb8bbee-f462-4bf5-9e2b-d61bb5f22a6a/start").
+						forSuccess().
 						build()
 		));
 	}

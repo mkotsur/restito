@@ -2,9 +2,10 @@ package com.xebialabs.restito.stubs;
 
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.junit.*;
+import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class StubTest {
@@ -15,7 +16,7 @@ public class StubTest {
 		Response response = mock(Response.class);
 
 		Stub stub = new Stub();
-		assertEquals(false, stub.getWhen().apply(request));
+		assertTrue(stub.getWhen().apply(request));
 		assertEquals(response, stub.getWhat().apply(response));
 	}
 }

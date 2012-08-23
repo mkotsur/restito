@@ -12,7 +12,7 @@ import org.glassfish.grizzly.http.server.Response;
  */
 public class Stub {
 
-	public Predicate<Request> when = Predicates.alwaysFalse();
+	public Predicate<Request> when = Predicates.alwaysTrue();
 
 	public Function<Response, Response> what = Functions.identity();
 

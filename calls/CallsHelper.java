@@ -1,15 +1,11 @@
 package com.xebialabs.restito.calls;
 
-import com.google.common.base.Optional;
 import com.xebialabs.restito.StubServer;
-import org.glassfish.grizzly.http.server.Request;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
 
 public class CallsHelper {
 
@@ -22,10 +18,24 @@ public class CallsHelper {
 		);
 
 		for (Call call : calls) {
-			log.info("Request to URL: {}, URI: {} of type {}", va(call.getUrl(), call.getUri(), call.getContentType()));
+			log.info("{} Request to URL: {} of type {}", va( call.getMethod(), call.getUrl(), call.getContentType()));
 			for (Map.Entry<String, String> e : call.getHeaders().entrySet()) {
 				log.info(" --> Header [{}] with value: [{}]", e.getKey(), e.getValue());
 			}
+
+			for (Map.Entry<String, String[]> e : call.getParameters().entrySet()) {
+				log.info(" --> Parameter [{}] with value(s): ", e.getKey());
+				for (String v : e.getValue()) {
+					log.info("      -> [{}]", v);
+				}
+			}
+
+			// Prevents IntelliJ from crash :-)
+			if (call.getContentType() == null || !call.getContentType().startsWith("multipart/form-data")) {
+				log.info(" --> Body: ");
+				log.info(call.getPostBody());
+			}
+
 		}
 
 	}
