@@ -35,6 +35,10 @@ public class DeploitStandardBehavior implements Behavior {
 						forXmlResourceContent("com/xebialabs/restito/stubs/deployit.repository.ci.Environments.myEnv.xml").
 						build(),
 				new StubBuilder().
+						withUri("/deployit/repository/exists/Environments/myEnv/importDarMojoPomTest").
+						forStringContent("<boolean>false</boolean>").
+						build(),
+				new StubBuilder().
 						withUri("/deployit/repository/ci/Environments/myEnvironment/importDarMojoPomTest").
 						forStatus(HttpStatus.NOT_FOUND_404).
 						build(),
