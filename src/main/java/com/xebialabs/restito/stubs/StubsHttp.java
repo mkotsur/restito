@@ -2,6 +2,7 @@ package com.xebialabs.restito.stubs;
 
 import com.xebialabs.restito.StubServer;
 import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.util.HttpStatus;
 
 public class StubsHttp {
 
@@ -61,6 +62,11 @@ public class StubsHttp {
 
 		public void stringContent(String s) {
 			builder.forStringContent(s);
+			server.addStub(builder.build());
+		}
+
+		public void status(HttpStatus s) {
+			builder.forStatus(s);
 			server.addStub(builder.build());
 		}
 	}

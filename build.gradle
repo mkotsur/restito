@@ -10,7 +10,6 @@ sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
 repositories {
-  mavenLocal()
   mavenCentral()
 }
 
@@ -28,5 +27,7 @@ dependencies {
 
   compile 'org.glassfish.grizzly:grizzly-http-server:2.2.1'
   compile 'com.sun.jersey:jersey-grizzly2:1.12'
+
+  compile 'com.jayway.restassured:rest-assured:1.6.2'
 
 }
