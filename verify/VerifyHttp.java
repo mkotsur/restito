@@ -13,12 +13,23 @@ public class VerifyHttp {
 
 	private final StubServer stubServer;
 
+	private int times = 1;
+
+	public static VerifyHttp verifyHttp(StubServer stubServer, int times) {
+		return new VerifyHttp(stubServer, times);
+	}
+
 	public static VerifyHttp verifyHttp(StubServer stubServer) {
 		return new VerifyHttp(stubServer);
 	}
 
 	private VerifyHttp(StubServer stubServer) {
 		this.stubServer = stubServer;
+	}
+
+	private VerifyHttp(StubServer stubServer, int times) {
+		this.stubServer = stubServer;
+		this.times = times;
 	}
 
 	public void get(final String url) {
@@ -38,28 +49,40 @@ public class VerifyHttp {
 	}
 
 	public void method(final Method method,final String uri) {
-		Function<List<Call>, Boolean> check = new Function<List<Call>, Boolean>() {
+		Function<List<Call>, Integer> check = new Function<List<Call>, Integer>() {
 			@Override
-			public Boolean apply(List<Call> input) {
+			public Integer apply(List<Call> input) {
+				int i = 0;
 				for (Call call : input) {
 					if (method.equals(call.getMethod()) && uri.equals(call.getUri())) {
-						return true;
+						i++;
 					}
 				}
 
-				return false;
+				return i;
 			}
 		};
 
-		calls(
-				String.format("Expected to meet a %s call to %s, but this never happened.", method, uri),
-				stubServer.getCalls(),
-				check
+		Integer happenedTimes = check.apply(stubServer.getCalls());
+		assertThat(
+				String.format("Expected to meet a %s call to %s %s times, got %s instead .", method, uri, times, happenedTimes),
+				happenedTimes.equals(times)
 		);
 	}
 
-	protected void calls(String message, List<Call> call, Function<List<Call>, Boolean> check) {
-		assertThat(message, check.apply(call));
+
+	public static class Times {
+		public static int never() {
+			return 0;
+		}
+
+		public static int once() {
+			return 1;
+		}
+
+		public static int times(int i) {
+			return i;
+		}
 	}
 
 }

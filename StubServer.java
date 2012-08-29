@@ -8,6 +8,8 @@ import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,10 +22,17 @@ public class StubServer {
 	private List<Stub> stubs = Lists.newArrayList();
 	private HttpServer simpleServer;
 
+	private Logger log = LoggerFactory.getLogger(StubServer.class);
+
 
 	public StubServer(Stub... stubs) {
 		this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
 		simpleServer = HttpServer.createSimpleServer(".", PORT);
+	}
+
+	public StubServer addStub(Stub s) {
+		this.stubs.add(s);
+		return this;
 	}
 
 	public StubServer(Behavior behavior) {
@@ -58,12 +67,21 @@ public class StubServer {
 		return new HttpHandler() {
 			@Override
 			public void service(Request request, Response response) throws Exception {
-				for (Stub stub : stubs) {
+
+				boolean processed = false;
+
+				for (Stub stub : Lists.reverse(stubs)) {
 					if (!stub.getWhen().apply(request)) {
 						continue;
 					}
 
-					response = stub.getWhat().apply(response);
+					stub.getWhat().apply(response);
+					processed = true;
+					break;
+				}
+
+				if (!processed) {
+					log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
 				}
 
 				calls.add(Call.fromRequest(request));
