@@ -1,5 +1,7 @@
-package com.xebialabs.restito.stubs;
+package com.xebialabs.restito;
 
+import com.xebialabs.restito.stubs.Stub;
+import com.xebialabs.restito.stubs.StubBuilder;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
