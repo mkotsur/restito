@@ -1,12 +1,16 @@
 package com.xebialabs.restito.verify;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.xebialabs.restito.StubServer;
 import com.xebialabs.restito.calls.Call;
 import org.glassfish.grizzly.http.Method;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Iterables.filter;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class VerifyHttp {
@@ -32,25 +36,29 @@ public class VerifyHttp {
 		this.times = times;
 	}
 
+	@Deprecated
 	public void get(final String url) {
 		method(Method.GET, url);
 	}
 
+	@Deprecated
 	public void post(final String url) {
 		method(Method.POST, url);
 	}
 
+	@Deprecated
 	public void put(final String url) {
 		method(Method.PUT, url);
 	}
 
+	@Deprecated
 	public void delete(final String url) {
 		method(Method.DELETE, url);
 	}
 
+	@Deprecated
 	public void method(final Method method,final String uri) {
 		Function<List<Call>, Integer> check = new Function<List<Call>, Integer>() {
-			@Override
 			public Integer apply(List<Call> input) {
 				int i = 0;
 				for (Call call : input) {
@@ -70,7 +78,23 @@ public class VerifyHttp {
 		);
 	}
 
+	public void once(Condition... conditions) {
 
+		List<Call> calls = stubServer.getCalls();
+
+		for (Condition condition : conditions) {
+			calls = Lists.newArrayList(filter(calls, condition.getPredicate()));
+		}
+
+
+		assertEquals(
+				String.format("Expected to happen %s time(s), but happened %s times instead", 1, calls.size()),
+				1, calls.size()
+		);
+	}
+
+
+	@Deprecated
 	public static class Times {
 		public static int never() {
 			return 0;

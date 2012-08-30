@@ -1,4 +1,4 @@
-version '0.1-SNAPSHOT'
+version '0.2.1-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
@@ -31,3 +31,10 @@ dependencies {
   compile 'com.jayway.restassured:rest-assured:1.6.2'
 
 }
+
+tasks.withType(Compile) { compile ->
+  compile.options.compilerArgs << '-Xlint:deprecation'
+  compile.options.compilerArgs << '-Xlint:unchecked'
+}
+
+

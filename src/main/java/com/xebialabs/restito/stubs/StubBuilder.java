@@ -27,7 +27,6 @@ public class StubBuilder {
 
 	public StubBuilder forStatus(final HttpStatus status) {
 		this.stub.setWhat(new Function<Response, Response>() {
-			@Override
 			public Response apply(@Nullable Response input) {
 				input.setStatus(status);
 				return input;
@@ -47,7 +46,6 @@ public class StubBuilder {
 
 	public StubBuilder forStringContent(final String content) {
 		this.stub.setWhat(new Function<Response, Response>() {
-			@Override
 			public Response apply(@Nullable Response input) {
 				input.setContentType("application/xml");
 				input.setContentLength(content.length());
@@ -66,8 +64,7 @@ public class StubBuilder {
 
 	public StubBuilder withUri(final String uri) {
 		withPredicate(new Predicate<Request>() {
-			@Override
-			public boolean apply(@Nullable Request input) {
+			public boolean apply(Request input) {
 				return input.getRequestURI().endsWith(uri);
 			}
 		});
@@ -77,8 +74,7 @@ public class StubBuilder {
 
 	public StubBuilder withMethod(final Method m) {
 		withPredicate(new Predicate<Request>() {
-			@Override
-			public boolean apply(@Nullable Request input) {
+			public boolean apply(Request input) {
 				return m.equals(input.getMethod());
 			}
 		});
@@ -88,8 +84,7 @@ public class StubBuilder {
 	public StubBuilder withParameter(final String parameterName, final String... parameterValues) {
 
 		return withPredicate(new Predicate<Request>() {
-			@Override
-			public boolean apply(@Nullable Request input) {
+			public boolean apply(Request input) {
 				return Arrays.equals(input.getParameterValues(parameterName), parameterValues);
 			}
 		});
@@ -100,8 +95,7 @@ public class StubBuilder {
 		final Predicate<Request> currentPredicate = this.stub.getWhen();
 
 		this.stub.setWhen(new Predicate<Request>() {
-			@Override
-			public boolean apply(@Nullable Request input) {
+			public boolean apply(Request input) {
 				return newPredicate.apply(input) && currentPredicate.apply(input);
 			}
 		});
