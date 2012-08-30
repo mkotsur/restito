@@ -12,15 +12,7 @@ Example:
 ```java
 package com.xebialabs.restito;
 
-import com.jayway.restassured.RestAssured;
-import com.xebialabs.restito.calls.CallsHelper;
-import org.glassfish.grizzly.http.util.HttpStatus;
-import org.junit.*;
-
-import static com.jayway.restassured.RestAssured.expect;
-import static com.xebialabs.restito.stubs.StubsHttp.whenHttp;
-import static com.xebialabs.restito.verify.VerifyHttp.Times.once;
-import static com.xebialabs.restito.verify.VerifyHttp.verifyHttp;
+...
 
 public class SimpleRequestsTest {
 
@@ -47,7 +39,10 @@ public class SimpleRequestsTest {
 
 		// Restito
 		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
-		verifyHttp(server, once()).get("/demo");
+		verifyHttp(server, once()).once(
+				method(Method.GET),
+				uri("/demo")
+		);
 
 	}
 
