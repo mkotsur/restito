@@ -1,12 +1,12 @@
-package com.xebialabs.restito.verify;
+package com.xebialabs.restito.builder;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.xebialabs.restito.StubServer;
-import com.xebialabs.restito.calls.Call;
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Condition;
+import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.filter;

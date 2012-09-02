@@ -1,4 +1,4 @@
-package com.xebialabs.restito.junit;
+package com.xebialabs.restito.support.junit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

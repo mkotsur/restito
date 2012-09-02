@@ -1,4 +1,4 @@
-package com.xebialabs.restito.calls;
+package com.xebialabs.restito.semantics;
 
 import com.google.common.collect.Maps;
 import org.glassfish.grizzly.http.Method;
@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Call that happened to server
+ * Call that happened to server.
+ * Handy wrapper for Request values.
  */
 public class Call {
 

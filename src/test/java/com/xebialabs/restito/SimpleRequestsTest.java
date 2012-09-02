@@ -1,9 +1,8 @@
 package com.xebialabs.restito;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.specification.RequestSpecification;
-import com.xebialabs.restito.calls.CallsHelper;
-import com.xebialabs.restito.verify.Condition;
+import com.xebialabs.restito.server.StubServer;
+import com.xebialabs.restito.support.log.CallsHelper;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
@@ -11,14 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.jayway.restassured.RestAssured.expect;
-import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
-import static com.xebialabs.restito.stubs.StubsHttp.whenHttp;
-import static com.xebialabs.restito.verify.Condition.method;
-import static com.xebialabs.restito.verify.Condition.parameter;
-import static com.xebialabs.restito.verify.Condition.uri;
-import static com.xebialabs.restito.verify.VerifyHttp.Times.once;
-import static com.xebialabs.restito.verify.VerifyHttp.verifyHttp;
+import static com.xebialabs.restito.builder.StubsHttp.whenHttp;
+import static com.xebialabs.restito.builder.VerifyHttp.Times.once;
+import static com.xebialabs.restito.builder.VerifyHttp.verifyHttp;
+import static com.xebialabs.restito.semantics.Condition.*;
 
 public class SimpleRequestsTest {
 

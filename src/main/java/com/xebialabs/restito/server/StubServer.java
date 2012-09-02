@@ -1,9 +1,9 @@
-package com.xebialabs.restito;
+package com.xebialabs.restito.server;
 
 import com.google.common.collect.Lists;
-import com.xebialabs.restito.behavior.Behavior;
-import com.xebialabs.restito.calls.Call;
-import com.xebialabs.restito.stubs.Stub;
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Stub;
+import com.xebialabs.restito.support.behavior.Behavior;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class StubServer {
 
-	public static final int PORT = 6666;
+	public static final int DEFAULT_PORT = 6666;
 	private List<Call> calls = Lists.newArrayList();
 	private List<Stub> stubs = Lists.newArrayList();
 	private HttpServer simpleServer;
@@ -27,7 +27,7 @@ public class StubServer {
 
 	public StubServer(Stub... stubs) {
 		this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
-		simpleServer = HttpServer.createSimpleServer(".", PORT);
+		simpleServer = HttpServer.createSimpleServer(".", DEFAULT_PORT);
 	}
 
 	public StubServer addStub(Stub s) {
@@ -37,7 +37,7 @@ public class StubServer {
 
 	public StubServer(Behavior behavior) {
 		this.stubs = behavior.getStubs();
-		simpleServer = HttpServer.createSimpleServer(".", PORT);
+		simpleServer = HttpServer.createSimpleServer(".", DEFAULT_PORT);
 	}
 
 	public StubServer run() {

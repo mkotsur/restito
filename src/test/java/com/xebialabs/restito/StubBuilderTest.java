@@ -1,7 +1,7 @@
 package com.xebialabs.restito;
 
-import com.xebialabs.restito.stubs.Stub;
-import com.xebialabs.restito.stubs.StubBuilder;
+import com.xebialabs.restito.builder.StubBuilder;
+import com.xebialabs.restito.semantics.Stub;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -45,7 +45,7 @@ public class StubBuilderTest {
 	@Test
 	public void shouldBuildStubWithContent() throws Exception {
 
-		Stub stub = new StubBuilder().forXmlResourceContent("com/xebialabs/restito/stubs/content.xml").build();
+		Stub stub = new StubBuilder().forXmlResourceContent("content.xml").build();
 
 		stub.getWhat().apply(response);
 

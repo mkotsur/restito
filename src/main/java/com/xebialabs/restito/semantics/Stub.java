@@ -1,4 +1,4 @@
-package com.xebialabs.restito.stubs;
+package com.xebialabs.restito.semantics;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;

@@ -1,4 +1,4 @@
-package com.xebialabs.restito.junit;
+package com.xebialabs.restito.support.junit;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

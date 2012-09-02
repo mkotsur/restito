@@ -1,8 +1,9 @@
-package com.xebialabs.restito.stubs;
+package com.xebialabs.restito.builder;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
+import com.xebialabs.restito.semantics.Stub;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;

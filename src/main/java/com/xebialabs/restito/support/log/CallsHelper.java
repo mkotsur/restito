@@ -1,6 +1,7 @@
-package com.xebialabs.restito.calls;
+package com.xebialabs.restito.support.log;
 
-import com.xebialabs.restito.StubServer;
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.server.StubServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

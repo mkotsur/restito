@@ -1,10 +1,8 @@
-package com.xebialabs.restito.verify;
+package com.xebialabs.restito.semantics;
 
 import com.google.common.base.Predicate;
-import com.xebialabs.restito.calls.Call;
 import org.glassfish.grizzly.http.Method;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class Condition {
@@ -14,7 +12,6 @@ public class Condition {
 	private Condition(Predicate<Call> predicate) {
 		this.predicate = predicate;
 	}
-
 
 	public static Condition method(final Method m) {
 		return new Condition(new Predicate<Call>() {
@@ -38,6 +35,10 @@ public class Condition {
 				return input.getUri().endsWith(uri);
 			}
 		});
+	}
+
+	public static Condition predicate(Predicate<Call> p) {
+		return new Condition(p);
 	}
 
 	public Predicate<Call> getPredicate() {

@@ -1,6 +1,6 @@
-package com.xebialabs.restito.stubs;
+package com.xebialabs.restito.builder;
 
-import com.xebialabs.restito.StubServer;
+import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
