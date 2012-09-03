@@ -71,7 +71,7 @@ public class StubServer {
 				boolean processed = false;
 
 				for (Stub stub : Lists.reverse(stubs)) {
-					if (!stub.getWhen().apply(request)) {
+					if (!stub.getWhen().apply(Call.fromRequest(request))) {
 						continue;
 					}
 

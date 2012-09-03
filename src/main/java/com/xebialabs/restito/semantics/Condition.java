@@ -3,6 +3,7 @@ package com.xebialabs.restito.semantics;
 import com.google.common.base.Predicate;
 import org.glassfish.grizzly.http.Method;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public class Condition {
@@ -32,7 +33,24 @@ public class Condition {
 	public static Condition uri(final String uri) {
 		return new Condition(new Predicate<Call>() {
 			public boolean apply(Call input) {
+				return input.getUri().equals(uri);
+			}
+		});
+	}
+
+	public static Condition endsWithUri(final String uri) {
+		return new Condition(new Predicate<Call>() {
+			public boolean apply(Call input) {
 				return input.getUri().endsWith(uri);
+			}
+		});
+	}
+
+	public static Condition withPostBody() {
+		return new Condition(new Predicate<Call>() {
+			@Override
+			public boolean apply(@Nullable Call input) {
+				return input.getPostBody() != null && input.getPostBody().length() > 0;
 			}
 		});
 	}
@@ -43,5 +61,9 @@ public class Condition {
 
 	public Predicate<Call> getPredicate() {
 		return predicate;
+	}
+
+	public boolean check(Call input) {
+		return getPredicate().apply(input);
 	}
 }

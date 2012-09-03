@@ -12,18 +12,18 @@ import org.glassfish.grizzly.http.server.Response;
  */
 public class Stub {
 
-	public Predicate<Request> when = Predicates.alwaysTrue();
+	public Predicate<Call> when = Predicates.alwaysTrue();
 
 	public Function<Response, Response> what = Functions.identity();
 
 	public Stub() {}
 
-	public Stub(Predicate<Request> when, Function<Response, Response> what) {
+	public Stub(Predicate<Call> when, Function<Response, Response> what) {
 		this.when = when;
 		this.what = what;
 	}
 
-	public Predicate<Request> getWhen() {
+	public Predicate<Call> getWhen() {
 		return when;
 	}
 
@@ -31,7 +31,7 @@ public class Stub {
 		return what;
 	}
 
-	public void setWhen(Predicate<Request> when) {
+	public void setWhen(Predicate<Call> when) {
 		this.when = when;
 	}
 

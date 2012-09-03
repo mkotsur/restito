@@ -1,6 +1,8 @@
 package com.xebialabs.restito;
 
+import com.google.common.collect.Maps;
 import com.xebialabs.restito.builder.StubBuilder;
+import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
@@ -10,6 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -22,7 +27,7 @@ public class StubBuilderTest {
 	private Response response;
 
 	@Mock
-	private Request request;
+	private Call call;
 
 	@Mock
 	private java.io.Writer writer;
@@ -59,16 +64,16 @@ public class StubBuilderTest {
 	public void shouldBuildStubFilteredByExpectedUri() throws Exception {
 		Stub stub = new StubBuilder().withUri("/test").build();
 
-		when(request.getRequestURI()).thenReturn("/test");
-		assertTrue(stub.getWhen().apply(request));
+		when(call.getUri()).thenReturn("/test");
+		assertTrue(stub.getWhen().apply(call));
 	}
 
 	@Test
 	public void shouldBuildStubForNonExpectedUri() throws Exception {
 		Stub stub = new StubBuilder().withUri("/test").build();
 
-		when(request.getRequestURI()).thenReturn("/wrong");
-		assertFalse(stub.getWhen().apply(request));
+		when(call.getUri()).thenReturn("/wrong");
+		assertFalse(stub.getWhen().apply(call));
 	}
 
 	@Test
@@ -76,43 +81,51 @@ public class StubBuilderTest {
 		Stub stub4post = new StubBuilder().withMethod(Method.POST).build();
 		Stub stub4get = new StubBuilder().withMethod(Method.GET).build();
 
-		when(request.getMethod()).thenReturn(Method.POST);
+		when(call.getMethod()).thenReturn(Method.POST);
 
-		assertTrue(stub4post.getWhen().apply(request));
-		assertFalse(stub4get.getWhen().apply(request));
+		assertTrue(stub4post.getWhen().apply(call));
+		assertFalse(stub4get.getWhen().apply(call));
 	}
 
 	@Test
 	public void shouldAggregateConditionsNegative() {
 		Stub stub = new StubBuilder().withMethod(Method.POST).withUri("/uri").build();
 
-		when(request.getMethod()).thenReturn(Method.POST);
-		when(request.getRequestURI()).thenReturn("/other");
-		assertFalse(stub.getWhen().apply(request));
+		when(call.getMethod()).thenReturn(Method.POST);
+		when(call.getUri()).thenReturn("/other");
+		assertFalse(stub.getWhen().apply(call));
 
-		when(request.getMethod()).thenReturn(Method.GET);
-		when(request.getRequestURI()).thenReturn("/uri");
-		assertFalse(stub.getWhen().apply(request));
+		when(call.getMethod()).thenReturn(Method.GET);
+		when(call.getUri()).thenReturn("/uri");
+		assertFalse(stub.getWhen().apply(call));
 	}
 
 	@Test
 	public void shouldAggregateConditionsPositive() {
 		Stub stub = new StubBuilder().withMethod(Method.POST).withUri("/uri").build();
 
-		when(request.getMethod()).thenReturn(Method.POST);
-		when(request.getRequestURI()).thenReturn("/uri");
-		assertTrue(stub.getWhen().apply(request));
+		when(call.getMethod()).thenReturn(Method.POST);
+		when(call.getUri()).thenReturn("/uri");
+		assertTrue(stub.getWhen().apply(call));
 	}
 
 	@Test
 	public void shouldBuildStubFilteredByPostParameters() {
 		Stub stub = new StubBuilder().withParameter("colors", "blue", "green").build();
 
-		when(request.getParameterValues("colors")).thenReturn(new String[]{"blue", "green"});
-		assertTrue(stub.getWhen().apply(request));
+		Map<String, String[]> colors1 = new HashMap<String, String[]>() {{
+			put("colors", new String[]{"blue", "green"});
+		}};
 
-		when(request.getParameterValues("colors")).thenReturn(new String[]{"yellow", "red"});
-		assertFalse(stub.getWhen().apply(request));
+		Map<String, String[]> colors2 = new HashMap<String, String[]>() {{
+			put("colors", new String[]{"blue", "brown"});
+		}};
+
+		when(call.getParameters()).thenReturn(colors1);
+		assertTrue(stub.getWhen().apply(call));
+
+		when(call.getParameters()).thenReturn(colors2);
+		assertFalse(stub.getWhen().apply(call));
 
 	}
 
