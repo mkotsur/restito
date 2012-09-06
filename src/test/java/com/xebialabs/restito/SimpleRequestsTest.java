@@ -1,8 +1,8 @@
 package com.xebialabs.restito;
 
 import com.jayway.restassured.RestAssured;
+import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
-import com.xebialabs.restito.support.log.CallsHelper;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
@@ -30,7 +30,6 @@ public class SimpleRequestsTest {
 	@After
 	public void stop() {
 		server.stop();
-		CallsHelper.logCalls(server.getCalls());
 	}
 
 	@Test
@@ -40,7 +39,9 @@ public class SimpleRequestsTest {
 		expect().statusCode(200).when().get("/demo");
 
 		// Restito
-		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
+		whenHttp(server).condition(
+				Condition.endsWithUri("/demo")
+		).then().status(HttpStatus.OK_200);
 		verifyHttp(server, once()).once(
 				method(Method.GET),
 				uri("/demo")
@@ -50,7 +51,9 @@ public class SimpleRequestsTest {
 
 	@Test
 	public void shouldVerifyGetRequestWithParameters() {
-		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
+		whenHttp(server).condition(
+				Condition.endsWithUri("/demo")
+		).then().status(HttpStatus.OK_200);
 
 		given().param("foo", "bar").get("/demo");
 
@@ -63,7 +66,9 @@ public class SimpleRequestsTest {
 
 	@Test(expected = AssertionError.class)
 	public void shouldFailWhenParametersExpectedButWrongOnesGiven() {
-		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
+		whenHttp(server).condition(
+				Condition.endsWithUri("/demo")
+		).then().status(HttpStatus.OK_200);
 
 		given().param("foo", "bar").get("/demo");
 
@@ -76,7 +81,9 @@ public class SimpleRequestsTest {
 
 	@Test(expected = AssertionError.class)
 	public void shouldFailWhenMethodIsWrong() {
-		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
+		whenHttp(server).condition(
+				Condition.endsWithUri("/demo")
+		).then().status(HttpStatus.OK_200);
 
 		given().param("foo", "bar").get("/demo");
 

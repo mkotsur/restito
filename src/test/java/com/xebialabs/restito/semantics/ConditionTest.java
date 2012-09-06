@@ -1,17 +1,18 @@
 package com.xebialabs.restito.semantics;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import org.glassfish.grizzly.http.Method;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import sun.misc.Regexp;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +29,7 @@ public class ConditionTest {
 	@Test
 	public void shouldWorkWithCustomPredicate() {
 		Predicate p = mock(Predicate.class);
-		assertEquals(p, Condition.predicate(p).getPredicate());
+		assertEquals(p, Condition.custom(p).getPredicate());
 	}
 
 	@Test
@@ -105,11 +106,58 @@ public class ConditionTest {
 		assertTrue(condition.check(call));
 	}
 
+	@Test
+	public void shouldDistinguishByStringInBody() {
+		Condition condition = Condition.withPostBodyContaining("abra");
+
+		assertFalse(condition.check(call));
+
+		when(call.getPostBody()).thenReturn("abrakadabra");
+		assertTrue(condition.check(call));
+
+		condition = Condition.withPostBodyContaining("sweets");
+		assertFalse(condition.check(call));
+	}
+
+	@Test
+	public void shouldDistinguishByRegexpMatchInBody() {
+		Condition condition = Condition.withPostBodyContaining(new Regexp("[0-9]+"));
+
+		when(call.getPostBody()).thenReturn("331102");
+		assertTrue(condition.check(call));
+
+		condition = Condition.withPostBodyContaining(new Regexp("[a-z]+"));
+		assertFalse(condition.check(call));
+
+	}
+
+	@Test
+	public void shouldDistinguishByHeaderPresence() {
+		Condition withFoo = Condition.withHeader("foo");
+		Condition withFooContainsBar = Condition.withHeader("foo", "bar");
+
+		when(call.getHeaders()).thenReturn(Maps.<String, String>newHashMap());
+
+		assertFalse(withFoo.check(call));
+		assertFalse(withFooContainsBar.check(call));
+
+		when(call.getHeaders()).thenReturn(header("foo", "bar"));
+
+		assertTrue(withFoo.check(call));
+		assertTrue(withFooContainsBar.check(call));
+
+	}
 
 	// Helpers
 	private Map<String, String[]> paramsMap(final String key,final  String... values) {
 		return new HashMap<String, String[]>() {{
 			put(key, values);
+		}};
+	}
+
+	private Map<String, String> header(final String key,final String value) {
+		return new HashMap<String, String>() {{
+			put(key, value);
 		}};
 	}
 }

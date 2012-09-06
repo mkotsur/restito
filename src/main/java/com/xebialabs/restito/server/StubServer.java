@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.support.behavior.Behavior;
+import com.xebialabs.restito.support.log.CallsHelper;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -68,14 +69,18 @@ public class StubServer {
 			@Override
 			public void service(Request request, Response response) throws Exception {
 
+				Call call = Call.fromRequest(request);
+
+				CallsHelper.logCall(call);
+
 				boolean processed = false;
 
 				for (Stub stub : Lists.reverse(stubs)) {
-					if (!stub.getWhen().apply(Call.fromRequest(request))) {
+					if (!stub.isApplicable(call)) {
 						continue;
 					}
 
-					stub.getWhat().apply(response);
+					stub.apply(response);
 					processed = true;
 					break;
 				}
@@ -84,7 +89,7 @@ public class StubServer {
 					log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
 				}
 
-				calls.add(Call.fromRequest(request));
+				calls.add(call);
 			}
 		};
 	}

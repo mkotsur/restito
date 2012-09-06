@@ -1,12 +1,12 @@
-- stub differentRequest types
-- stub headers
++ stub differentRequest types
++ stub and verify headers
 - shortcut for te
-- stubParameters
-- stub that must happen
+- verify parameters
+- stub that must be called
 - auto-search of xml files
 - content-type auto detection
 - implement once(), never(), times(i)
 - implement ordered verifications
-- out-of-box printing
++ out-of-box printing
 - update examples in manual
 

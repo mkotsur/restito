@@ -1,0 +1,58 @@
+package com.xebialabs.restito.semantics;
+
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.util.HttpStatus;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.Writer;
+
+import static org.mockito.Mockito.*;
+
+public class ActionTest {
+
+	@Mock
+	private Response response;
+
+	@Mock
+	private Call call;
+
+	@Before
+	public void init() {
+		MockitoAnnotations.initMocks(this);
+		when(response.getWriter()).thenReturn(mock(Writer.class));
+	}
+
+
+	@Test
+	public void shouldBuildSuccessfulStub() {
+		Action.forSuccess().apply(response);
+
+		verify(response).setStatus(HttpStatus.OK_200);
+	}
+
+	@Test
+	public void shouldApplyXmlContent() throws Exception {
+		Action.forXmlResourceContent("content.xml").apply(response);
+
+		verify(response).setContentType("application/xml");
+		verify(response).setContentLength(13);
+		verify(response.getWriter()).write("<test></test>");
+	}
+
+	@Test
+	public void shouldApplyStringContent() throws Exception {
+		Action.forStringContent("asd").apply(response);
+
+		verify(response.getWriter()).write("asd");
+	}
+
+	@Test
+	public void shouldApplyHeader() throws Exception {
+		Action.header("Location", "google.com").apply(response);
+
+		verify(response).setHeader("Location", "google.com");
+	}
+}

@@ -1,7 +1,9 @@
 package com.xebialabs.restito.builder;
 
+import com.xebialabs.restito.semantics.Action;
+import com.xebialabs.restito.semantics.Condition;
+import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.server.StubServer;
-import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
 public class StubsHttp {
@@ -18,28 +20,17 @@ public class StubsHttp {
 			this.server = server;
 		}
 
-		public Then get(String uri) {
-			return method(Method.GET, uri);
+		public Then condition(Condition a) {
+			return new Then(server, a);
 		}
 
-		public Then delete(String uri) {
-			return method(Method.DELETE, uri);
-		}
-
-		public Then post(String uri) {
-			return method(Method.POST, uri);
-		}
-
-		public Then method(Method method, String uri) {
-			return new Then(server, new StubBuilder().withMethod(method).withUri(uri));
-		}
 	}
 
 	public static class Then {
 
 		private StubServer server;
 
-		private StubBuilder builder;
+		private Condition cond;
 
 		public Then then(){
 			return this;
@@ -49,25 +40,22 @@ public class StubsHttp {
 			return this;
 		}
 
-		protected Then(StubServer server, StubBuilder builder) {
+		protected Then(StubServer server, Condition condition) {
 			this.server = server;
-			this.builder = builder;
+			this.cond = condition;
 		}
 
 		public void xmlResourceContent(String xmlResource) {
-			builder.forXmlResourceContent(xmlResource);
-			server.addStub(builder.build());
+			server.addStub(new Stub(cond, Action.forXmlResourceContent(xmlResource)));
 		}
 
 
 		public void stringContent(String s) {
-			builder.forStringContent(s);
-			server.addStub(builder.build());
+			server.addStub(new Stub(cond, Action.forStringContent(s)));
 		}
 
 		public void status(HttpStatus s) {
-			builder.forStatus(s);
-			server.addStub(builder.build());
+			server.addStub(new Stub(cond, Action.forStatus(s)));
 		}
 	}
 }

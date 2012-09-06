@@ -19,26 +19,29 @@ public class CallsHelper {
 		);
 
 		for (Call call : calls) {
-			log.info("{} Request to URL: {} of type {}", va( call.getMethod(), call.getUrl(), call.getContentType()));
-			for (Map.Entry<String, String> e : call.getHeaders().entrySet()) {
-				log.info(" --> Header [{}] with value: [{}]", e.getKey(), e.getValue());
-			}
-
-			for (Map.Entry<String, String[]> e : call.getParameters().entrySet()) {
-				log.info(" --> Parameter [{}] with value(s): ", e.getKey());
-				for (String v : e.getValue()) {
-					log.info("      -> [{}]", v);
-				}
-			}
-
-			// Prevents IntelliJ from crash :-)
-			if (call.getContentType() == null || !call.getContentType().startsWith("multipart/form-data")) {
-				log.info(" --> Body: ");
-				log.info(call.getPostBody());
-			}
-
+			logCall(call);
 		}
 
+	}
+
+	public static void logCall(Call call) {
+		log.info("{} Request to URL: {} of type {}", va( call.getMethod(), call.getUrl(), call.getContentType()));
+		for (Map.Entry<String, String> e : call.getHeaders().entrySet()) {
+			log.info(" --> Header [{}] with value: [{}]", e.getKey(), e.getValue());
+		}
+
+		for (Map.Entry<String, String[]> e : call.getParameters().entrySet()) {
+			log.info(" --> Parameter [{}] with value(s): ", e.getKey());
+			for (String v : e.getValue()) {
+				log.info("      -> [{}]", v);
+			}
+		}
+
+		// Prevents IntelliJ from crash :-)
+		if (call.getContentType() == null || !call.getContentType().startsWith("multipart/form-data")) {
+			log.info(" --> Body: ");
+			log.info(call.getPostBody());
+		}
 	}
 
 	private static Object[] va(Object... args) {
