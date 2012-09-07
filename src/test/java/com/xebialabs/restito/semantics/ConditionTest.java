@@ -1,6 +1,7 @@
 package com.xebialabs.restito.semantics;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ConditionTest {
@@ -28,7 +28,7 @@ public class ConditionTest {
 
 	@Test
 	public void shouldWorkWithCustomPredicate() {
-		Predicate p = mock(Predicate.class);
+		Predicate<Call> p = Predicates.alwaysTrue();
 		assertEquals(p, Condition.custom(p).getPredicate());
 	}
 
