@@ -12,8 +12,7 @@ import org.junit.Test;
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.StubsHttp.whenHttp;
-import static com.xebialabs.restito.builder.VerifyHttp.Times.once;
-import static com.xebialabs.restito.builder.VerifyHttp.verifyHttp;
+import static com.xebialabs.restito.builder.verify.Verify.verifyHttp;
 import static com.xebialabs.restito.semantics.Condition.*;
 
 public class SimpleRequestsTest {
@@ -42,11 +41,11 @@ public class SimpleRequestsTest {
 		whenHttp(server).condition(
 				Condition.endsWithUri("/demo")
 		).then().status(HttpStatus.OK_200);
-		verifyHttp(server, once()).once(
+
+		verifyHttp(server).once(
 				method(Method.GET),
 				uri("/demo")
 		);
-
 	}
 
 	@Test
