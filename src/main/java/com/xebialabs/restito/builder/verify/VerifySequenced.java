@@ -4,7 +4,7 @@ import com.xebialabs.restito.semantics.Call;
 
 import java.util.List;
 
-import static com.xebialabs.restito.builder.verify.Verify.verifyHttp;
+import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 
 public class VerifySequenced {
 
@@ -14,7 +14,7 @@ public class VerifySequenced {
 		this.calls = calls;
 	}
 
-	public Verify then() {
+	public VerifyHttp then() {
 		return verifyHttp(calls);
 	}
 }

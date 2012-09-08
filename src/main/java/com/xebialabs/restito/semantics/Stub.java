@@ -20,7 +20,9 @@ public class Stub {
 
 	private Function<Response, Response> what = Functions.identity();
 
-	private int appliedTimes;
+	private int appliedTimes = 0;
+
+	private int expectedTimes = 0;
 
 	public Stub() {}
 
@@ -66,5 +68,13 @@ public class Stub {
 
 	public int getAppliedTimes() {
 		return appliedTimes;
+	}
+
+	public void setExpectedTimes(int expectedTimes) {
+		this.expectedTimes = expectedTimes;
+	}
+
+	public int getExpectedTimes() {
+		return expectedTimes;
 	}
 }

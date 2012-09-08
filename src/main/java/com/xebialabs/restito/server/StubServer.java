@@ -64,6 +64,10 @@ public class StubServer {
 		return calls;
 	}
 
+	public List<Stub> getStubs() {
+		return stubs;
+	}
+
 	private HttpHandler stubsToHandler(List<Stub> stub) {
 		return new HttpHandler() {
 			@Override

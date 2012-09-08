@@ -10,19 +10,19 @@ import java.util.List;
 import static com.google.common.collect.Iterables.filter;
 import static junit.framework.Assert.assertEquals;
 
-public class Verify {
+public class VerifyHttp {
 
 	private final List<Call> calls;
 
-	public static Verify verifyHttp(StubServer stubServer) {
-		return new Verify(stubServer.getCalls());
+	public static VerifyHttp verifyHttp(StubServer stubServer) {
+		return new VerifyHttp(stubServer.getCalls());
 
 	}
-	public static Verify verifyHttp(List<Call> calls) {
-		return new Verify(calls);
+	public static VerifyHttp verifyHttp(List<Call> calls) {
+		return new VerifyHttp(calls);
 	}
 
-	private Verify(List<Call> calls) {
+	private VerifyHttp(List<Call> calls) {
 		this.calls = calls;
 	}
 

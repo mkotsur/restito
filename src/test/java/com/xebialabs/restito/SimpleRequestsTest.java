@@ -11,8 +11,9 @@ import org.junit.Test;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
-import static com.xebialabs.restito.builder.StubsHttp.whenHttp;
-import static com.xebialabs.restito.builder.verify.Verify.verifyHttp;
+import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
+import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Condition.*;
 
 public class SimpleRequestsTest {
@@ -38,9 +39,9 @@ public class SimpleRequestsTest {
 		expect().statusCode(200).when().get("/demo");
 
 		// Restito
-		whenHttp(server).condition(
-				Condition.endsWithUri("/demo")
-		).then().status(HttpStatus.OK_200);
+		whenHttp(server).
+				match(Condition.endsWithUri("/demo")).
+				then(status(HttpStatus.OK_200));
 
 		verifyHttp(server).once(
 				method(Method.GET),
@@ -50,9 +51,9 @@ public class SimpleRequestsTest {
 
 	@Test
 	public void shouldVerifyGetRequestWithParameters() {
-		whenHttp(server).condition(
-				Condition.endsWithUri("/demo")
-		).then().status(HttpStatus.OK_200);
+		whenHttp(server).
+				match(endsWithUri("/demo")).
+				then(status(HttpStatus.OK_200));
 
 		given().param("foo", "bar").get("/demo");
 
@@ -65,9 +66,9 @@ public class SimpleRequestsTest {
 
 	@Test(expected = AssertionError.class)
 	public void shouldFailWhenParametersExpectedButWrongOnesGiven() {
-		whenHttp(server).condition(
-				Condition.endsWithUri("/demo")
-		).then().status(HttpStatus.OK_200);
+		whenHttp(server).
+				match(endsWithUri("/demo")).
+				then(status(HttpStatus.OK_200));
 
 		given().param("foo", "bar").get("/demo");
 
@@ -80,9 +81,9 @@ public class SimpleRequestsTest {
 
 	@Test(expected = AssertionError.class)
 	public void shouldFailWhenMethodIsWrong() {
-		whenHttp(server).condition(
-				Condition.endsWithUri("/demo")
-		).then().status(HttpStatus.OK_200);
+		whenHttp(server).
+				match(endsWithUri("/demo")).
+				then(status(HttpStatus.OK_200));
 
 		given().param("foo", "bar").get("/demo");
 

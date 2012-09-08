@@ -30,11 +30,11 @@ public class Action {
 	}
 
 	// Factory methods
-	public static Action forSuccess() {
-		return forStatus(HttpStatus.OK_200);
+	public static Action success() {
+		return status(HttpStatus.OK_200);
 	}
 
-	public static Action forStatus(final HttpStatus status) {
+	public static Action status(final HttpStatus status) {
 		return new Action(new Function<Response, Response>() {
 			public Response apply(Response input) {
 				input.setStatus(status);
@@ -67,7 +67,7 @@ public class Action {
 		});
 	}
 
-	public static Action 	header(final String key, final String value) {
+	public static Action header(final String key, final String value) {
 		return new Action(new Function<Response, Response>() {
 			@Override
 			public Response apply(Response input) {
@@ -77,8 +77,24 @@ public class Action {
 		});
 	}
 
-
 	public static Action custom(Function<Response, Response> f) {
 		return new Action(f);
+	}
+
+	/**
+	 * Creates a composite action which contains all passed actions and
+	 * executes them in the same order.
+	 */
+	public static Action composite(final Action... actions) {
+		return new Action(new Function<Response, Response>() {
+			@Override
+			public Response apply(Response input) {
+				for (Action action : actions) {
+					action.apply(input);
+				}
+
+				return input;
+			}
+		});
 	}
 }

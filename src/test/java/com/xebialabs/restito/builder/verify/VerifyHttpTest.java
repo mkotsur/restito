@@ -12,13 +12,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static com.xebialabs.restito.builder.verify.Verify.verifyHttp;
+import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 import static com.xebialabs.restito.semantics.Condition.custom;
 import static com.xebialabs.restito.semantics.Condition.method;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class VerifyTest {
+public class VerifyHttpTest {
 
 	@Mock
 	private StubServer stubServer;

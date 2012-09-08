@@ -1,6 +1,7 @@
 package com.xebialabs.restito.semantics;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import org.glassfish.grizzly.http.Method;
 import sun.misc.Regexp;
 
@@ -115,5 +116,18 @@ public class Condition {
 				return realValue.equals(value);
 			}
 		});
+	}
+
+	/**
+	 * Joins many conditions with "and" operation
+	 */
+	public static Condition composite(Condition... conditions) {
+		Predicate<Call> init = Predicates.alwaysTrue();
+
+		for (Condition condition : conditions) {
+			init = Predicates.and(condition.predicate);
+		}
+
+		return new Condition(init);
 	}
 }

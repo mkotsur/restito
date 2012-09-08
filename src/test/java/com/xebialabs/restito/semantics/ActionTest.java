@@ -4,11 +4,13 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.Writer;
 
+import static com.xebialabs.restito.semantics.Action.*;
 import static org.mockito.Mockito.*;
 
 public class ActionTest {
@@ -28,7 +30,7 @@ public class ActionTest {
 
 	@Test
 	public void shouldBuildSuccessfulStub() {
-		Action.forSuccess().apply(response);
+		Action.success().apply(response);
 
 		verify(response).setStatus(HttpStatus.OK_200);
 	}
@@ -54,5 +56,15 @@ public class ActionTest {
 		Action.header("Location", "google.com").apply(response);
 
 		verify(response).setHeader("Location", "google.com");
+	}
+
+	@Test
+	public void shouldCreateCompositeAction() {
+		composite(status(HttpStatus.OK_200), header("foo", "bar")).apply(response);
+
+		InOrder inOrder = inOrder(response);
+		inOrder.verify(response).setStatus(HttpStatus.OK_200);
+		inOrder.verify(response).setHeader("foo", "bar");
+
 	}
 }

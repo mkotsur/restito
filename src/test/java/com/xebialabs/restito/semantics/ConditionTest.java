@@ -13,6 +13,7 @@ import sun.misc.Regexp;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -145,7 +146,17 @@ public class ConditionTest {
 
 		assertTrue(withFoo.check(call));
 		assertTrue(withFooContainsBar.check(call));
+	}
 
+	@Test
+	public void shouldCreateCompositeCondition() {
+		Condition catTomcatCondition = Condition.composite(endsWithUri("cat"), endsWithUri("tomcat"));
+
+		when(call.getUri()).thenReturn("/cat");
+		assertFalse(catTomcatCondition.check(call));
+
+		when(call.getUri()).thenReturn("/tomcat");
+		assertTrue(catTomcatCondition.check(call));
 	}
 
 	// Helpers
