@@ -29,6 +29,9 @@ dependencies {
 
   compile 'com.jayway.restassured:rest-assured:1.6.2'
 
+  compile 'org.apache.mina:mina-core:2.0.4'
+
+
 }
 
 tasks.withType(Compile) { compile ->

@@ -5,6 +5,7 @@ import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.support.behavior.Behavior;
 import com.xebialabs.restito.support.log.CallsHelper;
+import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class StubServer {
 
-	public static final int DEFAULT_PORT = 6666;
+	public final static int DEFAULT_PORT = 6666;
+
 	private List<Call> calls = Lists.newArrayList();
 	private List<Stub> stubs = Lists.newArrayList();
 	private HttpServer simpleServer;
@@ -28,7 +30,11 @@ public class StubServer {
 
 	public StubServer(Stub... stubs) {
 		this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
-		simpleServer = HttpServer.createSimpleServer(".", DEFAULT_PORT);
+		simpleServer = HttpServer.createSimpleServer(".", AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
+	}
+
+	public StubServer(Behavior behavior) {
+		this(behavior.getStubs().toArray(new Stub[behavior.getStubs().size()]));
 	}
 
 	public StubServer addStub(Stub s) {
@@ -36,13 +42,8 @@ public class StubServer {
 		return this;
 	}
 
-	public StubServer(Behavior behavior) {
-		this.stubs = behavior.getStubs();
-		simpleServer = HttpServer.createSimpleServer(".", DEFAULT_PORT);
-	}
-
 	public StubServer run() {
-		simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(stubs), "/");
+		simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(), "/");
 		start();
 		return this;
 	}
@@ -51,13 +52,17 @@ public class StubServer {
 		try {
 			simpleServer.start();
 		} catch (Exception e) {
-			throw new RuntimeException("Can not start Grizzly server for REST tests.");
+			throw new RuntimeException(e);
 		}
 	}
 
 	public StubServer stop() {
 		simpleServer.stop();
 		return this;
+	}
+
+	public int getPort() {
+		return simpleServer.getListeners().iterator().next().getPort();
 	}
 
 	public List<Call> getCalls() {
@@ -68,7 +73,7 @@ public class StubServer {
 		return stubs;
 	}
 
-	private HttpHandler stubsToHandler(List<Stub> stub) {
+	private HttpHandler stubsToHandler() {
 		return new HttpHandler() {
 			@Override
 			public void service(Request request, Response response) throws Exception {
@@ -97,4 +102,5 @@ public class StubServer {
 			}
 		};
 	}
+
 }

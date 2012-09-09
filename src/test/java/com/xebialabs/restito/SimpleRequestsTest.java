@@ -20,11 +20,10 @@ public class SimpleRequestsTest {
 
 	StubServer server;
 
-
 	@Before
 	public void start() {
 		server = new StubServer().run();
-		RestAssured.port = 6666;
+		RestAssured.port = server.getPort();
 	}
 
 	@After
