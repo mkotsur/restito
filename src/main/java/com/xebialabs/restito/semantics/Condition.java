@@ -126,7 +126,7 @@ public class Condition {
 		Predicate<Call> init = Predicates.alwaysTrue();
 
 		for (Condition condition : conditions) {
-			init = Predicates.and(condition.predicate);
+			init = Predicates.and(init, condition.predicate);
 		}
 
 		return new Condition(init);

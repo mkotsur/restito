@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Condition.method;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -150,12 +151,14 @@ public class ConditionTest {
 
 	@Test
 	public void shouldCreateCompositeCondition() {
-		Condition catTomcatCondition = Condition.composite(endsWithUri("cat"), endsWithUri("tomcat"));
+		Condition catTomcatCondition = Condition.composite(method(Method.POST), endsWithUri("tomcat"));
 
-		when(call.getUri()).thenReturn("/cat");
+		when(call.getUri()).thenReturn("/tomcat");
+		when(call.getMethod()).thenReturn(Method.GET);
 		assertFalse(catTomcatCondition.check(call));
 
 		when(call.getUri()).thenReturn("/tomcat");
+		when(call.getMethod()).thenReturn(Method.POST);
 		assertTrue(catTomcatCondition.check(call));
 	}
 

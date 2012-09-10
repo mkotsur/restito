@@ -10,6 +10,7 @@ import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.util.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +96,7 @@ public class StubServer {
 				}
 
 				if (!processed) {
+					response.setStatus(HttpStatus.NOT_FOUND_404);
 					log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
 				}
 
