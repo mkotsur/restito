@@ -38,12 +38,14 @@ public class SimpleRequestsTest {
 		expect().statusCode(200).when().get("/demo");
 
 		// Restito
-		whenHttp(server).get("/demo").then().status(HttpStatus.OK_200);
-		verifyHttp(server, once()).once(
+		whenHttp(server).
+				match(endsWithUri("/demo")).
+				then(status(HttpStatus.OK_200));
+
+		verifyHttp(server).once(
 				method(Method.GET),
 				uri("/demo")
 		);
-
 	}
 
 }

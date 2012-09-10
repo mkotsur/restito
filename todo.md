@@ -8,4 +8,5 @@
 + should find a free port for the server
 - auto-search of xml files
 - content-type auto detection
-- update examples in manual
+- update examples
+- update javadocs

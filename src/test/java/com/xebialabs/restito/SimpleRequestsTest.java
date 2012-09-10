@@ -1,7 +1,6 @@
 package com.xebialabs.restito;
 
 import com.jayway.restassured.RestAssured;
-import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -39,7 +38,7 @@ public class SimpleRequestsTest {
 
 		// Restito
 		whenHttp(server).
-				match(Condition.endsWithUri("/demo")).
+				match(endsWithUri("/demo")).
 				then(status(HttpStatus.OK_200));
 
 		verifyHttp(server).once(

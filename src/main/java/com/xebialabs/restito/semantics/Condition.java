@@ -5,7 +5,6 @@ import com.google.common.base.Predicates;
 import org.glassfish.grizzly.http.Method;
 import sun.misc.Regexp;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
 /**
@@ -68,7 +67,7 @@ public class Condition {
 	public static Condition withPostBody() {
 		return new Condition(new Predicate<Call>() {
 			@Override
-			public boolean apply(@Nullable Call input) {
+			public boolean apply(Call input) {
 				return input.getPostBody() != null && input.getPostBody().length() > 0;
 			}
 		});
@@ -121,6 +120,8 @@ public class Condition {
 	/**
 	 * Joins many conditions with "and" operation
 	 */
+	// see http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
+	@SuppressWarnings("unchecked")
 	public static Condition composite(Condition... conditions) {
 		Predicate<Call> init = Predicates.alwaysTrue();
 

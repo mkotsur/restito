@@ -17,23 +17,36 @@ public class Action {
 
 	private Function<Response, Response> function;
 
-	public Action(Function<Response, Response> function) {
+	private Action(Function<Response, Response> function) {
 		this.function = function;
 	}
 
+	/**
+	 * Get function which represents the action
+	 */
 	public Function<Response, Response> getFunction() {
 		return function;
 	}
 
+	/**
+	 * Perform the action with response
+	 */
 	public Response apply(Response r) {
 		return this.function.apply(r);
 	}
 
 	// Factory methods
+
+	/**
+	 * Sets HTTP status 200 to response
+	 */
 	public static Action success() {
 		return status(HttpStatus.OK_200);
 	}
 
+	/**
+	 * Sets HTTP status to response
+	 */
 	public static Action status(final HttpStatus status) {
 		return new Action(new Function<Response, Response>() {
 			public Response apply(Response input) {
@@ -43,16 +56,22 @@ public class Action {
 		});
 	}
 
-	public static Action forXmlResourceContent(String resourcePath) {
+	/**
+	 * Writes content of resource file to response
+	 */
+	public static Action resourceContent(String resourcePath) {
 		try {
 			String asd = Resources.toString(Resources.getResource(resourcePath), Charset.defaultCharset());
-			return forStringContent(asd);
+			return stringContent(asd);
 		} catch (IOException e) {
 			throw new RuntimeException("Can not read resource for restito stubbing.");
 		}
 	}
 
-	public static Action forStringContent(final String content) {
+	/**
+	 * Writes string content to response
+	 */
+	public static Action stringContent(final String content) {
 		return new Action(new Function<Response, Response>() {
 			public Response apply(Response input) {
 				input.setContentType("application/xml");
@@ -67,6 +86,9 @@ public class Action {
 		});
 	}
 
+	/**
+	 * Sets key-value header on response
+	 */
 	public static Action header(final String key, final String value) {
 		return new Action(new Function<Response, Response>() {
 			@Override
@@ -77,6 +99,9 @@ public class Action {
 		});
 	}
 
+	/**
+	 * Perform set of custom actions on response
+	 */
 	public static Action custom(Function<Response, Response> f) {
 		return new Action(f);
 	}

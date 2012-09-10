@@ -18,9 +18,6 @@ public class ActionTest {
 	@Mock
 	private Response response;
 
-	@Mock
-	private Call call;
-
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
@@ -37,7 +34,7 @@ public class ActionTest {
 
 	@Test
 	public void shouldApplyXmlContent() throws Exception {
-		Action.forXmlResourceContent("content.xml").apply(response);
+		resourceContent("content.xml").apply(response);
 
 		verify(response).setContentType("application/xml");
 		verify(response).setContentLength(13);
@@ -46,14 +43,14 @@ public class ActionTest {
 
 	@Test
 	public void shouldApplyStringContent() throws Exception {
-		Action.forStringContent("asd").apply(response);
+		stringContent("asd").apply(response);
 
 		verify(response.getWriter()).write("asd");
 	}
 
 	@Test
 	public void shouldApplyHeader() throws Exception {
-		Action.header("Location", "google.com").apply(response);
+		header("Location", "google.com").apply(response);
 
 		verify(response).setHeader("Location", "google.com");
 	}
