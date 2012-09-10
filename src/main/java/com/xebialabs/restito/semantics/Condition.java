@@ -32,6 +32,9 @@ public class Condition {
 
 	// Factory methods
 
+	/**
+	 * Checks HTTP method
+	 */
 	public static Condition method(final Method m) {
 		return new Condition(new Predicate<Call>() {
 			public boolean apply(Call input) {
@@ -40,6 +43,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * Checks HTTP parameters. Also work with multi-valued parameters
+	 */
 	public static Condition parameter(final String key, final String... parameterValues) {
 		return new Condition(new Predicate<Call>() {
 			public boolean apply(Call input) {
@@ -48,6 +54,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * URI exactly equals
+	 */
 	public static Condition uri(final String uri) {
 		return new Condition(new Predicate<Call>() {
 			public boolean apply(Call input) {
@@ -56,6 +65,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * URI ends with
+	 */
 	public static Condition endsWithUri(final String uri) {
 		return new Condition(new Predicate<Call>() {
 			public boolean apply(Call input) {
@@ -64,6 +76,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * Contains non-empty POST body
+	 */
 	public static Condition withPostBody() {
 		return new Condition(new Predicate<Call>() {
 			@Override
@@ -73,10 +88,16 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * Custom condition
+	 */
 	public static Condition custom(Predicate<Call> p) {
 		return new Condition(p);
 	}
 
+	/**
+	 * With POST body containing string
+	 */
 	public static Condition withPostBodyContaining(final String str) {
 		return new Condition(new Predicate<Call>() {
 			@Override
@@ -85,6 +106,10 @@ public class Condition {
 			}
 		});
 	}
+
+	/**
+	 * With post body matching regexp
+	 */
 
 	public static Condition withPostBodyContaining(final Regexp regexp) {
 		return new Condition(new Predicate<Call>() {
@@ -95,6 +120,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * With header present
+	 */
 	public static Condition withHeader(final String key) {
 		return new Condition(new Predicate<Call>() {
 			@Override
@@ -104,6 +132,9 @@ public class Condition {
 		});
 	}
 
+	/**
+	 * With header present and equals
+	 */
 	public static Condition withHeader(final String key, final String value) {
 		return new Condition(new Predicate<Call>() {
 			@Override
@@ -115,6 +146,34 @@ public class Condition {
 				return realValue.equals(value);
 			}
 		});
+	}
+
+	/**
+	 * Method GET with given URI
+	 */
+	public static Condition get(String uri) {
+		return composite(method(Method.GET), uri(uri));
+	}
+
+	/**
+	 * Method POST with given URI
+	 */
+	public static Condition post(String uri) {
+		return composite(method(Method.POST), uri(uri));
+	}
+
+	/**
+	 * Method PUT with given URI
+	 */
+	public static Condition put(String uri) {
+		return composite(method(Method.PUT), uri(uri));
+	}
+
+	/**
+	 * Method DELETE with given URI
+	 */
+	public static Condition delete(String uri) {
+		return composite(method(Method.DELETE), uri(uri));
 	}
 
 	/**
@@ -131,4 +190,6 @@ public class Condition {
 
 		return new Condition(init);
 	}
+
+
 }

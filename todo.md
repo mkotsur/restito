@@ -6,7 +6,9 @@
 + out-of-box printing
 + new api with multiple conditions and action
 + should find a free port for the server
++ get shortcut
 - auto-search of xml files
 - content-type auto detection
+- fix and write tests for mustHappen
 - update examples
 - update javadocs

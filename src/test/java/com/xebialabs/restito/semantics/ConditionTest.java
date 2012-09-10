@@ -13,8 +13,7 @@ import sun.misc.Regexp;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.xebialabs.restito.semantics.Condition.endsWithUri;
-import static com.xebialabs.restito.semantics.Condition.method;
+import static com.xebialabs.restito.semantics.Condition.*;
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -160,6 +159,55 @@ public class ConditionTest {
 		when(call.getUri()).thenReturn("/tomcat");
 		when(call.getMethod()).thenReturn(Method.POST);
 		assertTrue(catTomcatCondition.check(call));
+	}
+
+	@Test
+	public void shouldCreateGetPostPutDeleteWithUriConditions() {
+		Condition get = get("/get");
+		Condition post = post("/post");
+		Condition put = put("/put");
+		Condition delete = delete("/delete");
+
+		when(call.getMethod()).thenReturn(Method.GET);
+		when(call.getUri()).thenReturn("/get");
+
+
+		assertTrue(get.check(call));
+		assertFalse(post.check(call));
+		assertFalse(put.check(call));
+		assertFalse(delete.check(call));
+
+		when(call.getMethod()).thenReturn(Method.GET);
+		when(call.getUri()).thenReturn("/post");
+
+		assertFalse(get.check(call));
+		assertFalse(post.check(call));
+		assertFalse(put.check(call));
+		assertFalse(delete.check(call));
+
+		when(call.getMethod()).thenReturn(Method.POST);
+		when(call.getUri()).thenReturn("/post");
+
+		assertFalse(get.check(call));
+		assertTrue(post.check(call));
+		assertFalse(put.check(call));
+		assertFalse(delete.check(call));
+
+		when(call.getMethod()).thenReturn(Method.DELETE);
+		when(call.getUri()).thenReturn("/delete");
+
+		assertFalse(get.check(call));
+		assertFalse(post.check(call));
+		assertFalse(put.check(call));
+		assertTrue(delete.check(call));
+
+		when(call.getMethod()).thenReturn(Method.PUT);
+		when(call.getUri()).thenReturn("/put");
+
+		assertFalse(get.check(call));
+		assertFalse(post.check(call));
+		assertTrue(put.check(call));
+		assertFalse(delete.check(call));
 	}
 
 	// Helpers
