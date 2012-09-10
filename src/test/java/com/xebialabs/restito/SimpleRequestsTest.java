@@ -116,14 +116,9 @@ public class SimpleRequestsTest {
 				match(endsWithUri("/asd"), method(Method.POST)).
 				then(status(HttpStatus.OK_200), stringContent("POST asd"));
 
-
 		whenHttp(server).
 				match(endsWithUri("/asd"), parameter("bar", "foo"), method(Method.GET)).
 				then(status(HttpStatus.OK_200), stringContent("GET asd with parameter"));
-
-		expect().statusCode(200).
-		when().get("/undefined");
-
 
 		expect().statusCode(200).and().body(equalTo("GET asd")).
 		when().get("/asd");
