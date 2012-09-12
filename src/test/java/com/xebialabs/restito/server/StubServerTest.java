@@ -1,6 +1,5 @@
-package com.xebialabs.restito;
+package com.xebialabs.restito.server;
 
-import com.xebialabs.restito.server.StubServer;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

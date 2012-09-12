@@ -13,6 +13,6 @@
 - uriStartsWith
 - uri matches regex
 
-- fix and write tests for mustHappen
++ fix and write tests for mustHappen
 - update examples
 - update javadocs

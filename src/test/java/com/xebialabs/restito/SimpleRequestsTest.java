@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
+import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
-import static com.xebialabs.restito.semantics.Action.status;
-import static com.xebialabs.restito.semantics.Action.stringContent;
+import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.Condition.*;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -97,9 +97,7 @@ public class SimpleRequestsTest {
 
 	@Test
 	public void shouldReturn404forNotDefinedUris() {
-		whenHttp(server).
-				match(endsWithUri("/asd")).
-				then(status(HttpStatus.OK_200));
+		whenHttp(server).match(endsWithUri("/asd")).then(success());
 
 		given().param("foo", "bar").
 		expect().statusCode(404).
@@ -109,16 +107,16 @@ public class SimpleRequestsTest {
 	@Test
 	public void shouldReturnProperContentForProperRequests() {
 		whenHttp(server).
-				match(endsWithUri("/asd"), method(Method.GET)).
-				then(status(HttpStatus.OK_200), stringContent("GET asd"));
+				match(get("/asd")).
+				then(success(), stringContent("GET asd"));
 
 		whenHttp(server).
-				match(endsWithUri("/asd"), method(Method.POST)).
-				then(status(HttpStatus.OK_200), stringContent("POST asd"));
+				match(post("/asd")).
+				then(success(), stringContent("POST asd"));
 
 		whenHttp(server).
-				match(endsWithUri("/asd"), parameter("bar", "foo"), method(Method.GET)).
-				then(status(HttpStatus.OK_200), stringContent("GET asd with parameter"));
+				match(get("/asd"), parameter("bar", "foo")).
+				then(success(), stringContent("GET asd with parameter"));
 
 		expect().statusCode(200).and().body(equalTo("GET asd")).
 		when().get("/asd");
@@ -129,6 +127,26 @@ public class SimpleRequestsTest {
 
 		expect().statusCode(200).and().body(equalTo("POST asd")).
 		when().post("/asd");
+	}
+
+	@Test(expected = AssertionError.class)
+	public void shouldFailWhenSecondExpectedStubDidNotHappen() {
+		whenHttp(server).match(get("/asd")).then(success()).mustHappen();
+		whenHttp(server).match(get("/neverHappens")).then(success()).mustHappen();
+		expect().statusCode(200).get("/asd");
+		ensureHttp(server).gotStubsCommitmentsDone();
+	}
+
+	@Test
+	public void shouldPassWhenExpectedStubDidHappen() {
+		whenHttp(server).match(get("/asd")).then(success()).mustHappen();
+		expect().statusCode(200).get("/asd");
+		ensureHttp(server).gotStubsCommitmentsDone();
+	}
+
+	@Test
+	public void shouldPassWhenNoStubCommitments() {
+		ensureHttp(server).gotStubsCommitmentsDone();
 	}
 
 }
