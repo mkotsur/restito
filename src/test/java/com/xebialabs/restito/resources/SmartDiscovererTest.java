@@ -37,4 +37,14 @@ public class SmartDiscovererTest {
     public void shouldFallbackToSlashToSlashStrategy() {
         assertTrue(smartDiscoverer.discoverResource(Method.POST, "/foo/bar3.xml").getPath().endsWith(prefix + "/foo/bar3.xml"));
     }
+
+    @Test
+    public void shouldFallbackToSlashToSlashXmlExtensionStrategy() {
+        assertTrue(smartDiscoverer.discoverResource(Method.POST, "/foo/bar3").getPath().endsWith(prefix + "/foo/bar3.xml"));
+    }
+
+    @Test
+    public void shouldFallbackToSlashToDotJsonExtensionStrategy() {
+        assertTrue(smartDiscoverer.discoverResource(Method.POST, "/foo/bar5").getPath().endsWith(prefix + "/foo.bar5.json"));
+    }
 }

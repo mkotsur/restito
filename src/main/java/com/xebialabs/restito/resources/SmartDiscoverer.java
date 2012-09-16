@@ -21,11 +21,19 @@ public class SmartDiscoverer {
     /**
      * Discovers resource based on request
      * Tries different options:
-     * 1. GET asd/bsd/asd.ext => resource: {resourcePrefix}/get.asd.bsd.asd.ext
-     * 2. GET asd/bsd/asd.ext => resource: {resourcePrefix}/get/asd/bsd/asd.ext
-     * 3. GET asd/bsd/asd.ext => resource: {resourcePrefix}/asd.bsd.asd.ext
-     * 4. GET asd/bsd/asd.ext => resource: {resourcePrefix}/asd/bsd/asd.ext
-     */
+     * 1. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd
+     * 2. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd
+     * 3. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd
+     * 4. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd
+     * 5. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.xml
+     * 6. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.xml
+     * 7. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.xml
+     * 8. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.xml
+     * 9. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.json
+     * 10. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.json
+     * 11. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.json
+     * 12. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.json
+     * */
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
@@ -46,7 +54,16 @@ public class SmartDiscoverer {
                 m.toString().toLowerCase() + "." + Joiner.on(".").join(split),
                 m.toString().toLowerCase() + "/" + Joiner.on("/").join(split),
                 Joiner.on(".").join(split),
-                Joiner.on("/").join(split)
+                Joiner.on("/").join(split),
+
+                m.toString().toLowerCase() + "." + Joiner.on(".").join(split) + ".xml",
+                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split) + ".xml",
+                Joiner.on(".").join(split) + ".xml",
+                Joiner.on("/").join(split) + ".xml",
+                m.toString().toLowerCase() + "." + Joiner.on(".").join(split) + ".json",
+                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split)+ ".json",
+                Joiner.on(".").join(split) + ".json",
+                Joiner.on("/").join(split) + ".json"
         );
     }
 }
