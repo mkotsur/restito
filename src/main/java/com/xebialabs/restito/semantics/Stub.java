@@ -1,10 +1,10 @@
 package com.xebialabs.restito.semantics;
 
+import org.glassfish.grizzly.http.server.Response;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import org.glassfish.grizzly.http.server.Response;
 
 /**
  * When request matches XXX => do YYY
@@ -16,9 +16,9 @@ import org.glassfish.grizzly.http.server.Response;
  */
 public class Stub {
 
-	private Predicate<Call> when = Predicates.alwaysTrue();
+	private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
 
-	private Function<Response, Response> what = Functions.identity();
+	private Action what = Action.custom(Functions.<Response>identity());
 
 	private int appliedTimes = 0;
 
@@ -26,44 +26,47 @@ public class Stub {
 
 	public Stub() {}
 
+    @Deprecated
 	public Stub(Predicate<Call> when, Function<Response, Response> what) {
+		this.when = Condition.custom(when);
+		this.what = Action.custom(what);
+	}
+
+    @Deprecated
+	public Stub(Condition when, Function<Response, Response> what) {
+		this.when = when;
+		this.what = Action.custom(what);
+	}
+
+	public Stub(Condition when, Action what) {
 		this.when = when;
 		this.what = what;
 	}
 
-	public Stub(Condition when, Function<Response, Response> what) {
-		this.when = when.getPredicate();
-		this.what = what;
-	}
-
-	public Stub(Condition when, Action what) {
-		this.when = when.getPredicate();
-		this.what = what.getFunction();
-	}
-
 	public Stub alsoWhen(final Condition extraCondition) {
-		final Predicate<Call> currentPredicate = this.when;
-		this.when = new Predicate<Call>() {
-			public boolean apply(Call input) {
-				return extraCondition.check(input) && currentPredicate.apply(input);
-			}
-		};
+		this.when = Condition.composite(this.when, extraCondition);
 		return this;
 	}
 
 	public Stub alsoWhat(final Action extraWhat) {
-		what = Functions.compose(what, extraWhat.getFunction());
+        what = Action.composite(what, extraWhat);
 		return this;
 	}
 
 	public boolean isApplicable(Call call) {
-		return this.when.apply(call);
+		return this.when.getPredicate().apply(call);
 	}
 
 	public Response apply(Response response) {
-		Response newResponse = this.what.apply(response);
+        if (when instanceof ConditionWithApplicables) {
+            for (Applicable applicable : ((ConditionWithApplicables) when).getApplicables()) {
+                response = applicable.apply(response);
+            }
+        }
+
+		response = this.what.apply(response);
 		appliedTimes++;
-		return newResponse;
+		return response;
 	}
 
 	public int getAppliedTimes() {

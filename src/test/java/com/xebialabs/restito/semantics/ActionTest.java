@@ -1,5 +1,6 @@
 package com.xebialabs.restito.semantics;
 
+import java.io.Writer;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
@@ -8,10 +9,17 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.Writer;
-
-import static com.xebialabs.restito.semantics.Action.*;
-import static org.mockito.Mockito.*;
+import static com.xebialabs.restito.semantics.Action.composite;
+import static com.xebialabs.restito.semantics.Action.header;
+import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static com.xebialabs.restito.semantics.Action.status;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ActionTest {
 
@@ -39,6 +47,24 @@ public class ActionTest {
 		verify(response).setContentType("application/xml");
 		verify(response).setContentLength(13);
 		verify(response.getWriter()).write("<test></test>");
+	}
+
+	@Test
+	public void shouldApplyJsonContent() throws Exception {
+		resourceContent("content.json").apply(response);
+
+		verify(response).setContentType("application/json");
+		verify(response).setContentLength(15);
+		verify(response.getWriter()).write("{\"asd\": \"cool\"}");
+	}
+
+	@Test
+	public void shouldApplyContentWithCustomType() throws Exception {
+		resourceContent("content.cst").apply(response);
+
+		verify(response, never()).setContentType(any(String.class));
+		verify(response).setContentLength(14);
+		verify(response.getWriter()).write("Custom content");
 	}
 
 	@Test
