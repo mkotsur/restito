@@ -1,4 +1,4 @@
-version '0.3.5-SNAPSHOT'
+version '0.3.5'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
