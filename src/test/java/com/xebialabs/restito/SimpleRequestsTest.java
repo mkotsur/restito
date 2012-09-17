@@ -1,20 +1,29 @@
 package com.xebialabs.restito;
 
-import com.jayway.restassured.RestAssured;
-import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import com.jayway.restassured.RestAssured;
+
+import com.xebialabs.restito.server.StubServer;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
-import static com.xebialabs.restito.semantics.Action.*;
-import static com.xebialabs.restito.semantics.Condition.*;
+import static com.xebialabs.restito.semantics.Action.status;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static com.xebialabs.restito.semantics.Action.success;
+import static com.xebialabs.restito.semantics.Condition.composite;
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Condition.method;
+import static com.xebialabs.restito.semantics.Condition.parameter;
+import static com.xebialabs.restito.semantics.Condition.post;
+import static com.xebialabs.restito.semantics.Condition.uri;
 import static org.hamcrest.Matchers.equalTo;
 
 public class SimpleRequestsTest {
@@ -148,5 +157,12 @@ public class SimpleRequestsTest {
 	public void shouldPassWhenNoStubCommitments() {
 		ensureHttp(server).gotStubsCommitmentsDone();
 	}
+
+    @Test
+    public void shouldAutoDiscoverResponseForGetRequestBasedOnUri() {
+        whenHttp(server).match(composite(get("/demo/path/data"))).then(success());
+
+        expect().statusCode(200).and().body(equalTo("<content>from data.xml</content>")).when().get("/demo/path/data");
+    }
 
 }

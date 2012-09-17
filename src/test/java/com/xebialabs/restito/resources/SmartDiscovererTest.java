@@ -47,4 +47,9 @@ public class SmartDiscovererTest {
     public void shouldFallbackToSlashToDotJsonExtensionStrategy() {
         assertTrue(smartDiscoverer.discoverResource(Method.POST, "/foo/bar5").getPath().endsWith(prefix + "/foo.bar5.json"));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldIgnoreFolders() {
+        smartDiscoverer.discoverResource(Method.GET, "/foo").getPath();
+    }
 }

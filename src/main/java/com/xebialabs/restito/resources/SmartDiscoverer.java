@@ -1,5 +1,6 @@
 package com.xebialabs.restito.resources;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import org.glassfish.grizzly.http.Method;
@@ -37,7 +38,11 @@ public class SmartDiscoverer {
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
-                return Resources.getResource(resourcePrefix + "/" + s);
+                URL resource = Resources.getResource(resourcePrefix + "/" + s);
+                if (!new File(resource.getFile()).isFile()) {
+                    continue; // Probably directory
+                }
+                return resource;
             } catch (IllegalArgumentException e) {
                 // just go on
             }
