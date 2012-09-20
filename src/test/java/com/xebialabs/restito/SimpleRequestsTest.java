@@ -160,9 +160,8 @@ public class SimpleRequestsTest {
 
     @Test
     public void shouldAutoDiscoverResponseForGetRequestBasedOnUri() {
-        whenHttp(server).match(composite(get("/demo/path/data"))).then(success());
-
-        expect().statusCode(200).and().body(equalTo("<content>from data.xml</content>")).when().get("/demo/path/data");
+        whenHttp(server).match(composite(get("/demo/path%20to%20data/data"))).then(success());
+        expect().statusCode(200).and().body(equalTo("<content>from data.xml</content>")).when().get("/demo/path to data/data");
     }
 
 }

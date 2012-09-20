@@ -1,7 +1,9 @@
 package com.xebialabs.restito.resources;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 import org.glassfish.grizzly.http.Method;
 import com.google.common.base.Joiner;
@@ -38,14 +40,14 @@ public class SmartDiscoverer {
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
-                URL resource = Resources.getResource(resourcePrefix + "/" + s);
-                if (!new File(resource.getFile()).isFile()) {
+                URL resource = Resources.getResource(resourcePrefix + "/" + URLDecoder.decode(s, "UTF-8"));
+                if (!new File(URLDecoder.decode(resource.getFile(), "UTF-8")).isFile()) {
                     continue; // Probably directory
                 }
                 return resource;
-            } catch (IllegalArgumentException e) {
-                // just go on
             }
+            catch (IllegalArgumentException ignored) {} // just go on
+            catch (UnsupportedEncodingException ignored) {} // just go on
         }
 
         throw new IllegalArgumentException(format("Can not discover resource for method [%s] and URI [%s]", m, uri));

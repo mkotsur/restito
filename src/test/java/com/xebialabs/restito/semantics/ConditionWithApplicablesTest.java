@@ -70,7 +70,7 @@ public class ConditionWithApplicablesTest {
         Writer writer = mock(Writer.class);
         when(response.getWriter()).thenReturn(writer);
 
-        ConditionWithApplicables condition = Condition.get("/demo/path/data.xml");
+        ConditionWithApplicables condition = Condition.get("/demo/path%20to%20data/data.xml");
 
         condition.getApplicables().get(0).apply(response);
 
