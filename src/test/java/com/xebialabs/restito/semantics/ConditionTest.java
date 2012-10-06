@@ -1,20 +1,27 @@
 package com.xebialabs.restito.semantics;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Maps;
+
 import sun.misc.Regexp;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.xebialabs.restito.semantics.Condition.*;
-import static junit.framework.Assert.*;
+import static com.xebialabs.restito.semantics.Condition.delete;
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Condition.method;
+import static com.xebialabs.restito.semantics.Condition.post;
+import static com.xebialabs.restito.semantics.Condition.put;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class ConditionTest {
@@ -147,6 +154,14 @@ public class ConditionTest {
 		assertTrue(withFoo.check(call));
 		assertTrue(withFooContainsBar.check(call));
 	}
+
+    @Test
+    public void headersShouldBeCaseInsensitive() {
+        when(call.getHeaders()).thenReturn(header("foo", "bar"));
+        assertTrue(Condition.withHeader("fOo").check(call));
+        assertTrue(Condition.withHeader("fOo", "bar").check(call));
+        assertFalse(Condition.withHeader("fOo", "bAr").check(call));
+    }
 
 	@Test
 	public void shouldCreateCompositeCondition() {

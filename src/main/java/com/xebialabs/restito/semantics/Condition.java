@@ -2,6 +2,7 @@ package com.xebialabs.restito.semantics;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.slf4j.Logger;
@@ -153,29 +154,35 @@ public class Condition {
     }
 
     /**
-     * With header present
+     * With header present.
+     * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
      */
     public static Condition withHeader(final String key) {
         return new Condition(new Predicate<Call>() {
             @Override
             public boolean apply(Call input) {
-                return input.getHeaders().keySet().contains(key);
+                for (String k : input.getHeaders().keySet()) {
+                    if (k.equalsIgnoreCase(key)) return true;
+                }
+                return false;
             }
         });
     }
 
     /**
-     * With header present and equals
+     * With header present and equals.
+     * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
      */
     public static Condition withHeader(final String key, final String value) {
         return new Condition(new Predicate<Call>() {
             @Override
             public boolean apply(Call input) {
-                String realValue = input.getHeaders().get(key);
-                if (realValue == null) {
-                    return value == null;
+                for (Map.Entry<String, String> e : input.getHeaders().entrySet()) {
+                    if (e.getKey().equalsIgnoreCase(key)) {
+                        return (value == null && e.getValue() == null) || e.getValue().equals(value);
+                    }
                 }
-                return realValue.equals(value);
+                return false;
             }
         });
     }
