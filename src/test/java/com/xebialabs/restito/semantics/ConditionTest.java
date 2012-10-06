@@ -105,6 +105,28 @@ public class ConditionTest {
 	}
 
 	@Test
+	public void shouldDistinguishStartsWithUri() {
+		Condition condition = Condition.startsWithUri("/big");
+
+		when(call.getUri()).thenReturn("/big/boom");
+		assertTrue(condition.check(call));
+
+		when(call.getUri()).thenReturn("/boom").getMock();
+		assertFalse(condition.check(call));
+	}
+
+	@Test
+	public void shouldMakeConditionForUriMatching   () {
+		Condition condition = Condition.matchesUri(new Regexp("^/[0-9]*"));
+
+		when(call.getUri()).thenReturn("/232323");
+		assertTrue(condition.check(call));
+
+		when(call.getUri()).thenReturn("/boom").getMock();
+		assertFalse(condition.check(call));
+	}
+
+	@Test
 	public void shouldDistinguishByBodyPresence() {
 		Condition condition = Condition.withPostBody();
 

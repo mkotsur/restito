@@ -110,6 +110,28 @@ public class Condition {
     }
 
     /**
+     * URI starts with
+     */
+    public static Condition startsWithUri(final String uri) {
+        return new Condition(new Predicate<Call>() {
+            public boolean apply(Call input) {
+                return input.getUri().startsWith(uri);
+            }
+        });
+    }
+
+    /**
+     * URI starts with
+     */
+    public static Condition matchesUri(final Regexp regexp) {
+        return new Condition(new Predicate<Call>() {
+            public boolean apply(Call input) {
+                return input.getUri().matches(regexp.exp);
+            }
+        });
+    }
+
+    /**
      * Contains non-empty POST body
      */
     public static Condition withPostBody() {
