@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Call that happened to server.
- * Handy wrapper for Request values.
+ * <p>Call that happened to server. Handy wrapper for Request values.</p>
  */
 public class Call {
 
@@ -25,6 +24,9 @@ public class Call {
 
 	private Call() {}
 
+    /**
+     * Factory method
+     */
 	public static Call fromRequest(Request request) {
 		Call call = new Call();
 
@@ -48,10 +50,16 @@ public class Call {
 		return call;
 	}
 
+    /**
+     * URI of the call
+     */
 	public String getUri() {
 		return uri;
 	}
 
+    /**
+     * Content type of the call
+     */
 	public String getContentType() {
 		return contentType;
 	}
@@ -60,18 +68,30 @@ public class Call {
 		return url;
 	}
 
+    /**
+     * Map of headers
+     */
 	public Map<String, String> getHeaders() {
 		return headers;
 	}
 
+    /**
+     * Http method
+     */
 	public Method getMethod() {
 		return method;
 	}
 
+    /**
+     * Map of parameters. All parameters considered as if they were multi-valued.
+     */
 	public Map<String, String[]> getParameters() {
 		return parameters;
 	}
 
+    /**
+     * In case of POST request - returns post body
+     */
 	public String getPostBody() {
 		return postBody;
 	}

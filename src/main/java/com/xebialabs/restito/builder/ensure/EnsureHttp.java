@@ -8,6 +8,10 @@ import java.util.List;
 import static java.lang.String.format;
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
+ * <p>Responsible for validating expected stubs</p>
+ */
 public class EnsureHttp {
 
 	private List<Stub> stubs;
@@ -16,6 +20,9 @@ public class EnsureHttp {
 		this.stubs = stubs;
 	}
 
+    /**
+     * Static factory to instantiate the class
+     */
 	public static EnsureHttp ensureHttp(final StubServer stubServer) {
 		return new EnsureHttp(stubServer.getStubs());
 	}

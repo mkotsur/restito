@@ -17,59 +17,61 @@ import com.google.common.io.Resources;
  */
 public class Action implements Applicable {
 
-	private Function<Response, Response> function;
+    private Function<Response, Response> function;
 
-	private Action(Function<Response, Response> function) {
-		this.function = function;
-	}
+    private Action(Function<Response, Response> function) {
+        this.function = function;
+    }
 
-	/**
-	 * Perform the action with response
-	 */
-	@Override
+    /**
+     * Perform the action with response
+     */
+    @Override
     public Response apply(Response r) {
-		return this.function.apply(r);
-	}
+        return this.function.apply(r);
+    }
 
-	// Factory methods
+    // Factory methods
 
-	/**
-	 * Sets HTTP status 200 to response
-	 */
-	public static Action success() {
-		return status(HttpStatus.OK_200);
-	}
+    /**
+     * Sets HTTP status 200 to response
+     */
+    public static Action success() {
+        return status(HttpStatus.OK_200);
+    }
 
-	/**
-	 * Sets HTTP status to response
-	 */
-	public static Action status(final HttpStatus status) {
-		return new Action(new Function<Response, Response>() {
-			public Response apply(Response input) {
-				input.setStatus(status);
-				return input;
-			}
-		});
-	}
+    /**
+     * Sets HTTP status to response
+     */
+    public static Action status(final HttpStatus status) {
+        return new Action(new Function<Response, Response>() {
+            public Response apply(Response input) {
+                input.setStatus(status);
+                return input;
+            }
+        });
+    }
 
-	/**
-	 * Writes content and content-type of resource file to response.
+    /**
+     * Writes content and content-type of resource file to response.
      * Tries to detect content type based on file extension. If can not detect => content-type is not set.
      * For now there are following bindings:
-     * .xml => application/xml
-     * .json => application/xml
+     * <ul>
+     *     <li>.xml => application/xml</li>
+     *      <li>.json => application/xml</li>
+     * </ul>
      *
-	 */
-	public static Action resourceContent(String resourcePath) {
-		return resourceContent(Resources.getResource(resourcePath));
-	}
+     */
+    public static Action resourceContent(String resourcePath) {
+        return resourceContent(Resources.getResource(resourcePath));
+    }
 
     /**
      * Does the same as Action.resourceContent(), the only difference is that it accepts an URL instead of resource path.
      */
-	public static Action resourceContent(URL resourceUrl) {
-		try {
-			final String resourceContent = Resources.toString(resourceUrl, Charset.defaultCharset());
+    public static Action resourceContent(URL resourceUrl) {
+        try {
+            final String resourceContent = Resources.toString(resourceUrl, Charset.defaultCharset());
 
             Action contentTypeAction = custom(Functions.<Response>identity());
 
@@ -83,41 +85,41 @@ public class Action implements Applicable {
 
             return composite(contentTypeAction, stringContent(resourceContent));
 
-		} catch (IOException e) {
-			throw new RuntimeException("Can not read resource for restito stubbing.");
-		}
-	}
+        } catch (IOException e) {
+            throw new RuntimeException("Can not read resource for restito stubbing.");
+        }
+    }
 
-	/**
-	 * Writes string content to response
-	 */
-	public static Action stringContent(final String content) {
-		return new Action(new Function<Response, Response>() {
-			public Response apply(Response input) {
+    /**
+     * Writes string content to response
+     */
+    public static Action stringContent(final String content) {
+        return new Action(new Function<Response, Response>() {
+            public Response apply(Response input) {
 
-				input.setContentLength(content.length());
-				try {
-					input.getWriter().write(content);
-				} catch (IOException e) {
-					throw new RuntimeException("Can not write resource content for restito stubbing.");
-				}
-				return input;
-			}
-		});
-	}
+                input.setContentLength(content.length());
+                try {
+                    input.getWriter().write(content);
+                } catch (IOException e) {
+                    throw new RuntimeException("Can not write resource content for restito stubbing.");
+                }
+                return input;
+            }
+        });
+    }
 
-	/**
-	 * Sets key-value header on response
-	 */
-	public static Action header(final String key, final String value) {
-		return new Action(new Function<Response, Response>() {
-			@Override
-			public Response apply(Response input) {
-				input.setHeader(key, value);
-				return input;
-			}
-		});
-	}
+    /**
+     * Sets key-value header on response
+     */
+    public static Action header(final String key, final String value) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                input.setHeader(key, value);
+                return input;
+            }
+        });
+    }
 
     /**
      * Sets content type to the response
@@ -132,27 +134,27 @@ public class Action implements Applicable {
         });
     }
 
-	/**
-	 * Perform set of custom actions on response
-	 */
-	public static Action custom(Function<Response, Response> f) {
-		return new Action(f);
-	}
+    /**
+     * Perform set of custom actions on response
+     */
+    public static Action custom(Function<Response, Response> f) {
+        return new Action(f);
+    }
 
-	/**
-	 * Creates a composite action which contains all passed actions and
-	 * executes them in the same order.
-	 */
-	public static Action composite(final Applicable... actions) {
-		return new Action(new Function<Response, Response>() {
-			@Override
-			public Response apply(Response input) {
-				for (Applicable action : actions) {
-					action.apply(input);
-				}
+    /**
+     * Creates a composite action which contains all passed actions and
+     * executes them in the same order.
+     */
+    public static Action composite(final Applicable... actions) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                for (Applicable action : actions) {
+                    action.apply(input);
+                }
 
-				return input;
-			}
-		});
-	}
+                return input;
+            }
+        });
+    }
 }

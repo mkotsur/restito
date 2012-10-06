@@ -10,11 +10,9 @@
 - ordered stubs
 + auto-search of xml files
 + content-type auto detection
++ fix and write tests for mustHappen
+- HTTP headers case insensitive (http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive)
 - uriStartsWith
 - uri matches regex
-
-+ fix and write tests for mustHappen
-
-- HTTP headers case insensitive (http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive)
 - update examples
 - update javadocs

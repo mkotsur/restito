@@ -2,6 +2,10 @@ package com.xebialabs.restito.builder.stub;
 
 import com.xebialabs.restito.semantics.Stub;
 
+/**
+ * <p>Stub which must be called.</p>
+ * @see com.xebialabs.restito.builder.ensure.EnsureHttp
+ */
 public class StubExpected {
 
 	private Stub stub;

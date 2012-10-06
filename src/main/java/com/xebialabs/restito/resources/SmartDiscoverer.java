@@ -13,6 +13,10 @@ import com.google.common.io.Resources;
 
 import static java.lang.String.format;
 
+/**
+ * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
+ * <p>Responsible for discovering a resource which will be used as a response body. Discovery happens based on URI and and request method.</p>
+ */
 public class SmartDiscoverer {
 
     private String resourcePrefix;
@@ -24,18 +28,20 @@ public class SmartDiscoverer {
     /**
      * Discovers resource based on request
      * Tries different options:
-     * 1. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd
-     * 2. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd
-     * 3. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd
-     * 4. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd
-     * 5. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.xml
-     * 6. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.xml
-     * 7. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.xml
-     * 8. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.xml
-     * 9. GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.json
-     * 10. GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.json
-     * 11. GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.json
-     * 12. GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.json
+     * <ul>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.xml</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.xml</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.xml</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.xml</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.json</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.json</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.json</li>
+     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.json</li>
+     * </ul>
      * */
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {

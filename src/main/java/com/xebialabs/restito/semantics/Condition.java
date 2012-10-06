@@ -17,9 +17,9 @@ import sun.misc.Regexp;
 import static com.xebialabs.restito.semantics.Action.resourceContent;
 
 /**
- * Condition is something that can be true or false given the Call.
- * Also it contains static factory methods.
- * One should feel free to implement own conditions.
+ * <p>Condition is something that can be true or false given the Call.</p>
+ * <p>Also it contains static factory methods. One should feel free to implement own conditions.</p>
+ * </p>
  *
  * @see com.xebialabs.restito.semantics.Call
  */
@@ -28,16 +28,22 @@ public class Condition {
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    private Predicate<Call> predicate;
+    protected Predicate<Call> predicate;
 
     protected Condition(Predicate<Call> predicate) {
         this.predicate = predicate;
     }
 
+    /**
+     * Returns the predicate of condition
+     */
     public Predicate<Call> getPredicate() {
         return predicate;
     }
 
+    /**
+     * Check if call satisfies the condition
+     */
     public boolean check(Call input) {
         return getPredicate().apply(input);
     }
