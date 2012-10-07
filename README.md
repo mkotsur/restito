@@ -10,7 +10,7 @@ Restito is a tool which is inspired by [mockito](http://code.google.com/p/mockit
 
 Which means that it helps you to test an application which makes calls to some HTTP service. Restito sets up a <b>StubServer</b> instance which responds to your application's <b>Calls</b> based on defined <b>Stubs</b>. A stub makes some <b>Action</b> to response when <b>Condition</b> is respected.
 
-For more motivation, please read [Motivation](restito/guide.md#motivation) section of the [Developer's guide](restito/guide.md).
+For more motivation, please read [Motivation](https://github.com/xebialabs/restito/blob/master/guide.md#motivation) section of the [Developer's guide](https://github.com/xebialabs/restito/blob/master/guide.md).
 
 
 
