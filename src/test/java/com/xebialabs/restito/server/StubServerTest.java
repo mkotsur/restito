@@ -18,8 +18,12 @@ public class StubServerTest {
 	public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
 		StubServer server1 = new StubServer().run();
 		StubServer server2 = new StubServer().run();
-		assertTrue(server2.getPort() > 1000);
-		server1.stop();
-		server2.stop();
+		assertTrue(server2.getPort() > server1.getPort());
 	}
+
+    @Test
+    public void shouldUseSpecificPort() {
+        StubServer server = new StubServer(8888).run();
+        assertEquals(8888, server.getPort());
+    }
 }

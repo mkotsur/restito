@@ -34,6 +34,11 @@ public class StubServer {
         simpleServer = HttpServer.createSimpleServer(".", AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
     }
 
+    public StubServer(int port, Stub... stubs) {
+        this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
+        simpleServer = HttpServer.createSimpleServer(".", port);
+    }
+
     public StubServer(Behavior behavior) {
         this(behavior.getStubs().toArray(new Stub[behavior.getStubs().size()]));
     }

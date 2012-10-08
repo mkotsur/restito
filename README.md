@@ -8,11 +8,16 @@ Restito is a tool which is inspired by [mockito](http://code.google.com/p/mockit
 * Performs verification against happened calls
 * Has mockito-style API
 
-Which means that it helps you to test an application which makes calls to some HTTP service. Restito sets up a <b>StubServer</b> instance which responds to your application's <b>Calls</b> based on defined <b>Stubs</b>. A stub makes some <b>Action</b> to response when <b>Condition</b> is respected.
+Which means that it helps you to test an application which makes calls to some HTTP service. Restito sets up a [StubServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html) instance which responds to your application's [Calls](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Call.html) based on defined [Stubs](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Stub.html). A stub makes some [Action](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html) to response when [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) is respected.
 
-For more motivation, please read [Motivation](https://github.com/xebialabs/restito/blob/master/guide.md#motivation) section of the [Developer's guide](https://github.com/xebialabs/restito/blob/master/guide.md).
+For more motivation, please read [Motivation](https://github.com/mkotsur/restito/blob/master/guide.md#motivation) section of the [Developer's guide](https://github.com/mkotsur/restito/blob/master/guide.md).
 
+For more details you can also check [Restito's javadoc](http://mkotsur.github.com/restito/javadoc/current/).
 
+Maven instructions
+--------
+
+!TO BE UPLOADED!
 
 Example:
 ---------
