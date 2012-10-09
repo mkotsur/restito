@@ -1,13 +1,13 @@
 # Developer's guide
 
+There is [UserGuideTest](https://github.com/mkotsur/restito/blob/master/src/test/java/com/xebialabs/restito/UserGuideTest.java) which illustrates all sections from this manual.
+
 * [Motivation](#motivation)
 * [Starting and stopping stub server](#starting_and_stopping_stub_server)
     * [Specific vs random port](#specific_vs_random_port)
 * [Stubbing server behavior](#stubbing_server_behavior)
     * [Stub conditions](#stub_conditions)
-    * [Own condition](#own_condition)
     * [Stub actions](#stub_actions)
-    * [Own action](#own_action)
     * [Automatic content type](#automatic_content_type)
     * [Expected stubs](#expected_stubs) <sup style="color: orange">Experimental!</sup>
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
@@ -29,14 +29,19 @@ Let's imagine you have an application or library which uses a REST interface. At
 	public void start() {
 		server = new StubServer().run();
 	}
+
+	...
+
+	@After
+    public void stop() {
+        server.stop();
+    }
 ```
 
-Method [StubServer.stop()](http://mkotsur.github.com/restito/javadoc/3.7.1-SNAPSHOT/com/xebialabs/restito/server/StubServer.html#stop\(\)) is exposed, but that's not necessary to call it. JVM will close ports when tests are over.
-
 <a name="specific_vs_random_port" />
-## Selecting a random free port
+## Specific vs random port
 
-By default, [StubServer.DEFAULT_PORT](http://mkotsur.github.com/restito/javadoc/3.7.1-SNAPSHOT/com/xebialabs/restito/server/StubServer.html#DEFAULT_PORT) is used, but if it's busy, then next available will be taken.
+By default, [StubServer.DEFAULT_PORT](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html#DEFAULT_PORT) is used, but if it's busy, then next available will be taken.
 
 ```java
 	@Test
@@ -57,5 +62,59 @@ If you want to specify port explicitly, then you can do something like that:
 ```
 
 <a name="stubbing_server_behavior" />
+# Stubbing server behavior.
+
+
+<a name="stub_conditions" />
+## Stub conditions
+_In fact, Restito's stub server is not just a stub. It also behaves like a mock and spy object according to M. Fowler's terminology. However it's called just a StubServer._
 
 Stubbing is a way to teach server to behave as you wish.
+
+```java
+import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static com.xebialabs.restito.semantics.Condition.*;
+
+		whenHttp(server).
+				match(get("/asd"), parameter("bar", "foo")).
+				then(success(), stringContent("GET asd with parameter bar=foo"));
+```
+
+In this example your stub will return mentioned string content when GET request with HTTP parameter bar=foo is done.
+
+List of all avaialble conditions can be checked in the javadoc for [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html)
+
+If you want to use a custom condition, it's also very easy:
+
+```java
+import static com.xebialabs.restito.semantics.Condition.*;
+import com.google.common.base.Predicate;
+import com.xebialabs.restito.semantics.Call;
+
+        Predicate<Call> uriEndsWithA = new Predicate<Call>() {
+            @Override
+            public boolean apply(final Call input) {
+                return input.getUri().endsWith("a");
+            }
+        };
+        whenHttp(server).match(custom(uriEndsWithA)).then(success());
+```
+
+<a name="stub_actions" />
+## Stub actions
+
+Action is a second component of Stubs. When condition is met, action will be performed on the response (like adding content, setting header, etc.)
+
+```java
+import static com.xebialabs.restito.semantics.Action.*;
+import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+
+
+whenHttp(server).
+                match(endsWithUri("/demo")).
+                then(status(HttpStatus.OK_200), stringContent("Hello world!"));
+```
+This example will make your stub output "Hello world!" with http status 200 for all types of requests (POST, GET, PUT, ...) when URI ends with "/demo".

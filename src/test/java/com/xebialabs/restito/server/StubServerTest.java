@@ -1,5 +1,7 @@
 package com.xebialabs.restito.server;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -7,9 +9,20 @@ import static junit.framework.Assert.assertTrue;
 
 public class StubServerTest {
 
-	@Test
+    private StubServer server;
+
+    @Before
+    public void start() {
+        server = new StubServer().run();
+    }
+
+    @After
+    public void stop() {
+        server.stop();
+    }
+
+    @Test
 	public void shouldStartServerOnDefaultPort() {
-		StubServer server = new StubServer().run();
 		assertEquals(6666, server.getPort());
 		server.stop();
 	}
@@ -22,8 +35,9 @@ public class StubServerTest {
 	}
 
     @Test
-    public void shouldUseSpecificPort() {
+    public void shouldBePossibleToSpecifyPort() {
         StubServer server = new StubServer(8888).run();
         assertEquals(8888, server.getPort());
+        server.stop();
     }
 }

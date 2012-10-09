@@ -29,25 +29,41 @@ public class StubServer {
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
 
+    /**
+     * Creates a server based on stubs that are used to determine behavior.
+     */
     public StubServer(Stub... stubs) {
         this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(".", AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
     }
 
+    /**
+     * This constructor allows to specify the port beside stubs.
+     * If the port is busy, Restito won't try to pick different one and java.net.BindException will be thrown.
+     */
     public StubServer(int port, Stub... stubs) {
         this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(".", port);
     }
 
+    /**
+     * Creates a server based on Behavior object
+     */
     public StubServer(Behavior behavior) {
         this(behavior.getStubs().toArray(new Stub[behavior.getStubs().size()]));
     }
 
+    /**
+     * It is possible to add a stub even after the server is started
+     */
     public StubServer addStub(Stub s) {
         this.stubs.add(s);
         return this;
     }
 
+    /**
+     * Starts the server
+     */
     public StubServer run() {
         simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(), "/");
         try {
@@ -58,23 +74,38 @@ public class StubServer {
         return this;
     }
 
+    /**
+     * Alias for StubServer.run()
+     */
     public void start() {
         run();
     }
 
+    /**
+     * Stops the server
+     */
     public StubServer stop() {
         simpleServer.stop();
         return this;
     }
 
+    /**
+     * Returns the port which the server is running at
+     */
     public int getPort() {
         return simpleServer.getListeners().iterator().next().getPort();
     }
 
+    /**
+     * Returns calls performed to the serer
+     */
     public List<Call> getCalls() {
         return calls;
     }
 
+    /**
+     * Returns stubs associated with the server
+     */
     public List<Stub> getStubs() {
         return stubs;
     }
