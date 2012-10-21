@@ -18,6 +18,9 @@ import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.support.behavior.Behavior;
 import com.xebialabs.restito.support.log.CallsHelper;
 
+/**
+ * The HttpServer wrapper which is responsible for operations like starting and stopping and holding objects that describe server behavior.
+ */
 public class StubServer {
 
     public final static int DEFAULT_PORT = 6666;
