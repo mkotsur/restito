@@ -1,6 +1,5 @@
-package com.xebialabs.restito;
+package guide;
 
-import javax.annotation.Nullable;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;

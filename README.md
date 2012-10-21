@@ -14,13 +14,12 @@ For more motivation, please read [Motivation](https://github.com/mkotsur/restito
 
 For more details you can also check [Restito's javadoc](http://mkotsur.github.com/restito/javadoc/current/).
 
-Maven instructions
---------
+# Maven instructions
 
 !TO BE UPLOADED!
 
-Example:
----------
+# Quick example:
+
 ```java
 package com.xebialabs.restito;
 

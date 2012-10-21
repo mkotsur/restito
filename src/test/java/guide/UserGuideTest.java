@@ -1,12 +1,13 @@
-package com.xebialabs.restito;
+package guide;
 
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
-import org.junit.*;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
@@ -16,8 +17,6 @@ import static com.xebialabs.restito.semantics.Condition.endsWithUri;
 import static com.xebialabs.restito.semantics.Condition.method;
 import static com.xebialabs.restito.semantics.Condition.parameter;
 import static com.xebialabs.restito.semantics.Condition.uri;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 public class UserGuideTest {
 
@@ -33,25 +32,6 @@ public class UserGuideTest {
     public void stop() {
         server.stop();
     }
-
-    @Test
-    public void shouldStartAndStopStubServer() {
-        assertTrue(server.getPort() > 0);
-    }
-
-    @Test
-    public void shouldBePossibleToSpecifyPort() {
-        StubServer server1 = new StubServer(8888).run();
-        assertEquals(8888, server1.getPort());
-        server1.stop();
-    }
-
-    @Test
-    public void shouldSelectRandomFreePortWhenDefaultOneIsBusy() {
-        StubServer server2 = new StubServer().run();
-        assertTrue(server2.getPort() > server.getPort());
-    }
-
 
     @Test
     public void shouldStubServerBehavior() {

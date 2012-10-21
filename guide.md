@@ -1,10 +1,11 @@
 # Developer's guide
 
-There is [UserGuideTest](https://github.com/mkotsur/restito/blob/master/src/test/java/com/xebialabs/restito/UserGuideTest.java) which illustrates all sections from this manual.
+One test can be better then dozen lines of documentation, so there are tests in [guide package](https://github.com/mkotsur/restito/blob/master/src/test/java/guide) which illustrate sections from this manual. Don't underestimate them :-)
 
 * [Motivation](#motivation)
 * [Starting and stopping stub server](#starting_and_stopping_stub_server)
     * [Specific vs random port](#specific_vs_random_port)
+    * [Junit integration](#junit_integration)
 * [Stubbing server behavior](#stubbing_server_behavior)
     * [Stub conditions](#stub_conditions)
     * [Stub actions](#stub_actions)
@@ -60,6 +61,10 @@ If you want to specify port explicitly, then you can do something like that:
         assertEquals(8888, server.getPort());
     }
 ```
+
+<a name="junit_integration" />
+#Junit integration <sup style="color: green"><a href="https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java">See JunitIntegrationTest</a></sup>
+When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it.
 
 <a name="stubbing_server_behavior" />
 # Stubbing server behavior.
