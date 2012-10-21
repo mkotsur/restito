@@ -15,12 +15,12 @@ initial_branch="`git rev-parse --symbolic-full-name --abbrev-ref HEAD`"
 echo "  --> You are on branch: ${initial_branch}. Checking out ${PAGES_BRANCH}."
 git co "${PAGES_BRANCH}"
 
-if [[ $? ]]; then echo "  --> Previous command failed. Bye-Bye."; exit $?; fi
+if [[ $? -ne 0 ]]; then echo "  --> Previous command failed. Bye-Bye."; exit $?; fi
 
 git rm -rf "${PAGES_JAVADOC_PATH}"
 cp -r "${BUILD_JAVADOC_PATH}" "${PAGES_JAVADOC_PATH}"
 
-if [[ $? ]]; then echo "  --> Previous command failed. Bye-Bye."; exit $?; fi
+if [[ $? -ne 0 ]]; then echo "  --> Previous command failed. Bye-Bye."; exit $?; fi
 
 git add -A
 git ci -am "New javadoc for git pages"
