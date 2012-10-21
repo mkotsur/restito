@@ -14,7 +14,17 @@ public class StubExpected {
 		this.stub = stub;
 	}
 
+    /**
+     * Should happen once
+     */
 	public void mustHappen() {
 		stub.setExpectedTimes(1);
+	}
+
+    /**
+     * Set number of times it should happen
+     */
+	public void mustHappen(int times) {
+		stub.setExpectedTimes(times);
 	}
 }

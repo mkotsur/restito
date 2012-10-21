@@ -238,12 +238,26 @@ public class Condition {
     }
 
     /**
+     * Always true
+     */
+    public static Condition alwaysTrue() {
+        return custom(Predicates.<Call>alwaysTrue());
+    }
+
+    /**
+     * Always false
+     */
+    public static Condition alwaysFalse() {
+        return custom(Predicates.<Call>alwaysFalse());
+    }
+
+    /**
      * Joins many conditions with "and" operation
      */
     // see http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
     @SuppressWarnings("unchecked")
     public static Condition composite(Condition... conditions) {
-        Condition init = new Condition(Predicates.<Call>alwaysTrue());
+        Condition init = alwaysTrue();
 
         for (Condition condition : conditions) {
 

@@ -1,14 +1,12 @@
 package com.xebialabs.restito.semantics;
 
 import org.glassfish.grizzly.http.server.Response;
-import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
  * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches XXX => do YYY)</p>
- * <p>Just a wrapper for the Action which will should be performed when Condition is true.</p>
+ * <p>Just a wrapper for the {@link Action} which will should be performed when {@link Condition} is true.</p>
  *
  * @see com.xebialabs.restito.semantics.Action
  * @see com.xebialabs.restito.semantics.Condition
@@ -22,20 +20,6 @@ public class Stub {
 	private int appliedTimes = 0;
 
 	private int expectedTimes = 0;
-
-	public Stub() {}
-
-    @Deprecated
-	public Stub(Predicate<Call> when, Function<Response, Response> what) {
-		this.when = Condition.custom(when);
-		this.what = Action.custom(what);
-	}
-
-    @Deprecated
-	public Stub(Condition when, Function<Response, Response> what) {
-		this.when = when;
-		this.what = Action.custom(what);
-	}
 
     /**
      * Creates a stub with action and condition

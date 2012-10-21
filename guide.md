@@ -10,7 +10,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
     * [Stub conditions](#stub_conditions)
     * [Stub actions](#stub_actions)
     * [Automatic content type](#automatic_content_type)
-    * [Expected stubs](#expected_stubs) <sup style="color: orange">Experimental!</sup>
+    * [Expected stubs](#expected_stubs)
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
 * [Verifying calls to server](#mimic_server_behavior)
     * [Simeple verifications](#simple_verifications)
@@ -63,8 +63,8 @@ If you want to specify port explicitly, then you can do something like that:
 ```
 
 <a name="junit_integration" />
-#Junit integration <sup style="color: green"><a href="https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java">See JunitIntegrationTest</a></sup>
-When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it.
+#Junit integration
+When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it. Check (this test)[https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java] for more details.
 
 <a name="stubbing_server_behavior" />
 # Stubbing server behavior.
@@ -80,7 +80,7 @@ Stubbing is a way to teach server to behave as you wish.
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Condition.*;
-
+    ...
 		whenHttp(server).
 				match(get("/asd"), parameter("bar", "foo")).
 				then(success(), stringContent("GET asd with parameter bar=foo"));
@@ -96,7 +96,7 @@ If you want to use a custom condition, it's also very easy:
 import static com.xebialabs.restito.semantics.Condition.*;
 import com.google.common.base.Predicate;
 import com.xebialabs.restito.semantics.Call;
-
+    ...
         Predicate<Call> uriEndsWithA = new Predicate<Call>() {
             @Override
             public boolean apply(final Call input) {
@@ -116,10 +116,53 @@ import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Condition.endsWithUri;
 import static com.xebialabs.restito.semantics.Action.stringContent;
-
-
-whenHttp(server).
+    ...
+        whenHttp(server).
                 match(endsWithUri("/demo")).
                 then(status(HttpStatus.OK_200), stringContent("Hello world!"));
 ```
 This example will make your stub output "Hello world!" with http status 200 for all types of requests (POST, GET, PUT, ...) when URI ends with "/demo".
+
+Full list of actions can be found in the [appropriate javadoc](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html).
+
+<a name="automatic_content_type" />
+## Automatic content type
+
+When you use action [resourceContent\(\)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent\(java.lang.String\)), Restito will look at file extension and it it's one of the types below, appropriate Content-Type will be set:
+
+* .xml => application/xml
+* .json => application/json
+
+See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java) for more details.
+
+<a name="expected_stubs" />
+## Expected stubs
+
+Makes sure that certain stubbed condition has been called some number of times. See [StubExpectedTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubExpectedTest.java) to learn how to do it.
+
+<a name="autodiscovery_of_stubs_content" />
+## Autodiscovery of stubs content
+
+**This is an experimental feature, api will be changed in next releases**
+
+When you use _get()_, _put()_, _post()_ or _delete()_ condition, Restito will try to find resource on the classpath according to the rules defined defined below in the same order:
+
+* GET asd/bsd/asd => resource: restito/get.asd.bsd.asd
+* GET asd/bsd/asd => resource: restito/get/asd/bsd/asd
+* GET asd/bsd/asd => resource: restito/asd.bsd.asd
+* GET asd/bsd/asd => resource: restito/asd/bsd/asd
+* GET asd/bsd/asd => resource: restito/get.asd.bsd.asd.xml
+* GET asd/bsd/asd => resource: restito/get/asd/bsd/asd.xml
+* GET asd/bsd/asd => resource: restito/asd.bsd.asd.xml
+* GET asd/bsd/asd => resource: restito/asd/bsd/asd.xml
+* GET asd/bsd/asd => resource: restito/get.asd.bsd.asd.json
+* GET asd/bsd/asd => resource: restito/get/asd/bsd/asd.json
+* GET asd/bsd/asd => resource: restito/asd.bsd.asd.json
+* GET asd/bsd/asd => resource: restito/asd/bsd/asd.json
+
+See [AutodiscoveryOfStubsContentTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutodiscoveryOfStubsContentTest.java) to get some inspiration.
+
+
+
+
+

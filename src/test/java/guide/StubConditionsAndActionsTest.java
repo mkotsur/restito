@@ -18,7 +18,7 @@ import static com.xebialabs.restito.semantics.Condition.method;
 import static com.xebialabs.restito.semantics.Condition.parameter;
 import static com.xebialabs.restito.semantics.Condition.uri;
 
-public class UserGuideTest {
+public class StubConditionsAndActionsTest {
 
     StubServer server;
 
