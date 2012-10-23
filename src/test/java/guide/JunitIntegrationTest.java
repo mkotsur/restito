@@ -22,7 +22,7 @@ public class JunitIntegrationTest {
 
     public static abstract class MyParentTest {
 
-        protected StubServer stubServer;
+        StubServer stubServer;
 
         @Rule
         public ServerDependencyRule serverDependency = new ServerDependencyRule();

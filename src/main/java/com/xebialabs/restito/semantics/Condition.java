@@ -24,12 +24,13 @@ import static com.xebialabs.restito.semantics.Action.resourceContent;
  *
  * @see com.xebialabs.restito.semantics.Call
  */
+@SuppressWarnings("SameParameterValue")
 public class Condition {
 
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    protected Predicate<Call> predicate;
+    private Predicate<Call> predicate;
 
     protected Condition(Predicate<Call> predicate) {
         this.predicate = predicate;
@@ -265,7 +266,7 @@ public class Condition {
             if (condition instanceof ConditionWithApplicables) {
                 init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());
             } else {
-                init = new Condition(newPredicate);
+                init = Condition.custom(newPredicate);
             }
         }
 

@@ -22,9 +22,9 @@ public class ConditionWithApplicablesTest {
     @Mock
     private Response response;
 
-    public static final Condition trueCondition = Condition.custom(Predicates.<Call>alwaysTrue());
+    private static final Condition trueCondition = Condition.custom(Predicates.<Call>alwaysTrue());
 
-    public static final Applicable ok200Applicable = new Applicable() {
+    private static final Applicable ok200Applicable = new Applicable() {
         @Override
         public Response apply(final Response r) {
             r.setStatus(HttpStatus.OK_200);

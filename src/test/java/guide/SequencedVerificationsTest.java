@@ -22,7 +22,7 @@ import static com.xebialabs.restito.semantics.Condition.uri;
 public class SequencedVerificationsTest {
 
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

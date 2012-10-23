@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class StubConditionsAndActionsTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

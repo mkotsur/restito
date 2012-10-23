@@ -17,7 +17,7 @@ import static com.xebialabs.restito.semantics.Condition.uri;
 
 public class ExpectedStubTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

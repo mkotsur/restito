@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.containsString;
 
 public class AutodiscoveryOfStubsContentTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

@@ -23,6 +23,7 @@ import com.xebialabs.restito.support.log.CallsHelper;
  */
 public class StubServer {
 
+    @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
     private List<Call> calls = Lists.newArrayList();

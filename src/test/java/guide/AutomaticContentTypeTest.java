@@ -15,7 +15,7 @@ import static com.xebialabs.restito.semantics.Condition.endsWithUri;
 
 public class AutomaticContentTypeTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

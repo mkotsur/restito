@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public class SpecificVsRandomPortTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

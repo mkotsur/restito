@@ -21,7 +21,7 @@ import static com.xebialabs.restito.semantics.Condition.uri;
 
 public class SimpleVerificationsTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {

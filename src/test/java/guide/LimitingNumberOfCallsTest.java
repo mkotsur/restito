@@ -19,7 +19,7 @@ import static com.xebialabs.restito.semantics.Condition.uri;
 
 public class LimitingNumberOfCallsTest {
 
-    StubServer server;
+    private StubServer server;
 
     @Before
     public void start() {
