@@ -12,7 +12,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
     * [Automatic content type](#automatic_content_type)
     * [Expected stubs](#expected_stubs)
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
-* [Verifying calls to server](#mimic_server_behavior)
+* [Verifying calls to server](#verifying_calls_to_server)
     * [Simeple verifications](#simple_verifications)
     * [Limiting number of calls](#limiting_number_of_calls)
     * [Sequenced verifications](#sequenced_verification)
@@ -25,7 +25,6 @@ Let's imagine you have an application or library which uses a REST interface. At
 # Starting and stopping stub server
 
 ```java
-
 	@Before
 	public void start() {
 		server = new StubServer().run();
@@ -62,9 +61,13 @@ If you want to specify port explicitly, then you can do something like that:
     }
 ```
 
+See [SpecificVsRandomPortTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SpecificVsRandomPortTest.java).
+
 <a name="junit_integration" />
 #Junit integration
-When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it. Check (this test)[https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java] for more details.
+When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it.
+
+Check (this test)[https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java] for more details.
 
 <a name="stubbing_server_behavior" />
 # Stubbing server behavior.
@@ -106,6 +109,8 @@ import com.xebialabs.restito.semantics.Call;
         whenHttp(server).match(custom(uriEndsWithA)).then(success());
 ```
 
+See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
+
 <a name="stub_actions" />
 ## Stub actions
 
@@ -123,7 +128,9 @@ import static com.xebialabs.restito.semantics.Action.stringContent;
 ```
 This example will make your stub output "Hello world!" with http status 200 for all types of requests (POST, GET, PUT, ...) when URI ends with "/demo".
 
-Full list of actions can be found in the [appropriate javadoc](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html).
+Full list of actions can be found in the [appropriate javadoc](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html).
+
+See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
 
 <a name="automatic_content_type" />
 ## Automatic content type
@@ -133,7 +140,7 @@ When you use action [resourceContent\(\)](http://mkotsur.github.com/restito/java
 * .xml => application/xml
 * .json => application/json
 
-See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java) for more details.
+See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
 
 <a name="expected_stubs" />
 ## Expected stubs
@@ -162,7 +169,50 @@ When you use _get()_, _put()_, _post()_ or _delete()_ condition, Restito will tr
 
 See [AutodiscoveryOfStubsContentTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutodiscoveryOfStubsContentTest.java) to get some inspiration.
 
+<a name="verifying_calls_to_server" />
+# Verifying calls to server
+
+<a name="simple_verifications" />
+## Simeple verifications
+
+To verify that some call to the server has happened once, you may use following DSL:
+
+```
+    verifyHttp(server).once(
+            method(Method.POST),
+            uri("/demo"),
+            parameter("foo", "bar")
+    );
+```
+
+For verifications you use the same conditions as for stubbing and complete list of them can be found at [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) javadoc and [custom conditions](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html#custom\(com.google.common.base.Predicate\)) can easily be created.
+
+See [SimpleVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SimpleVerificationsTest.java).
 
 
+<a name="limiting_number_of_calls" />
+## Limiting number of calls
 
+You have more options to limit number of calls:
 
+* [never(Condition... conditions)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#never\(com.xebialabs.restito.semantics.Condition...\))
+* [times(int t, Condition... conditions)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#times\(int,%20com.xebialabs.restito.semantics.Condition...\))
+
+See [LimitingNumberOfCallsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/LimitingNumberOfCallsTest.java).
+
+<a name="sequenced_verification" />
+## Sequenced verifications
+
+You can easily chain verifications:
+
+```
+    verifyHttp(server).once(
+            method(Method.GET),
+            uri("/first")
+    ).then().once(
+            method(Method.GET),
+            uri("/second")
+    );
+```
+
+See [SequencedVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedVerificationsTest.java).

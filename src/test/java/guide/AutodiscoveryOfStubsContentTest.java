@@ -15,7 +15,6 @@ import static org.hamcrest.Matchers.containsString;
 
 public class AutodiscoveryOfStubsContentTest {
 
-
     StubServer server;
 
     @Before
@@ -30,10 +29,11 @@ public class AutodiscoveryOfStubsContentTest {
     }
 
     @Test
-    public void shouldSetContentTypeJsonAccordingToResourceExtension() {
+    public void shouldFindXmlResourceFileByUrl() {
         whenHttp(server).
                 match(get("/demo/path%20to%20data/data")).then(success());
 
         expect().content(containsString("from data.xml")).when().get("/demo/path to data/data");
     }
+
 }
