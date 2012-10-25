@@ -5,6 +5,7 @@ defaultTasks 'build'
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'idea'
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
