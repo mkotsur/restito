@@ -1,1 +1,8 @@
 build
+
+# Idea project files
+*.iws
+*.ipr
+*.iml
+.idea/
+
