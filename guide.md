@@ -5,6 +5,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
 * [Motivation](#motivation)
 * [Starting and stopping stub server](#starting_and_stopping_stub_server)
     * [Specific vs random port](#specific_vs_random_port)
+    * [Using HTTPS](#using_https)
     * [Junit integration](#junit_integration)
 * [Stubbing server behavior](#stubbing_server_behavior)
     * [Stub conditions](#stub_conditions)
@@ -62,6 +63,17 @@ If you want to specify port explicitly, then you can do something like that:
 ```
 
 See [SpecificVsRandomPortTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SpecificVsRandomPortTest.java).
+
+<a name="using_https" />
+#Using HTTPS
+
+When you need to use HTTPS, this is just one configuration call...
+
+See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/UsingHttpsTest.java).
+
+```java
+    server = new StubServer().secured().run();
+```
 
 <a name="junit_integration" />
 #Junit integration
