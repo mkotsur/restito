@@ -6,7 +6,8 @@ import com.xebialabs.restito.server.StubServer;
 import java.util.List;
 
 import static java.lang.String.format;
-import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
@@ -29,10 +30,8 @@ public class EnsureHttp {
 
 	public void gotStubsCommitmentsDone() {
 		for (Stub stub : stubs) {
-			assertEquals(
-					format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes()),
-					stub.getExpectedTimes(), stub.getAppliedTimes()
-			);
+			assertThat(format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes()),
+                    stub.getExpectedTimes(), equalTo(stub.getAppliedTimes()));
 		}
 
 	}

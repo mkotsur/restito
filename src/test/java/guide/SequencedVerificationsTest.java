@@ -53,7 +53,7 @@ public class SequencedVerificationsTest {
         );
     }
 
-    @Test(expected = AssertionFailedError.class)
+    @Test(expected = AssertionError.class)
     public void shouldFailWhenCallsAreInReversedOrder() {
         expect().statusCode(200).when().get("/second");
         expect().statusCode(200).when().get("/first");

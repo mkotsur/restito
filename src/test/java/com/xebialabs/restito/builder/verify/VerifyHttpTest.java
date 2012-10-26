@@ -42,19 +42,19 @@ public class VerifyHttpTest {
 		verifyHttp(stubServer).never(conditionFalse());
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenExpectedOnceButNeverHappens() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
 		verifyHttp(stubServer).once(conditionFalse());
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenNeverExpectedButHappens() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
 		verifyHttp(stubServer).never(conditionTrue());
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenHappensLessTimesThenExpected() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
 		verifyHttp(stubServer).times(10, conditionTrue());
@@ -66,25 +66,25 @@ public class VerifyHttpTest {
 		verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenSecondCallInOrderMissing() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(getCall));
 		verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenFirstCallInOrderMissing() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(postCall));
 		verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenOrderIsWrong() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(postCall, getCall));
 		verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldVerifyTwoIdenticalWhenCalledOnlyOne() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
 		verifyHttp(stubServer).once(
@@ -104,7 +104,7 @@ public class VerifyHttpTest {
 		);
 	}
 
-	@Test(expected = AssertionFailedError.class)
+	@Test(expected = AssertionError.class)
 	public void shouldFailWhenConditionHappensMoreTimesThenExpectedEvenIfThenItExpectedAgain() {
 		when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
 		verifyHttp(stubServer).times(2,

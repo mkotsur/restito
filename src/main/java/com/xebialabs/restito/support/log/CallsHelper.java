@@ -14,9 +14,7 @@ public class CallsHelper {
 
 	public static void logCalls(List<Call> calls) {
 
-		log.info(
-				String.format("There are %s entries recorded: ", calls.size())
-		);
+		log.info(String.format("There are %s entries recorded: ", calls.size()));
 
 		for (Call call : calls) {
 			logCall(call);
