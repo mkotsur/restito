@@ -1,14 +1,16 @@
 package com.xebialabs.restito.builder.verify;
 
+import java.util.List;
 import com.google.common.collect.Lists;
+
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
 
-import java.util.List;
-
 import static com.google.common.collect.Iterables.filter;
-import static junit.framework.Assert.assertEquals;
+import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * <p>Responsible for building verifications (e.g. something happened x times).</p>
@@ -54,10 +56,7 @@ public class VerifyHttp {
      */
     public VerifySequenced times(int t, Condition... conditions) {
         final List<Call> foundCalls = filterByConditions(conditions);
-        assertEquals(
-                String.format("Expected to happen %s time(s), but happened %s times instead", t, foundCalls.size()),
-                t, foundCalls.size()
-        );
+        assertThat(format("Expected to happen %s time(s), but happened %s times instead", t, foundCalls.size()), t, equalTo(foundCalls.size()));
 
         List<Call> callsAfterLastFound = foundCalls.size() == 0 ? calls :
                 calls.subList(

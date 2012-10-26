@@ -1,8 +1,8 @@
 package com.xebialabs.restito.builder.verify;
 
-import com.xebialabs.restito.semantics.Call;
-
 import java.util.List;
+
+import com.xebialabs.restito.semantics.Call;
 
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 
@@ -11,16 +11,16 @@ import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
  */
 public class VerifySequenced {
 
-	private List<Call> calls;
+    private List<Call> calls;
 
     VerifySequenced(List<Call> calls) {
-		this.calls = calls;
-	}
+        this.calls = calls;
+    }
 
     /**
      * Returns next round of verification
      */
-	public VerifyHttp then() {
-		return verifyHttp(calls);
-	}
+    public VerifyHttp then() {
+        return verifyHttp(calls);
+    }
 }

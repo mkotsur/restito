@@ -12,93 +12,90 @@ import com.google.common.base.Predicates;
 
 import static com.xebialabs.restito.semantics.Action.contentType;
 import static com.xebialabs.restito.semantics.Action.success;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static junit.framework.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class StubTest {
 
-	@Mock
-	Response r;
+    @Mock
+    Response r;
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void shouldBeApplicableWhenConditionIsTrue() {
-		Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
-		assertTrue(stub.isApplicable(mock(Call.class)));
-	}
-	@Test
-	public void shouldBeNotApplicableWhenConditionIsFalse() {
-		Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysFalse()), success());
-		assertFalse(stub.isApplicable(mock(Call.class)));
-	}
+    @Test
+    public void shouldBeApplicableWhenConditionIsTrue() {
+        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
+        assertTrue(stub.isApplicable(mock(Call.class)));
+    }
 
-	@Test
-	public void shouldExecuteApplyFunctionOnResponse() {
-		new Stub(mock(Condition.class), contentType("boo")).apply(r);
-		verify(r, times(1)).setContentType("boo");
-	}
+    @Test
+    public void shouldBeNotApplicableWhenConditionIsFalse() {
+        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysFalse()), success());
+        assertFalse(stub.isApplicable(mock(Call.class)));
+    }
 
-	@Test
-	public void shouldComposeConditionsNegative() {
-		Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
+    @Test
+    public void shouldExecuteApplyFunctionOnResponse() {
+        new Stub(mock(Condition.class), contentType("boo")).apply(r);
+        verify(r, times(1)).setContentType("boo");
+    }
 
-		assertTrue(stub.isApplicable(mock(Call.class)));
+    @Test
+    public void shouldComposeConditionsNegative() {
+        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
 
-		stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysFalse()));
+        assertTrue(stub.isApplicable(mock(Call.class)));
 
-		assertFalse(stub.isApplicable(mock(Call.class)));
-	}
+        stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysFalse()));
 
-	@Test
-	public void shouldComposeConditionsPositive() {
-		Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
+        assertFalse(stub.isApplicable(mock(Call.class)));
+    }
 
-		assertTrue(stub.isApplicable(mock(Call.class)));
+    @Test
+    public void shouldComposeConditionsPositive() {
+        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), success());
 
-		stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysTrue()));
+        assertTrue(stub.isApplicable(mock(Call.class)));
 
-		assertTrue(stub.isApplicable(mock(Call.class)));
-	}
+        stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysTrue()));
 
-	@Test
-	public void shouldComposeMutationsNegative() {
-		Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), contentType("myType"));
+        assertTrue(stub.isApplicable(mock(Call.class)));
+    }
 
-		stub.alsoWhat(Action.custom(new Function<Response, Response>() {
-			@Override
-			public Response apply(@Nullable Response input) {
-				input.setCharacterEncoding("UTF-9");
-				return input;
-			}
-		}));
+    @Test
+    public void shouldComposeMutationsNegative() {
+        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), contentType("myType"));
 
-		stub.apply(r);
+        stub.alsoWhat(Action.custom(new Function<Response, Response>() {
+            @Override
+            public Response apply(@Nullable Response input) {
+                input.setCharacterEncoding("UTF-9");
+                return input;
+            }
+        }));
 
-		verify(r).setContentType("myType");
-		verify(r).setCharacterEncoding("UTF-9");
-	}
+        stub.apply(r);
 
-	@Test
-	public void shouldIncreaseAppliedTimesCounter() {
-		Stub stub = new Stub(
-				Condition.custom(Predicates.<Call>alwaysTrue()),
-				Action.custom(Functions.<Response>identity())
-		);
+        verify(r).setContentType("myType");
+        verify(r).setCharacterEncoding("UTF-9");
+    }
 
-		assertEquals(0, stub.getAppliedTimes());
+    @Test
+    public void shouldIncreaseAppliedTimesCounter() {
+        Stub stub = new Stub(
+                Condition.custom(Predicates.<Call>alwaysTrue()),
+                Action.custom(Functions.<Response>identity())
+        );
 
-		stub.apply(mock(Response.class));
+        assertEquals(0, stub.getAppliedTimes());
 
-		assertEquals(1, stub.getAppliedTimes());
-	}
+        stub.apply(mock(Response.class));
+
+        assertEquals(1, stub.getAppliedTimes());
+    }
 
 }
 

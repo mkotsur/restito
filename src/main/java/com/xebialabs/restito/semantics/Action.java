@@ -57,10 +57,9 @@ public class Action implements Applicable {
      * Tries to detect content type based on file extension. If can not detect => content-type is not set.
      * For now there are following bindings:
      * <ul>
-     *     <li>.xml => application/xml</li>
-     *      <li>.json => application/xml</li>
+     * <li>.xml => application/xml</li>
+     * <li>.json => application/xml</li>
      * </ul>
-     *
      */
     public static Action resourceContent(String resourcePath) {
         return resourceContent(Resources.getResource(resourcePath));
