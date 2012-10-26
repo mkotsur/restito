@@ -1,5 +1,9 @@
 package com.xebialabs.restito.server;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +15,9 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
@@ -89,15 +96,29 @@ public class StubServer {
         return this;
     }
 
-    private SSLContextConfigurator getSslConfig() {
+    private SSLContextConfigurator getSslConfig() throws IOException {
         SSLContextConfigurator defaultConfig = SSLContextConfigurator.DEFAULT_CONFIG;
-        String keystore_server = Thread.currentThread().getContextClassLoader().getResource("keystore_server").getFile();
-        String truststore_server = Thread.currentThread().getContextClassLoader().getResource("truststore_server").getFile();
+        String keystore_server = createCertificateStore("keystore_server");
+        String truststore_server = createCertificateStore("truststore_server");
         defaultConfig.setKeyStoreFile(keystore_server);
         defaultConfig.setKeyStorePass("secret");
         defaultConfig.setTrustStoreFile(truststore_server);
         defaultConfig.setTrustStorePass("secret");
         return defaultConfig;
+    }
+
+    /**
+     * Copy the Certificate store to the temporary directory, as it needs to be in a real file, not inside a jar for Grizzly to pick it up.
+     * @param resourceName The Store to copy
+     * @return The absolute path to the temporary keystore.
+     * @throws IOException If the store could not be copied.
+     */
+    private String createCertificateStore(String resourceName) throws IOException {
+        URL resource = StubServer.class.getResource("/" + resourceName);
+        File store = File.createTempFile(resourceName, "store");
+        Files.copy(Resources.newInputStreamSupplier(resource), store);
+        store.deleteOnExit();
+        return store.getAbsolutePath();
     }
 
     /**
@@ -150,7 +171,6 @@ public class StubServer {
         return new HttpHandler() {
             @Override
             public void service(Request request, Response response) throws Exception {
-
                 Call call = Call.fromRequest(request);
 
                 CallsHelper.logCall(call);
