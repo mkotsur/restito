@@ -1,9 +1,9 @@
 package com.xebialabs.restito.builder.ensure;
 
+import java.util.List;
+
 import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.server.StubServer;
-
-import java.util.List;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -15,24 +15,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class EnsureHttp {
 
-	private List<Stub> stubs;
+    private List<Stub> stubs;
 
-	private EnsureHttp(List<Stub> stubs) {
-		this.stubs = stubs;
-	}
+    private EnsureHttp(List<Stub> stubs) {
+        this.stubs = stubs;
+    }
 
     /**
      * Static factory to instantiate the class
      */
-	public static EnsureHttp ensureHttp(final StubServer stubServer) {
-		return new EnsureHttp(stubServer.getStubs());
-	}
+    public static EnsureHttp ensureHttp(final StubServer stubServer) {
+        return new EnsureHttp(stubServer.getStubs());
+    }
 
-	public void gotStubsCommitmentsDone() {
-		for (Stub stub : stubs) {
-			assertThat(format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes()),
+    public void gotStubsCommitmentsDone() {
+        for (Stub stub : stubs) {
+            assertThat(format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes()),
                     stub.getExpectedTimes(), equalTo(stub.getAppliedTimes()));
-		}
+        }
 
-	}
+    }
 }

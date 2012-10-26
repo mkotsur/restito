@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 /**
  * This annotation can be used together with {@link ServerDependencyRule} annotation. It allows to start/stop server from base test case reducing boilerplate in your test classes.
  */
-public @interface NeedsServer {}
+public @interface NeedsServer {
+}

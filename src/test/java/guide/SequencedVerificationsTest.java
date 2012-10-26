@@ -9,15 +9,11 @@ import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 
-import junit.framework.AssertionFailedError;
-
 import static com.jayway.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 import static com.xebialabs.restito.semantics.Action.status;
-import static com.xebialabs.restito.semantics.Condition.method;
-import static com.xebialabs.restito.semantics.Condition.startsWithUri;
-import static com.xebialabs.restito.semantics.Condition.uri;
+import static com.xebialabs.restito.semantics.Condition.*;
 
 public class SequencedVerificationsTest {
 

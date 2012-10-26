@@ -12,10 +12,7 @@ import org.mockito.MockitoAnnotations;
 import com.google.common.base.Predicates;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ConditionWithApplicablesTest {
 

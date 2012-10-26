@@ -22,17 +22,17 @@ public class StubServerTest {
     }
 
     @Test
-	public void shouldStartServerOnDefaultPort() {
-		assertEquals(6666, server.getPort());
-		server.stop();
-	}
+    public void shouldStartServerOnDefaultPort() {
+        assertEquals(6666, server.getPort());
+        server.stop();
+    }
 
-	@Test
-	public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
-		StubServer server1 = new StubServer().run();
-		StubServer server2 = new StubServer().run();
-		assertTrue(server2.getPort() > server1.getPort());
-	}
+    @Test
+    public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
+        StubServer server1 = new StubServer().run();
+        StubServer server2 = new StubServer().run();
+        assertTrue(server2.getPort() > server1.getPort());
+    }
 
     @Test
     public void shouldBePossibleToSpecifyPort() {

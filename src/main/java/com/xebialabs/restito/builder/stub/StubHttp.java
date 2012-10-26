@@ -8,23 +8,23 @@ import com.xebialabs.restito.server.StubServer;
  */
 public class StubHttp {
 
-	private StubServer stubServer;
+    private StubServer stubServer;
 
-	private StubHttp(StubServer stubServer) {
-		this.stubServer = stubServer;
-	}
+    private StubHttp(StubServer stubServer) {
+        this.stubServer = stubServer;
+    }
 
     /**
      * Static factory for this class
      */
-	public static StubHttp whenHttp(StubServer server) {
-		return new StubHttp(server);
-	}
+    public static StubHttp whenHttp(StubServer server) {
+        return new StubHttp(server);
+    }
 
     /**
      * Adds some conditions to the stub
      */
-	public StubActioned match(Condition... conditions) {
-		return new StubActioned(stubServer, Condition.composite(conditions));
-	}
+    public StubActioned match(Condition... conditions) {
+        return new StubActioned(stubServer, Condition.composite(conditions));
+    }
 }

@@ -1,11 +1,11 @@
 package com.xebialabs.restito.builder.verify;
 
+import java.util.List;
 import com.google.common.collect.Lists;
+
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
-
-import java.util.List;
 
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.String.format;
