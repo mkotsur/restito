@@ -173,7 +173,7 @@ See [AutodiscoveryOfStubsContentTest](https://github.com/mkotsur/restito/blob/ma
 # Verifying calls to server
 
 <a name="simple_verifications" />
-## Simeple verifications
+## Simple verifications
 
 To verify that some call to the server has happened once, you may use following DSL:
 
