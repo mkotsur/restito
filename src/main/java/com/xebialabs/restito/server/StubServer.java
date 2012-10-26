@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.mina.util.AvailablePortFinder;
-import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.http.util.HttpStatus;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
@@ -29,6 +28,11 @@ public class StubServer {
     private List<Call> calls = Lists.newArrayList();
     private List<Stub> stubs = Lists.newArrayList();
     private HttpServer simpleServer;
+
+    /**
+     * Whether or not the server should run in HTTPS mode.
+     */
+    public boolean secured;
 
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
@@ -71,11 +75,29 @@ public class StubServer {
     public StubServer run() {
         simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(), "/");
         try {
+            if (secured) {
+                for (NetworkListener networkListener : simpleServer.getListeners()) {
+                    networkListener.setSecure(true);
+                    SSLEngineConfigurator sslEngineConfig = new SSLEngineConfigurator(getSslConfig(), false, false, false);
+                    networkListener.setSSLEngineConfig(sslEngineConfig);
+                }
+            }
             simpleServer.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return this;
+    }
+
+    private SSLContextConfigurator getSslConfig() {
+        SSLContextConfigurator defaultConfig = SSLContextConfigurator.DEFAULT_CONFIG;
+        String keystore_server = Thread.currentThread().getContextClassLoader().getResource("keystore_server").getFile();
+        String truststore_server = Thread.currentThread().getContextClassLoader().getResource("truststore_server").getFile();
+        defaultConfig.setKeyStoreFile(keystore_server);
+        defaultConfig.setKeyStorePass("secret");
+        defaultConfig.setTrustStoreFile(truststore_server);
+        defaultConfig.setTrustStorePass("secret");
+        return defaultConfig;
     }
 
     /**
@@ -90,6 +112,16 @@ public class StubServer {
      */
     public StubServer stop() {
         simpleServer.stop();
+        return this;
+    }
+
+    /**
+     * Sets the Server in Secure mode. If it is already running, ignores the call.
+     */
+    public StubServer secured() {
+        if (!simpleServer.isStarted()) {
+            this.secured = true;
+        }
         return this;
     }
 
