@@ -51,7 +51,7 @@ public class SmartDiscovererTest {
     @Test
     public void shouldWorkIfPathContainsSpaces() {
         String path = smartDiscoverer.discoverResource(Method.POST, "/spaces%20here/1.xml").getPath();
-        assertTrue(path + " does not ends as expected" , path.endsWith(prefix + "/spaces%20here/1.xml"));
+        assertTrue(path + " does not ends as expected", path.endsWith(prefix + "/spaces%20here/1.xml"));
     }
 
     @Test(expected = IllegalArgumentException.class)

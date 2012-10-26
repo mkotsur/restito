@@ -42,7 +42,7 @@ public class SmartDiscoverer {
      * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.json</li>
      * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.json</li>
      * </ul>
-     * */
+     */
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
@@ -51,9 +51,10 @@ public class SmartDiscoverer {
                     continue; // Probably directory
                 }
                 return resource;
-            }
-            catch (IllegalArgumentException ignored) {} // just go on
-            catch (UnsupportedEncodingException ignored) {} // just go on
+            } catch (IllegalArgumentException ignored) {
+            } // just go on
+            catch (UnsupportedEncodingException ignored) {
+            } // just go on
         }
 
         throw new IllegalArgumentException(format("Can not discover resource for method [%s] and URI [%s]", m, uri));
@@ -74,7 +75,7 @@ public class SmartDiscoverer {
                 Joiner.on(".").join(split) + ".xml",
                 Joiner.on("/").join(split) + ".xml",
                 m.toString().toLowerCase() + "." + Joiner.on(".").join(split) + ".json",
-                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split)+ ".json",
+                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split) + ".json",
                 Joiner.on(".").join(split) + ".json",
                 Joiner.on("/").join(split) + ".json"
         );

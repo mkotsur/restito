@@ -9,18 +9,18 @@ import org.junit.runners.model.Statement;
  */
 public class ServerDependencyRule implements TestRule {
 
-	private NeedsServer annotation;
+    private NeedsServer annotation;
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		annotation = description.getAnnotation(NeedsServer.class);
-		return base;
-	}
+    @Override
+    public Statement apply(Statement base, Description description) {
+        annotation = description.getAnnotation(NeedsServer.class);
+        return base;
+    }
 
     /**
      * Returns true when current test case is marked with {@link NeedsServer} and thus needs the server to be started.
      */
-	public boolean isServerDependent() {
-		return annotation != null;
-	}
+    public boolean isServerDependent() {
+        return annotation != null;
+    }
 }
