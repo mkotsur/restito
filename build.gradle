@@ -1,4 +1,4 @@
-version '0.3.9'
+version '0.4.0-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
@@ -36,6 +36,21 @@ dependencies {
 tasks.withType(Compile) { compile ->
     compile.options.compilerArgs << '-Xlint:deprecation'
     compile.options.compilerArgs << '-Xlint:unchecked'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 uploadArchives {
