@@ -17,10 +17,6 @@ Developer's guide is the best place to start. FOR LOTS OF EXAMPLES CLICK [**-> H
 
 For more details you can also check [Restito's javadoc](http://mkotsur.github.com/restito/javadoc/current/).
 
-# Maven instructions
-
-!TO BE UPLOADED!
-
 # Quick example:
 
 ```java
@@ -61,4 +57,21 @@ public class SimpleRequestsTest {
     }
 
 }
+```
+
+# Maven instructions
+
+```
+<dependency>
+    <groupId>com.xebialabs.overthere</groupId>
+    <artifactId>restito</artifactId>
+    <version>0.4-alpha-1</version>
+</dependency>
+```
+
+
+# Building instructions
+
+```
+$ gradle clean build
 ```
