@@ -1,10 +1,12 @@
-version '0.4-alpha-1'
+//  version = '0.4-alpha-1'  // Last released version
+version '0.4-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'idea'
 
 sourceCompatibility = '1.6'
@@ -60,13 +62,46 @@ artifacts {
     archives javadocJar
 }
 
+signing {
+    sign configurations.archives
+}
+
 uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: "${nexusBaseUrl}/repositories/releases") {
-            authentication(userName: "${nexusUserName}", password: "${nexusPassword}")
-        }
-        snapshotRepository(url: "${nexusBaseUrl}/repositories/snapshots") {
-            authentication(userName: "${nexusUserName}", password: "${nexusPassword}")
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'Restito'
+                packaging 'jar'
+                description 'GradleFx is a Gradle plugin for building Flex and Actionscript applications'
+                url 'http://gradlefx.github.com/'
+
+                scm {
+                    url 'scm:git@github.com:mkotsur/restito.git'
+                    connection 'scm:git@github.com:mkotsur/restito.git'
+                    developerConnection 'scm:git@github.com:mkotsur/restito.git'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'mkotsur'
+                        name 'Mykhailo Kotsur'
+                    }
+                }
+            }
         }
     }
 }
