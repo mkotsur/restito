@@ -14,5 +14,5 @@
 + uriStartsWith
 + uri matches regex
 - ordered stubs
-- update examples
-- update javadocs
++ update examples
++ update javadocs

@@ -77,6 +77,9 @@ See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/jav
 
 <a name="junit_integration" />
 #Junit integration
+
+**!! To use this you must have junit 4.10+ on your classpath. Restito doesn't contain it bundled to save you from the dependency nightmare. !!**
+
 When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it.
 
 Check (this test)[https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java] for more details.
@@ -103,7 +106,7 @@ import static com.xebialabs.restito.semantics.Condition.*;
 
 In this example your stub will return mentioned string content when GET request with HTTP parameter bar=foo is done.
 
-List of all avaialble conditions can be checked in the javadoc for [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html)
+List of all available conditions can be checked in the javadoc for [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html)
 
 If you want to use a custom condition, it's also very easy:
 
@@ -147,7 +150,7 @@ See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/maste
 <a name="automatic_content_type" />
 ## Automatic content type
 
-When you use action [resourceContent\(\)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent\(java.lang.String\)), Restito will look at file extension and it it's one of the types below, appropriate Content-Type will be set:
+When you use action [resourceContent\(\)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent\(java.lang.String\)), Restito will look at file extension and if it it's one of the types below, appropriate Content-Type will be set:
 
 * .xml => application/xml
 * .json => application/json

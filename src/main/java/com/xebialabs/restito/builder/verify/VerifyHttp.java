@@ -9,8 +9,6 @@ import com.xebialabs.restito.server.StubServer;
 
 import static com.google.common.collect.Iterables.filter;
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * <p>Responsible for building verifications (e.g. something happened x times).</p>
@@ -56,7 +54,9 @@ public class VerifyHttp {
      */
     public VerifySequenced times(int t, Condition... conditions) {
         final List<Call> foundCalls = filterByConditions(conditions);
-        assertThat(format("Expected to happen %s time(s), but happened %s times instead", t, foundCalls.size()), t, equalTo(foundCalls.size()));
+        if (t != foundCalls.size()) {
+            throw new AssertionError(format("Expected to happen %s time(s), but happened %s times instead", t, foundCalls.size()));
+        }
 
         List<Call> callsAfterLastFound = foundCalls.size() == 0 ? calls :
                 calls.subList(
