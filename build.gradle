@@ -78,8 +78,8 @@ uploadArchives {
             pom.project {
                 name 'Restito'
                 packaging 'jar'
-                description 'GradleFx is a Gradle plugin for building Flex and Actionscript applications'
-                url 'http://gradlefx.github.com/'
+                description 'Restito - testing framework for rest clients'
+                url 'http://mkotsur.github.com/restito'
 
                 scm {
                     url 'scm:git@github.com:mkotsur/restito.git'
