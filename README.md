@@ -63,9 +63,9 @@ public class SimpleRequestsTest {
 
 ```
 <dependency>
-    <groupId>com.xebialabs.overthere</groupId>
-    <artifactId>restito</artifactId>
-    <version>0.4-alpha-1</version>
+    <groupId>com.xebialabs.restito</groupId>
+    <artifactId>restito</artifactId>
+    <version>0.4-alpha-1</version>
 </dependency>
 ```
 
