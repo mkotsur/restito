@@ -1,4 +1,4 @@
-[![Build Status](https://buildhive.cloudbees.com/job/mkotsur/job/restito/badge/icon)](https://buildhive.cloudbees.com/job/mkotsur/job/restito/) Restito - testing framework for rest clients
+Restito - testing framework for rest clients [![Build Status](https://buildhive.cloudbees.com/job/mkotsur/job/restito/badge/icon)](https://buildhive.cloudbees.com/job/mkotsur/job/restito/)
 ============================================
 
 Restito is a tool which is inspired by [mockito](http://code.google.com/p/mockito/) and functionally is diametrically opposite to the [Rest Assured](http://code.google.com/p/rest-assured).
