@@ -11,8 +11,8 @@ import com.xebialabs.restito.server.StubServer;
 import com.xebialabs.restito.support.junit.NeedsServer;
 import com.xebialabs.restito.support.junit.ServerDependencyRule;
 
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 // This Suite stuff is just to run tests from a subclass

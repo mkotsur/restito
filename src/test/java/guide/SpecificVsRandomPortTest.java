@@ -7,8 +7,8 @@ import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Covers "Starting and stopping stub server"->"Specific vs random port" user guide chapter

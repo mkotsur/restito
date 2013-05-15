@@ -1,6 +1,5 @@
 package com.xebialabs.restito.semantics;
 
-import javax.annotation.Nullable;
 import org.glassfish.grizzly.http.server.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,7 @@ import com.google.common.base.Predicates;
 
 import static com.xebialabs.restito.semantics.Action.contentType;
 import static com.xebialabs.restito.semantics.Action.success;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class StubTest {
@@ -71,7 +70,7 @@ public class StubTest {
 
         stub.alsoWhat(Action.custom(new Function<Response, Response>() {
             @Override
-            public Response apply(@Nullable Response input) {
+            public Response apply(Response input) {
                 input.setCharacterEncoding("UTF-9");
                 return input;
             }

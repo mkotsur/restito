@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 import sun.misc.Regexp;
 
 import static com.xebialabs.restito.semantics.Condition.*;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 public class ConditionTest {
