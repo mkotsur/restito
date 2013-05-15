@@ -97,4 +97,12 @@ public class StubConditionsAndActionsTest {
                 expect().statusCode(404).
                 when().get("/undefined");
     }
+
+    @Test
+    public void shouldResolveStubsInReverseOrder() {
+        whenHttp(server).match(alwaysTrue()).then(status(HttpStatus.OK_200));
+        whenHttp(server).match(get("/bad")).then(status(HttpStatus.BAD_REQUEST_400));
+        expect().statusCode(400).get("/bad");
+        expect().statusCode(200).get("/any/other/url");
+    }
 }

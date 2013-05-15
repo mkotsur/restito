@@ -124,7 +124,18 @@ import com.xebialabs.restito.semantics.Call;
         whenHttp(server).match(custom(uriEndsWithA)).then(success());
 ```
 
-See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
+Conditions are resolved in reverse order, which makes it easy to have some 'default' behavior.
+
+```java
+        whenHttp(server).match(alwaysTrue()).then(status(HttpStatus.OK_200));
+        whenHttp(server).match(get("/bad")).then(status(HttpStatus.BAD_REQUEST_400));
+```
+
+In this case, when request comes, it will be first tested against last attached condition (i.e. "/bad" URL), and if it doesn't match, will fall back to the first condition which is always true.
+
+If no matching conditions found at all, restito will respond with HTTP status _404 Not Found_.
+
+See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubConditionsAndActionsTest.java).
 
 <a name="stub_actions" />
 ## Stub actions
@@ -145,7 +156,7 @@ This example will make your stub output "Hello world!" with http status 200 for 
 
 Full list of actions can be found in the [appropriate javadoc](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html).
 
-See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
+See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubConditionsAndActionsTest.java).
 
 <a name="automatic_content_type" />
 ## Automatic content type
