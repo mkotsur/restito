@@ -2,6 +2,7 @@ package com.xebialabs.restito.semantics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +14,15 @@ import com.google.common.collect.Maps;
 
 import sun.misc.Regexp;
 
-import static com.xebialabs.restito.semantics.Condition.*;
-import static org.junit.Assert.*;
+import static com.xebialabs.restito.semantics.Condition.delete;
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Condition.method;
+import static com.xebialabs.restito.semantics.Condition.post;
+import static com.xebialabs.restito.semantics.Condition.put;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class ConditionTest {
@@ -120,6 +128,17 @@ public class ConditionTest {
     }
 
     @Test
+    public void shouldMakeConditionForUriPatternMatch() {
+        Condition condition = Condition.matchesUri(Pattern.compile("^/[0-9]*"));
+
+        when(call.getUri()).thenReturn("/232323");
+        assertTrue(condition.check(call));
+
+        when(call.getUri()).thenReturn("/boom").getMock();
+        assertFalse(condition.check(call));
+    }
+
+    @Test
     public void shouldDistinguishByBodyPresence() {
         Condition condition = Condition.withPostBody();
 
@@ -151,7 +170,17 @@ public class ConditionTest {
 
         condition = Condition.withPostBodyContaining(new Regexp("[a-z]+"));
         assertFalse(condition.check(call));
+    }
 
+    @Test
+    public void shouldDistinguishByPatternMatchInBody() {
+        Condition condition = Condition.withPostBodyContaining(Pattern.compile("[0-9]+"));
+
+        when(call.getPostBody()).thenReturn("331102");
+        assertTrue(condition.check(call));
+
+        condition = Condition.withPostBodyContaining(new Regexp("[a-z]+"));
+        assertFalse(condition.check(call));
     }
 
     @Test

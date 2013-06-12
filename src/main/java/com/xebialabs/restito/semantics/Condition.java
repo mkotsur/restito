@@ -3,6 +3,7 @@ package com.xebialabs.restito.semantics;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import static com.xebialabs.restito.semantics.Action.resourceContent;
  *
  * @see com.xebialabs.restito.semantics.Call
  */
-@SuppressWarnings("SameParameterValue")
+@SuppressWarnings("SameParameterValue,")
 public class Condition {
 
 
@@ -123,11 +124,25 @@ public class Condition {
 
     /**
      * URI starts with
+     * @deprecated
+     * @see {@link #matchesUri(java.util.regex.Pattern)}
      */
+    @Deprecated
     public static Condition matchesUri(final Regexp regexp) {
         return new Condition(new Predicate<Call>() {
             public boolean apply(Call input) {
                 return input.getUri().matches(regexp.exp);
+            }
+        });
+    }
+
+    /**
+     * URI starts with
+     */
+    public static Condition matchesUri(final Pattern p) {
+        return new Condition(new Predicate<Call>() {
+            public boolean apply(Call input) {
+                return input.getUri().matches(p.pattern());
             }
         });
     }
@@ -165,13 +180,27 @@ public class Condition {
 
     /**
      * With post body matching regexp
+     * @deprecated
+     * @see {@link #withPostBodyContaining(java.util.regex.Pattern)}
      */
-
+    @Deprecated
     public static Condition withPostBodyContaining(final Regexp regexp) {
         return new Condition(new Predicate<Call>() {
             @Override
             public boolean apply(Call input) {
                 return input.getPostBody().matches(regexp.exp);
+            }
+        });
+    }
+
+    /**
+     * With post body matching pattern
+     */
+    public static Condition withPostBodyContaining(final Pattern pattern) {
+        return new Condition(new Predicate<Call>() {
+            @Override
+            public boolean apply(Call input) {
+                return input.getPostBody().matches(pattern.pattern());
             }
         });
     }
