@@ -172,4 +172,21 @@ public class Action implements Applicable {
             }
         });
     }
+
+    /**
+     * Creates a composite action which contains all passed actions and
+     * executes them in the same order.
+     */
+    public static Action composite(final Action... actions) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                for (Applicable action : actions) {
+                    action.apply(input);
+                }
+
+                return input;
+            }
+        });
+    }
 }

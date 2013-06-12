@@ -87,12 +87,19 @@ public class ActionTest {
     }
 
     @Test
-    public void shouldCreateCompositeAction() {
+    public void shouldCreateCompositeActionFromActions() {
         composite(status(HttpStatus.OK_200), header("foo", "bar")).apply(response);
 
         InOrder inOrder = inOrder(response);
         inOrder.verify(response).setStatus(HttpStatus.OK_200);
         inOrder.verify(response).setHeader("foo", "bar");
 
+    }
+
+    @Test
+    public void shouldCreateCompositeActionFromApplicables() {
+        composite((Applicable)status(HttpStatus.NOT_ACCEPTABLE_406)).apply(response);
+
+        verify(response).setStatus(HttpStatus.NOT_ACCEPTABLE_406);
     }
 }
