@@ -20,6 +20,7 @@ import com.xebialabs.restito.server.StubServer;
 
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Action.ok;
 import static com.xebialabs.restito.semantics.Action.success;
 import static com.xebialabs.restito.semantics.Condition.get;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,7 +42,7 @@ public class UsingHttpsTest {
 
     @Test
     public void shouldPassWhenExpectedStubDidHappen() throws GeneralSecurityException, IOException {
-        whenHttp(server).match(get("/asd")).then(success()).mustHappen();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
 
         HttpResponse execute = sslReadyHttpClient().execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
 

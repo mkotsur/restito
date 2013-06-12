@@ -32,6 +32,20 @@ public class ActionTest {
     }
 
     @Test
+    public void shouldBuildOkStub() {
+        Action.ok().apply(response);
+
+        verify(response).setStatus(HttpStatus.OK_200);
+    }
+
+    @Test
+    public void shouldBuildNoContentStub() {
+        Action.noContent().apply(response);
+
+        verify(response).setStatus(HttpStatus.NO_CONTENT_204);
+    }
+
+    @Test
     public void shouldApplyXmlContent() throws Exception {
         resourceContent("content.xml").apply(response);
 

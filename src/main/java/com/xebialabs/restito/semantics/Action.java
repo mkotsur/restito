@@ -34,10 +34,26 @@ public class Action implements Applicable {
     // Factory methods
 
     /**
-     * Sets HTTP status 200 to response
+     * Sets HTTP status 200 to response.
+     * Consider using {@link #ok()} as more concise and less ambiguous option.
+     * @see {@link #ok()}
      */
     public static Action success() {
         return status(HttpStatus.OK_200);
+    }
+
+    /**
+     * Sets HTTP status 200 to response
+     */
+    public static Action ok() {
+        return status(HttpStatus.OK_200);
+    }
+
+    /**
+     * Sets HTTP status 204 to response
+     */
+    public static Action noContent() {
+        return status(HttpStatus.NO_CONTENT_204);
     }
 
     /**

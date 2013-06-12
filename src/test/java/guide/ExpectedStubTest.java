@@ -11,6 +11,7 @@ import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Action.ok;
 import static com.xebialabs.restito.semantics.Action.success;
 import static com.xebialabs.restito.semantics.Condition.get;
 import static com.xebialabs.restito.semantics.Condition.uri;
@@ -32,7 +33,7 @@ public class ExpectedStubTest {
 
     @Test
     public void shouldPassWhenExpectedStubDidHappen() {
-        whenHttp(server).match(get("/asd")).then(success()).mustHappen();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
         expect().statusCode(200).get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
@@ -41,7 +42,7 @@ public class ExpectedStubTest {
     public void shouldPassWhenStubTriggeredExactNumberOfTimes() {
         whenHttp(server).
                 match(uri("/demo")).
-                then(success()).
+                then(ok()).
                 mustHappen(2);
 
         given().when().get("/demo");
@@ -53,8 +54,8 @@ public class ExpectedStubTest {
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenSecondExpectedStubDidNotHappen() {
-        whenHttp(server).match(get("/asd")).then(success()).mustHappen();
-        whenHttp(server).match(get("/neverHappens")).then(success()).mustHappen();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
+        whenHttp(server).match(get("/neverHappens")).then(ok()).mustHappen();
         expect().statusCode(200).get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
@@ -63,7 +64,7 @@ public class ExpectedStubTest {
     public void shouldFailWhenStubNotTriggeredMoreThenExpected() {
         whenHttp(server).
                 match(uri("/demo")).
-                then(success()).
+                then(ok()).
                 mustHappen(2);
 
         given().when().get("/demo");

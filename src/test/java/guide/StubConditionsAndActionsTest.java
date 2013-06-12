@@ -55,15 +55,15 @@ public class StubConditionsAndActionsTest {
     public void shouldReturnProperContentForProperRequests() {
         whenHttp(server).
                 match(get("/asd")).
-                then(success(), stringContent("GET asd"));
+                then(ok(), stringContent("GET asd"));
 
         whenHttp(server).
                 match(post("/asd")).
-                then(success(), stringContent("POST asd"));
+                then(ok(), stringContent("POST asd"));
 
         whenHttp(server).
                 match(get("/asd"), parameter("bar", "foo")).
-                then(success(), stringContent("GET asd with parameter"));
+                then(ok(), stringContent("GET asd with parameter"));
 
         expect().statusCode(200).and().body(equalTo("GET asd")).
                 when().get("/asd");
@@ -84,14 +84,14 @@ public class StubConditionsAndActionsTest {
                 return input.getUri().endsWith("a");
             }
         };
-        whenHttp(server).match(custom(uriEndsWithA)).then(success());
+        whenHttp(server).match(custom(uriEndsWithA)).then(ok());
         expect().statusCode(200).get("/a");
         expect().statusCode(404).get("/b");
     }
 
     @Test
     public void shouldReturn404forNotDefinedUris() {
-        whenHttp(server).match(endsWithUri("/asd")).then(success());
+        whenHttp(server).match(endsWithUri("/asd")).then(ok());
 
         given().param("foo", "bar").
                 expect().statusCode(404).

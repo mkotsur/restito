@@ -101,7 +101,7 @@ import static com.xebialabs.restito.semantics.Condition.*;
     ...
 		whenHttp(server).
 				match(get("/asd"), parameter("bar", "foo")).
-				then(success(), stringContent("GET asd with parameter bar=foo"));
+				then(ok(), stringContent("GET asd with parameter bar=foo"));
 ```
 
 In this example your stub will return mentioned string content when GET request with HTTP parameter bar=foo is done.
@@ -121,7 +121,7 @@ import com.xebialabs.restito.semantics.Call;
                 return input.getUri().endsWith("a");
             }
         };
-        whenHttp(server).match(custom(uriEndsWithA)).then(success());
+        whenHttp(server).match(custom(uriEndsWithA)).then(ok());
 ```
 
 Conditions are resolved in reverse order, which makes it easy to have some 'default' behavior.
