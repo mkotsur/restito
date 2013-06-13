@@ -1,14 +1,20 @@
 package com.xebialabs.restito.semantics;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.zip.GZIPOutputStream;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+
+import static java.util.Arrays.toString;
 
 /**
  * Action is a modifier for Response
@@ -121,6 +127,25 @@ public class Action implements Applicable {
                 return input;
             }
         });
+    }
+
+    /**
+     * Writes gzipped string content to response
+     */
+    public static Action gzippedStringContent(final String uncompressed) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            GZIPOutputStream gzos = new GZIPOutputStream(baos);
+
+            byte [] uncompressedBytes   = uncompressed.getBytes();
+
+            gzos.write(uncompressedBytes, 0, uncompressedBytes.length);
+            gzos.close();
+
+            return composite(header("Content-Encoding", "gzip"), resourceContent(Arrays.toString(baos.toByteArray())));
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
