@@ -1,6 +1,8 @@
 package com.xebialabs.restito.semantics;
 
 import java.io.Writer;
+import java.nio.charset.Charset;
+
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static com.xebialabs.restito.semantics.Action.*;
+import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 import static org.mockito.Mockito.*;
 
 public class ActionTest {
@@ -21,6 +24,7 @@ public class ActionTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         when(response.getWriter()).thenReturn(mock(Writer.class));
+        when(response.getCharacterEncoding()).thenReturn("UTF-8");
     }
 
 
@@ -61,6 +65,23 @@ public class ActionTest {
         verify(response).setContentType("application/json");
         verify(response).setContentLength(15);
         verify(response.getWriter()).write("{\"asd\": \"cool\"}");
+    }
+
+    @Test
+    public void shouldApplyCharset() throws Exception {
+        charset("my-amazing-encoding").apply(response);
+
+        verify(response).setCharacterEncoding("my-amazing-encoding");
+    }
+
+    @Test
+    public void shouldApplyUnicodeJsonContent() throws Exception {
+
+        resourceContent("unicode-content.json", "UTF-8").apply(response);
+
+        verify(response).setContentType("application/json");
+        verify(response).setContentLength(40); //40 bytes / 22 characters
+        verify(response.getWriter()).write(new String("{\"test\" : \"的这款单肩包集经典\"}".getBytes(), "UTF-8"));
     }
 
     @Test
