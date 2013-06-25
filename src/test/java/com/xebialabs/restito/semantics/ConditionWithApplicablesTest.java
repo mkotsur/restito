@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.google.common.base.Predicates;
 
+import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
@@ -32,6 +33,7 @@ public class ConditionWithApplicablesTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
+        when(response.getCharacterEncoding()).thenReturn(DEFAULT_HTTP_CHARACTER_ENCODING);
     }
 
     @Test

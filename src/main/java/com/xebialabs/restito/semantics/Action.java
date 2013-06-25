@@ -78,15 +78,35 @@ public class Action implements Applicable {
      * </ul>
      */
     public static Action resourceContent(String resourcePath) {
-        return resourceContent(Resources.getResource(resourcePath));
+        return resourceContent(Resources.getResource(resourcePath), Charset.defaultCharset().name());
+    }
+
+    /**
+     * Writes content using the specified encoding and content-type of resource file to response.
+     * Tries to detect content type based on file extension. If can not detect => content-type is not set.
+     * For now there are following bindings:
+     * <ul>
+     * <li>.xml => application/xml</li>
+     * <li>.json => application/xml</li>
+     * </ul>
+     */
+    public static Action resourceContent(String resourcePath, String charset) {
+        return resourceContent(Resources.getResource(resourcePath), charset);
     }
 
     /**
      * Does the same as Action.resourceContent(), the only difference is that it accepts an URL instead of resource path.
      */
     public static Action resourceContent(URL resourceUrl) {
+        return resourceContent(resourceUrl, Charset.defaultCharset().name());
+    }
+
+    /**
+     * Does the same as Action.resourceContent(), the only difference is that it accepts an URL instead of resource path.
+     */
+    public static Action resourceContent(URL resourceUrl, String charset) {
         try {
-            final String resourceContent = Resources.toString(resourceUrl, Charset.defaultCharset());
+            final String resourceContent = Resources.toString(resourceUrl, Charset.forName(charset));
 
             Action contentTypeAction = custom(Functions.<Response>identity());
 
@@ -112,7 +132,8 @@ public class Action implements Applicable {
         return new Action(new Function<Response, Response>() {
             public Response apply(Response input) {
 
-                input.setContentLength(content.length());
+                Charset charset = Charset.forName(input.getCharacterEncoding());
+                input.setContentLength(content.getBytes(charset).length);
                 try {
                     input.getWriter().write(content);
                 } catch (IOException e) {
@@ -144,6 +165,19 @@ public class Action implements Applicable {
             @Override
             public Response apply(final Response r) {
                 r.setContentType(contentType);
+                return r;
+            }
+        });
+    }
+
+    /**
+     * Sets charset of the response (must come before stringContent/resourceContent Action)
+     */
+    public static Action charset(final String charset) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(final Response r) {
+                r.setCharacterEncoding(charset);
                 return r;
             }
         });
