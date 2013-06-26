@@ -117,7 +117,9 @@ public class ConditionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void shouldMakeConditionForUriMatching() {
+
         Condition condition = Condition.matchesUri(new Regexp("^/[0-9]*"));
 
         when(call.getUri()).thenReturn("/232323");
@@ -162,6 +164,7 @@ public class ConditionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void shouldDistinguishByRegexpMatchInBody() {
         Condition condition = Condition.withPostBodyContaining(new Regexp("[0-9]+"));
 
@@ -173,6 +176,7 @@ public class ConditionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void shouldDistinguishByPatternMatchInBody() {
         Condition condition = Condition.withPostBodyContaining(Pattern.compile("[0-9]+"));
 

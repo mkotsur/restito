@@ -124,7 +124,7 @@ public class Condition {
 
     /**
      * URI starts with
-     * @deprecated
+     * @deprecated will be removed at 0.5
      * @see {@link #matchesUri(java.util.regex.Pattern)}
      */
     @Deprecated
@@ -180,7 +180,7 @@ public class Condition {
 
     /**
      * With post body matching regexp
-     * @deprecated
+     * @deprecated will be removed at 0.5
      * @see {@link #withPostBodyContaining(java.util.regex.Pattern)}
      */
     @Deprecated
