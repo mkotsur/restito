@@ -1,0 +1,67 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.xebialabs.restito.examples</groupId>
+    <artifactId>popular-page</artifactId>
+    <version>1</version>
+
+    <dependencies>
+
+        <!-- Restito dependency -->
+        <dependency>
+            <groupId>com.xebialabs.restito</groupId>
+            <artifactId>restito</artifactId>
+            <version>0.4-beta-1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Note, that to have nice logging from Restito, you must have one of slf4j bindings on the classpath-->
+        <!-- More info here: http://slf4j.org/faq.html#configure_logging  -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Restito can run with jUnit, or other test runner of your choice -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Dependencies needed by our 'Application' itself -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.xebialabs.restito.examples.App</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
