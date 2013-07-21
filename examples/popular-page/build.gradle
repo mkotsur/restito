@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin:'application'
+
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  testCompile 'com.xebialabs.restito:restito:0.4-beta-1'
+  testCompile 'org.slf4j:slf4j-jdk14:1.6.2'
+  testCompile 'junit:junit:4.11'
+
+  compile 'com.google.code.gson:gson:2.1'
+  compile 'com.google.guava:guava:14.0.1'
+}
+
+mainClassName = "com.xebialabs.restito.examples.App"

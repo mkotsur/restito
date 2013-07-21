@@ -1,16 +1,15 @@
-To run the app:
+## Try it
 
-```shell
-cd examples
-mvn exec:java
-```
+```cd examples/popular-page```
 
-To run tests:
+### To run the app:
 
-```shell
-cd examples
-mvn test
-```
+```mvn exec:java``` or ```gradle run```
+
+
+### To run tests:
+
+```mvn test``` or ```gradle -i test```
 
 
 # What's this all about
