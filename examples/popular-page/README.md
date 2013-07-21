@@ -1,15 +1,15 @@
 To run the app:
 
 ```shell
-    cd examples
-    mvn exec:java
+cd examples
+mvn exec:java
 ```
 
 To run tests:
 
 ```shell
-    cd examples
-    mvn test
+cd examples
+mvn test
 ```
 
 
@@ -40,7 +40,7 @@ Now take a look at the code: [com.xebialabs.restito.examples.WikiClient](https:/
 
 It is arguable if you want to keep all these concerns in a single class, but for the sake of argument, let's agree that this is our layer which has deal with backend and we want to test it. In ideal world this layer might be thiner, but it will always exist.
 
-The only pre-requisite for testing this code with _Restito_ is that your [WikiClient](https://github.com/mkotsur/restito/blob/master/examples/popular-page/src/main/java/com/xebialabs/restito/examples/WikiClient.java) can be parametrized with the entry point. In this way, you can feed it with _http://localhost:XXX_ instead of _http://en.wikipedia.org_.
+The only pre-requisite for testing this code with _Restito_ is that your [WikiClient](https://github.com/mkotsur/restito/blob/master/examples/popular-page/src/main/java/com/xebialabs/restito/examples/WikiClient.java) can be parametrized with the entry point. In this way, you can feed it with ```http://localhost:XXX``` instead of ```http://en.wikipedia.org```.
 
 That's it. Then our happy-flow test-case will look like [WikiClientTest](https://github.com/mkotsur/restito/blob/master/examples/popular-page/src/test/java/com/xebialabs/restito/examples/WikiClientTest.java). Simple, eh?
 

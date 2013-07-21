@@ -22,7 +22,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
 # Motivation
 Let's imagine you have an application or library which uses a REST interface. At some point you would like to make sure that it works exactly as expected and mocking low-level HTTP client is not always the best option. That's where <b>Restito</b> comes to play: it gives you a DSL to test your application with mocked server just like you would do it with any mocking framework.
 
-There is a [nice example](https://github.com/mkotsur/restito/blob/master/examples/README.md) of the use case when Restito helps.
+There is a [nice example](https://github.com/mkotsur/restito/blob/master/examples/popular-page/README.md) of the use case when <b>Restito</b> helps.
 
 <a name="starting_and_stopping_stub_server"/>
 # Starting and stopping stub server
