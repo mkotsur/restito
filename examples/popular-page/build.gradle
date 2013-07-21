@@ -11,10 +11,16 @@ repositories {
 }
 
 dependencies {
-  testCompile 'com.xebialabs.restito:restito:0.4-beta-1'
+  testCompile 'com.xebialabs.restito:restito:0.4-beta-1' //  Restito dependency
+
+  //  Note, that to have nice logging from Restito, you must have one of slf4j bindings on the classpath
+  //  More info here: http://slf4j.org/faq.html#configure_logging
   testCompile 'org.slf4j:slf4j-jdk14:1.6.2'
+
+  //  Restito can run with jUnit, or other test runner of your choice
   testCompile 'junit:junit:4.11'
 
+  //  Dependencies needed by our 'Application' itself
   compile 'com.google.code.gson:gson:2.1'
   compile 'com.google.guava:guava:14.0.1'
 }
