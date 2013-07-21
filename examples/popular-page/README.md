@@ -4,7 +4,7 @@
 
 ### To run the app:
 
-```mvn exec:java``` or ```gradle run```
+```mvn compile exec:java``` or ```gradle run```
 
 
 ### To run tests:
