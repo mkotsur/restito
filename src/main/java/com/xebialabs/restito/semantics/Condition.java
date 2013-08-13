@@ -266,6 +266,14 @@ public class Condition {
     public static ConditionWithApplicables delete(String uri) {
         return methodWithUriAndAutoDiscovery(Method.DELETE, uri);
     }
+    
+    /**
+     * Method PATCH with given URI
+     */
+    public static ConditionWithApplicables patch(String uri) {
+        return methodWithUriAndAutoDiscovery(Method.PATCH, uri);
+    }
+
 
     /**
      * Always true
