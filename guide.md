@@ -17,6 +17,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
     * [Simeple verifications](#simple_verifications)
     * [Limiting number of calls](#limiting_number_of_calls)
     * [Sequenced verifications](#sequenced_verification)
+* [Using like a standalone stub server](#using_like_a_standalone_stub_server)
 
 <a name="motivation"/>
 # Motivation
@@ -244,3 +245,10 @@ You can easily chain verifications:
 ```
 
 See [SequencedVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedVerificationsTest.java).
+
+
+<a name="using_like_a_standalone_stub_server" />
+## Using like a standalone stub server
+
+It is possible to use <b>Restito</b> as a standalone server (if you need to have a server, which runs continuously, e.g. to develop against it).
+There is an [example](https://github.com/mkotsur/restito/blob/master/examples/standalone-server/README.md) how to achieve it.
