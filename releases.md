@@ -1,6 +1,8 @@
 Restito releases
 ============================================
 
+* 0.4-beta-2
+    * Added PATCH support
 * 0.4-beta-1
     * Added support for unicode characters
     * Deprecated methods exposed to the problem from #7. To be removed at 1.0
