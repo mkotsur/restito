@@ -85,7 +85,7 @@ See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/jav
 
 When you use [Junit](http://junit.org) and want to reduce boilerplate code which starts/stops server you can use [@NeedsServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/NeedsServer.html) annotation and [ServerDependencyRule](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/support/junit/ServerDependencyRule.html) to start/stop server in parent class only for cases that require it.
 
-Check (this test)[https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java] for more details.
+Check [this test](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java) for more details.
 
 <a name="stubbing_server_behavior" />
 # Stubbing server behavior.
