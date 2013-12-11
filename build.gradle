@@ -35,7 +35,8 @@ dependencies {
 
     provided 'junit:junit:4.11'
 
-    compile 'org.slf4j:slf4j-api:1.6.6'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    testCompile 'org.slf4j:slf4j-simple:1.7.5'
 
     compile 'org.mockito:mockito-core:1.9.0'
     compile 'com.google.guava:guava:14.0.1'
