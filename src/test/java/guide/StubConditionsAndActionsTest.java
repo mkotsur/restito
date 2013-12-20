@@ -99,6 +99,14 @@ public class StubConditionsAndActionsTest {
     }
 
     @Test
+    public void shouldMatchTheWholeUrl() throws Exception {
+        String fullUrl = "http://localhost:" + server.getPort() + "/asd";
+        whenHttp(server).match(url(fullUrl)).then(ok());
+
+        expect().statusCode(200).when().get(fullUrl);
+    }
+
+    @Test
     public void shouldResolveStubsInReverseOrder() {
         whenHttp(server).match(alwaysTrue()).then(status(HttpStatus.OK_200));
         whenHttp(server).match(get("/bad")).then(status(HttpStatus.BAD_REQUEST_400));

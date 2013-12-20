@@ -21,7 +21,8 @@ import static com.xebialabs.restito.semantics.Action.resourceContent;
 /**
  * <p>Condition is something that can be true or false given the Call.</p>
  * <p>Also it contains static factory methods. One should feel free to implement own conditions.</p>
- * </p>
+ *
+ * Note, that terms <b>URL</b> and <b>URI</b> have the same meaning as in {@link org.glassfish.grizzly.http.server.Request}.
  *
  * @see com.xebialabs.restito.semantics.Call
  */
@@ -90,12 +91,23 @@ public class Condition {
     }
 
     /**
-     * URI exactly equals
+     * URI exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURI()}
      */
     public static Condition uri(final String uri) {
         return new Condition(new Predicate<Call>() {
             public boolean apply(Call input) {
                 return input.getUri().equals(uri);
+            }
+        });
+    }
+
+    /**
+     * URL exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURL)}
+     */
+    public static Condition url(final String url) {
+        return new Condition(new Predicate<Call>() {
+            public boolean apply(Call input) {
+                return input.getUrl().equals(url);
             }
         });
     }
