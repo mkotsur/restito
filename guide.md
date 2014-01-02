@@ -14,10 +14,11 @@ One test can be better then dozen lines of documentation, so there are tests in 
     * [Expected stubs](#expected_stubs)
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
 * [Verifying calls to server](#verifying_calls_to_server)
-    * [Simeple verifications](#simple_verifications)
+    * [Simple verifications](#simple_verifications)
     * [Limiting number of calls](#limiting_number_of_calls)
     * [Sequenced verifications](#sequenced_verification)
 * [Using like a standalone stub server](#using_like_a_standalone_stub_server)
+* [Logging](#logging)
 
 <a name="motivation"/>
 # Motivation
@@ -252,3 +253,8 @@ See [SequencedVerificationsTest](https://github.com/mkotsur/restito/blob/master/
 
 It is possible to use <b>Restito</b> as a standalone server (if you need to have a server, which runs continuously, e.g. to develop against it).
 There is an [example](https://github.com/mkotsur/restito/blob/master/examples/standalone-server/README.md) how to achieve it.
+
+<a name="logging" />
+## Logging
+
+Restito uses [slf4j](http://www.slf4j.org/index.html) as a logging abstraction, which by default does not have any implementations: it collect logs It allows you to receive all the logging via the library, that your application is using.
