@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.xebialabs.restito:restito:0.4-beta-1' //  Restito dependency
+  compile 'com.xebialabs.restito:restito:0.4-beta-3' //  Restito dependency
 }
 
 mainClassName = "com.xebialabs.restito.examples.MyServer"

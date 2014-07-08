@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-  testCompile 'com.xebialabs.restito:restito:0.4-beta-1' //  Restito dependency
+  testCompile 'com.xebialabs.restito:restito:0.4-beta-3' //  Restito dependency
 
   //  Note, that to have nice logging from Restito, you must have one of slf4j bindings on the classpath
   //  More info here: http://slf4j.org/faq.html#configure_logging

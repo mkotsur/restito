@@ -1,6 +1,13 @@
 Restito releases
 ============================================
 
+
+* 0.4-beta-3
+    * Fixed "/" URI stubbing. Closes #16
+    * Fixed groovy testCompile version
+    * Added some information regarding logging
+    * Added support for matching the whole URL (like http://google.com)
+    * Updated slf4j to 1.7.5 and removed confusing logback.xml from the repo
 * 0.4-beta-2
     * Added PATCH support
 * 0.4-beta-1
