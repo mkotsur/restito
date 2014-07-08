@@ -4,6 +4,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.jayway.restassured.RestAssured;
+
+import static com.jayway.restassured.RestAssured.expect;
+import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Action.ok;
+import static com.xebialabs.restito.semantics.Condition.get;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +21,7 @@ public class StubServerTest {
     @Before
     public void start() {
         server = new StubServer().run();
+        RestAssured.port = server.getPort();
     }
 
     @After
@@ -40,5 +47,11 @@ public class StubServerTest {
         StubServer server = new StubServer(8888).run();
         assertEquals(8888, server.getPort());
         server.stop();
+    }
+
+    @Test
+    public void shouldBePossibleToStubRootUri() {
+        whenHttp(server).match(get("/")).then(ok()).mustHappen();
+        expect().statusCode(200).get("/");
     }
 }

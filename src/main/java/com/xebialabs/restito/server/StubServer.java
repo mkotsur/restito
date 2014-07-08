@@ -47,7 +47,7 @@ public class StubServer {
      */
     public StubServer(Stub... stubs) {
         this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
-        simpleServer = HttpServer.createSimpleServer(".", AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
+        simpleServer = HttpServer.createSimpleServer(null, AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
     }
 
     /**
@@ -56,7 +56,7 @@ public class StubServer {
      */
     public StubServer(int port, Stub... stubs) {
         this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
-        simpleServer = HttpServer.createSimpleServer(".", port);
+        simpleServer = HttpServer.createSimpleServer(null, port);
     }
 
     /**
