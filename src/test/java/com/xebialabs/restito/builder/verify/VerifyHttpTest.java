@@ -60,6 +60,24 @@ public class VerifyHttpTest {
         verifyHttp(stubServer).times(10, conditionTrue());
     }
 
+    @Test(expected = AssertionError.class)
+    public void shouldFailWhenHappensMoreTimesThenExpected() {
+        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        verifyHttp(stubServer).times(2, conditionTrue());
+    }
+
+    @Test
+    public void shouldPassWhenHappensMoreTimesThenAtLeastExpected() {
+        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        verifyHttp(stubServer).atLeast(2, conditionTrue());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldFailWhenHappensLessTimesThenAtLeastExpected() {
+        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        verifyHttp(stubServer).times(4, conditionTrue());
+    }
+
     @Test
     public void shouldPassWhen2CallsInOrderHappenAsExpected() {
         when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(getCall, postCall));
