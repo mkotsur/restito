@@ -58,13 +58,27 @@ public class VerifyHttp {
             throw new AssertionError(format("Expected to happen %s time(s), but happened %s times instead", t, foundCalls.size()));
         }
 
-        List<Call> callsAfterLastFound = foundCalls.size() == 0 ? calls :
-                calls.subList(
-                        calls.indexOf(foundCalls.get(foundCalls.size() - 1)) + 1,
-                        calls.size()
-                );
+        return new VerifySequenced(getCallsAfterLastFound(foundCalls));
+    }
 
-        return new VerifySequenced(callsAfterLastFound);
+    /**
+     * There should be at least <i>t</i> calls which satisfies the given conditions
+     */
+    public VerifySequenced atLeast(int t, Condition... conditions) {
+        final List<Call> foundCalls = filterByConditions(conditions);
+        if (t > foundCalls.size()) {
+            throw new AssertionError(format("Expected to happen at least %s time(s), but happened %s times instead", t, foundCalls.size()));
+        }
+
+        return new VerifySequenced(getCallsAfterLastFound(foundCalls));
+    }
+
+    private List<Call> getCallsAfterLastFound(final List<Call> foundCalls) {
+        return foundCalls.size() == 0 ? calls :
+                    calls.subList(
+                            calls.indexOf(foundCalls.get(foundCalls.size() - 1)) + 1,
+                            calls.size()
+                    );
     }
 
     private List<Call> filterByConditions(Condition[] conditions) {
