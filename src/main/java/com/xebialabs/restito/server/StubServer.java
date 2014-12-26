@@ -46,7 +46,7 @@ public class StubServer {
      * Creates a server based on stubs that are used to determine behavior.
      */
     public StubServer(Stub... stubs) {
-        this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
+        this.stubs = new ArrayList<>(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(null, AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
     }
 
@@ -55,7 +55,7 @@ public class StubServer {
      * If the port is busy, Restito won't try to pick different one and java.net.BindException will be thrown.
      */
     public StubServer(int port, Stub... stubs) {
-        this.stubs = new ArrayList<Stub>(Arrays.asList(stubs));
+        this.stubs = new ArrayList<>(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(null, port);
     }
 
@@ -130,7 +130,7 @@ public class StubServer {
      * Stops the server
      */
     public StubServer stop() {
-        simpleServer.stop();
+        simpleServer.shutdownNow();
         return this;
     }
 
