@@ -75,10 +75,10 @@ public class VerifyHttp {
 
     private List<Call> getCallsAfterLastFound(final List<Call> foundCalls) {
         return foundCalls.size() == 0 ? calls :
-                    calls.subList(
-                            calls.indexOf(foundCalls.get(foundCalls.size() - 1)) + 1,
-                            calls.size()
-                    );
+                calls.subList(
+                        calls.indexOf(foundCalls.get(foundCalls.size() - 1)) + 1,
+                        calls.size()
+                );
     }
 
     private List<Call> filterByConditions(Condition[] conditions) {
