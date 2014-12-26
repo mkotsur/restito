@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.slf4j.Logger;
@@ -172,10 +173,31 @@ public class Condition {
     }
 
     /**
+     * If basic authentication is provided
+     */
+    public static Condition basicAuth(String username, String password) {
+        final String authString = username + ":" + password;
+        final String encodedAuthString = new String(Base64.encodeBase64(authString.getBytes()));
+        return new Condition(new Predicate<Call>() {
+            @Override
+            public boolean apply(Call input) {
+                return ("Basic " + encodedAuthString).equals(input.getAuthorization());
+            }
+        });
+    }
+
+    /**
      * Custom condition
      */
     public static Condition custom(Predicate<Call> p) {
         return new Condition(p);
+    }
+
+    /**
+     * Not condition
+     */
+    public static Condition not(Condition c) {
+        return new Condition(Predicates.not(c.getPredicate()));
     }
 
     /**
@@ -278,7 +300,7 @@ public class Condition {
     public static ConditionWithApplicables delete(String uri) {
         return methodWithUriAndAutoDiscovery(Method.DELETE, uri);
     }
-    
+
     /**
      * Method PATCH with given URI
      */

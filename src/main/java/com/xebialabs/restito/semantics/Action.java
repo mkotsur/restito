@@ -3,6 +3,7 @@ package com.xebialabs.restito.semantics;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import com.google.common.base.Function;
@@ -184,6 +185,27 @@ public class Action implements Applicable {
     }
 
     /**
+     * Returns unauthorized response with default realm name
+     */
+    public static Action unauthorized() {
+        return unauthorized("Restito realm");
+    }
+
+    /**
+     * Returns unauthorized response
+     */
+    public static Action unauthorized(final String realm) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response r) {
+                r.addHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
+                r.setStatus(HttpStatus.UNAUTHORIZED_401);
+                return r;
+            }
+        });
+    }
+
+    /**
      * Perform set of custom actions on response
      */
     public static Action custom(Function<Response, Response> f) {
@@ -199,6 +221,23 @@ public class Action implements Applicable {
             @Override
             public Response apply(Response input) {
                 for (Applicable action : actions) {
+                    action.apply(input);
+                }
+
+                return input;
+            }
+        });
+    }
+
+    /**
+     * Creates a composite action which contains all passed actions and
+     * executes them in the same order.
+     */
+    public static Action composite(final Collection<Applicable> applicables) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                for (Applicable action : applicables) {
                     action.apply(input);
                 }
 

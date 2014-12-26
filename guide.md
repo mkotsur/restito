@@ -10,6 +10,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
 * [Stubbing server behavior](#stubbing_server_behavior)
     * [Stub conditions](#stub_conditions)
     * [Stub actions](#stub_actions)
+    * [Basic authentication](#basic_authentication)
     * [Automatic content type](#automatic_content_type)
     * [Expected stubs](#expected_stubs)
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
@@ -161,6 +162,18 @@ This example will make your stub output "Hello world!" with http status 200 for 
 Full list of actions can be found in the [appropriate javadoc](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html).
 
 See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubConditionsAndActionsTest.java).
+
+<a name="basic_authentication" />
+## Stub actions
+
+You can make you server to respond with [basic access authentication](http://en.wikipedia.org/wiki/Basic_access_authentication).
+
+```java
+whenHttp(server).match(basicAuth("admin", "secret")).then(status(HttpStatus.OK_200));
+whenHttp(server).match(not(basicAuth("admin", "secret"))).then(unauthorized());
+```
+
+The first line makes sure that server responds with status `200` when client sends username `admin` and password `secret`, and the second line tells the server to respond with status code `401` and special `WWW-Authenticate` header in other case.
 
 <a name="automatic_content_type" />
 ## Automatic content type

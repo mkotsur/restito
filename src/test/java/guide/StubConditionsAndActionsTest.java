@@ -15,9 +15,21 @@ import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
-import static com.xebialabs.restito.semantics.Action.*;
+import static com.xebialabs.restito.semantics.Action.ok;
+import static com.xebialabs.restito.semantics.Action.status;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static com.xebialabs.restito.semantics.Action.unauthorized;
+import static com.xebialabs.restito.semantics.Condition.alwaysTrue;
+import static com.xebialabs.restito.semantics.Condition.basicAuth;
 import static com.xebialabs.restito.semantics.Condition.custom;
-import static com.xebialabs.restito.semantics.Condition.*;
+import static com.xebialabs.restito.semantics.Condition.endsWithUri;
+import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Condition.method;
+import static com.xebialabs.restito.semantics.Condition.not;
+import static com.xebialabs.restito.semantics.Condition.parameter;
+import static com.xebialabs.restito.semantics.Condition.post;
+import static com.xebialabs.restito.semantics.Condition.uri;
+import static com.xebialabs.restito.semantics.Condition.url;
 import static org.hamcrest.Matchers.equalTo;
 
 public class StubConditionsAndActionsTest {
@@ -113,4 +125,21 @@ public class StubConditionsAndActionsTest {
         expect().statusCode(400).get("/bad");
         expect().statusCode(200).get("/any/other/url");
     }
+
+    @Test
+    public void shouldNotAllowWithoutHttpAuth() throws Exception {
+        whenHttp(server).match(basicAuth("admin", "secret")).then(status(HttpStatus.OK_200));
+        whenHttp(server).match(not(basicAuth("admin", "secret"))).then(unauthorized());
+
+        expect().statusCode(401).header("WWW-Authenticate", "Basic realm=\"Restito realm\"").get("/");
+        given().auth().basic("admin", "secret").expect().statusCode(200).when().get("/");
+    }
+
+    @Test
+    public void shouldAnswerWithCustomRealmName() {
+        whenHttp(server).match(not(basicAuth("admin", "secret"))).then(unauthorized("Custom realm"));
+        expect().statusCode(401).header("WWW-Authenticate", "Basic realm=\"Custom realm\"").get("/");
+    }
+
+
 }

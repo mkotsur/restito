@@ -42,6 +42,13 @@ public class ConditionTest {
     }
 
     @Test
+    public void shouldWorkWithNot() {
+        Predicate<Call> p = Predicates.alwaysTrue();
+        Condition t = Condition.custom(p);
+        assertFalse(Condition.not(t).check(call));
+    }
+
+    @Test
     public void shouldDistinguishMethods() {
         Condition condition = Condition.method(Method.GET);
 

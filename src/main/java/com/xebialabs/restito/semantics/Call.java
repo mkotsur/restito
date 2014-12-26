@@ -18,6 +18,7 @@ public class Call {
     private String contentType;
     private String postBody;
     private String url;
+    private String authorization;
     private Map<String, String> headers = Maps.newHashMap();
     private Map<String, String[]> parameters = Maps.newHashMap();
 
@@ -27,10 +28,11 @@ public class Call {
     /**
      * Factory method
      */
-    public static Call fromRequest(Request request) {
+    public static Call fromRequest(final Request request) {
         Call call = new Call();
 
         call.method = request.getMethod();
+        call.authorization = request.getAuthorization();
         call.uri = request.getRequestURI();
         call.contentType = request.getContentType();
         call.url = request.getRequestURL().toString();
@@ -39,7 +41,7 @@ public class Call {
             call.headers.put(s, request.getHeader(s));
         }
 
-        call.parameters = new HashMap<String, String[]>(request.getParameterMap());
+        call.parameters = new HashMap<>(request.getParameterMap());
 
         try {
             call.postBody = request.getPostBody(999999).toStringContent(Charset.defaultCharset());
@@ -94,6 +96,13 @@ public class Call {
      */
     public String getPostBody() {
         return postBody;
+    }
+
+    /**
+     * Returns an authorization header, or null if doesn't exist
+     */
+    public String getAuthorization() {
+        return authorization;
     }
 }
 
