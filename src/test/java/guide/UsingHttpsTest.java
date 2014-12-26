@@ -2,15 +2,18 @@ package guide;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +24,8 @@ import com.xebialabs.restito.server.StubServer;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.ok;
-import static com.xebialabs.restito.semantics.Action.success;
 import static com.xebialabs.restito.semantics.Condition.get;
+import static org.apache.http.client.config.RequestConfig.custom;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -54,12 +57,19 @@ public class UsingHttpsTest {
      * Helper which returns HTTP client configured for https session
      */
     private HttpClient sslReadyHttpClient() throws GeneralSecurityException {
-        DefaultHttpClient httpClient = new DefaultHttpClient(new PoolingClientConnectionManager());
-        SSLSocketFactory sslSocketFactory = new SSLSocketFactory(new TrustSelfSignedStrategy(), null);
-        Scheme scheme = new Scheme("https", server.getPort(), sslSocketFactory);
-        httpClient.getConnectionManager().getSchemeRegistry().register(scheme);
-        httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
-        return httpClient;
+        final SSLContext context = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+
+        final SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(context);
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("https", socketFactory)
+                .build();
+
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(custom().setConnectionRequestTimeout(10000).build())
+                .setConnectionManager(new PoolingHttpClientConnectionManager(registry))
+                .setSSLSocketFactory(socketFactory)
+                .build();
+
     }
 
 }
