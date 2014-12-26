@@ -1,7 +1,10 @@
 Restito releases
 ============================================
 
-
+* 0.4
+    * Added support for http basic authentication
+    * Updated libs
+    * Added verification for at least number of times
 * 0.4-beta-3
     * Fixed "/" URI stubbing. Closes #16
     * Fixed groovy testCompile version

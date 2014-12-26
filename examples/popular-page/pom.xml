@@ -10,7 +10,7 @@
         <dependency>
             <groupId>com.xebialabs.restito</groupId>
             <artifactId>restito</artifactId>
-            <version>0.4-beta-3</version>
+            <version>0.4</version>
             <scope>test</scope>
         </dependency>
 
