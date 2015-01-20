@@ -1,5 +1,6 @@
 package com.xebialabs.restito.server;
 
+import org.apache.mina.util.AvailablePortFinder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +31,8 @@ public class StubServerTest {
     }
 
     @Test
-    public void shouldStartServerOnDefaultPort() {
-        assertEquals(6666, server.getPort());
+    public void shouldStartServerInRangeStartingFromDefaultPort() {
+        assertTrue("Server port not in range", server.getPort() >= StubServer.DEFAULT_PORT && server.getPort() <= AvailablePortFinder.MAX_PORT_NUMBER);
         server.stop();
     }
 
@@ -39,7 +40,7 @@ public class StubServerTest {
     public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
         StubServer server1 = new StubServer().run();
         StubServer server2 = new StubServer().run();
-        assertTrue(server2.getPort() > server1.getPort());
+        assertTrue(server2.getPort() != server1.getPort());
     }
 
     @Test
