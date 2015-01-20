@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.mina.util.AvailablePortFinder;
+import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
@@ -47,7 +48,7 @@ public class StubServer {
      */
     public StubServer(Stub... stubs) {
         this.stubs = new ArrayList<>(Arrays.asList(stubs));
-        simpleServer = HttpServer.createSimpleServer(null, AvailablePortFinder.getNextAvailable(DEFAULT_PORT));
+        simpleServer = HttpServer.createSimpleServer(null, new PortRange(DEFAULT_PORT, AvailablePortFinder.MAX_PORT_NUMBER));
     }
 
     /**
