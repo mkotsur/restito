@@ -1,8 +1,7 @@
 package com.xebialabs.restito.semantics;
 
+import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
-
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
@@ -11,9 +10,18 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static com.xebialabs.restito.semantics.Action.*;
-import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
-import static org.mockito.Mockito.*;
+import static com.xebialabs.restito.semantics.Action.charset;
+import static com.xebialabs.restito.semantics.Action.composite;
+import static com.xebialabs.restito.semantics.Action.header;
+import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static com.xebialabs.restito.semantics.Action.status;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ActionTest {
 
@@ -24,6 +32,7 @@ public class ActionTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         when(response.getWriter()).thenReturn(mock(Writer.class));
+        when(response.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(response.getCharacterEncoding()).thenReturn("UTF-8");
     }
 
@@ -55,7 +64,7 @@ public class ActionTest {
 
         verify(response).setContentType("application/xml");
         verify(response).setContentLength(13);
-        verify(response.getWriter()).write("<test></test>");
+        verify(response.getOutputStream()).write("<test></test>".getBytes());
     }
 
     @Test
@@ -64,7 +73,7 @@ public class ActionTest {
 
         verify(response).setContentType("application/json");
         verify(response).setContentLength(15);
-        verify(response.getWriter()).write("{\"asd\": \"cool\"}");
+        verify(response.getOutputStream()).write("{\"asd\": \"cool\"}".getBytes());
     }
 
     @Test
@@ -76,12 +85,11 @@ public class ActionTest {
 
     @Test
     public void shouldApplyUnicodeJsonContent() throws Exception {
-
-        resourceContent("unicode-content.json", "UTF-8").apply(response);
+        resourceContent("unicode-content.json").apply(response);
 
         verify(response).setContentType("application/json");
         verify(response).setContentLength(40); //40 bytes / 22 characters
-        verify(response.getWriter()).write(new String("{\"test\" : \"的这款单肩包集经典\"}".getBytes(), "UTF-8"));
+        verify(response.getOutputStream()).write("{\"test\" : \"的这款单肩包集经典\"}".getBytes());
     }
 
     @Test
@@ -90,14 +98,14 @@ public class ActionTest {
 
         verify(response, never()).setContentType(any(String.class));
         verify(response).setContentLength(14);
-        verify(response.getWriter()).write("Custom content");
+        verify(response.getOutputStream()).write("Custom content".getBytes());
     }
 
     @Test
     public void shouldApplyStringContent() throws Exception {
         stringContent("asd").apply(response);
 
-        verify(response.getWriter()).write("asd");
+        verify(response.getOutputStream()).write("asd".getBytes());
     }
 
     @Test

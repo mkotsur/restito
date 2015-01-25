@@ -1,6 +1,6 @@
 package com.xebialabs.restito.semantics;
 
-import java.io.Writer;
+import java.io.OutputStream;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -66,14 +66,14 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldDiscoverXmlByPath() throws Exception {
 
-        Writer writer = mock(Writer.class);
-        when(response.getWriter()).thenReturn(writer);
+        OutputStream os = mock(OutputStream.class);
+        when(response.getOutputStream()).thenReturn(os);
 
         ConditionWithApplicables condition = Condition.get("/demo/path%20to%20data/data.xml");
 
         condition.getApplicables().get(0).apply(response);
 
-        verify(writer).write("<content>from data.xml</content>");
+        verify(os).write("<content>from data.xml</content>".getBytes());
         verify(response).setContentType("application/xml");
     }
 
@@ -87,12 +87,6 @@ public class ConditionWithApplicablesTest {
         ConditionWithApplicables condition = Condition.post("/blablabla.xml");
         condition.getApplicables().get(0).apply(response);
         assertFalse(condition.getPredicate().apply(call));
-    }
-
-
-    @Test
-    public void shouldDiscoverResourceByDirectSlashesStrategy() {
-
     }
 
 }

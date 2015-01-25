@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import javax.ws.rs.core.MediaType;
+import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import com.google.common.base.Function;
@@ -78,8 +80,23 @@ public class Action implements Applicable {
      * <li>.json => application/xml</li>
      * </ul>
      */
-    public static Action resourceContent(String resourcePath) {
-        return resourceContent(Resources.getResource(resourcePath), Charset.defaultCharset().name());
+    public static Action resourceContent(final String resourcePath) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                final HttpResponsePacket responsePacket = input.getResponse();
+                String encoding = responsePacket == null ? input.getCharacterEncoding() : responsePacket.getCharacterEncoding();
+                return resourceContent(resourcePath, encoding).apply(input);
+            }
+        });
+    }
+
+    /**
+     * @deprecated Use {@link #resourceContent(String)} and specify charset using {@link #charset(String)}
+     */
+    @Deprecated
+    public static Action resourceContent(String resourcePath, String charset) {
+        return resourceContent(Resources.getResource(resourcePath), charset == null ? null : Charset.forName(charset));
     }
 
     /**
@@ -91,35 +108,32 @@ public class Action implements Applicable {
      * <li>.json => application/xml</li>
      * </ul>
      */
-    public static Action resourceContent(String resourcePath, String charset) {
-        return resourceContent(Resources.getResource(resourcePath), charset);
-    }
-
-    /**
-     * Does the same as Action.resourceContent(), the only difference is that it accepts an URL instead of resource path.
-     */
     public static Action resourceContent(URL resourceUrl) {
-        return resourceContent(resourceUrl, Charset.defaultCharset().name());
+        return resourceContent(resourceUrl, null);
     }
 
     /**
-     * Does the same as Action.resourceContent(), the only difference is that it accepts an URL instead of resource path.
+     * @deprecated Use {@link #resourceContent(java.net.URL)} and specify charset using {@link #charset(java.nio.charset.Charset)}
      */
-    public static Action resourceContent(URL resourceUrl, String charset) {
+    @Deprecated
+    public static Action resourceContent(URL resourceUrl, Charset charset) {
         try {
-            final String resourceContent = Resources.toString(resourceUrl, Charset.forName(charset));
-
-            Action contentTypeAction = custom(Functions.<Response>identity());
+            final byte[] bytes = Resources.toByteArray(resourceUrl);
 
             String fileExtension = Files.getFileExtension(resourceUrl.getPath());
 
+            final Action charsetAction = charset != null ? charset(charset) : Action.noop();
+            final Action contentTypeAction;
+
             if (fileExtension.equalsIgnoreCase("xml")) {
-                contentTypeAction = contentType("application/xml");
+                contentTypeAction = composite(charsetAction, contentType("application/xml"));
             } else if (fileExtension.equalsIgnoreCase("json")) {
-                contentTypeAction = contentType("application/json");
+                contentTypeAction = composite(charsetAction, contentType("application/json"));
+            } else {
+                contentTypeAction = charsetAction;
             }
 
-            return composite(contentTypeAction, stringContent(resourceContent));
+            return composite(contentTypeAction, bytesContent(bytes));
 
         } catch (IOException e) {
             throw new RuntimeException("Can not read resource for restito stubbing.");
@@ -127,22 +141,28 @@ public class Action implements Applicable {
     }
 
     /**
-     * Writes string content to response
+     * Writes bytes content to response
      */
-    public static Action stringContent(final String content) {
+    public static Action bytesContent(final byte[] content) {
         return new Action(new Function<Response, Response>() {
-            public Response apply(Response input) {
+            public Response apply(Response response) {
 
-                Charset charset = Charset.forName(input.getCharacterEncoding());
-                input.setContentLength(content.getBytes(charset).length);
+                response.setContentLength(content.length);
                 try {
-                    input.getWriter().write(content);
+                    response.getOutputStream().write(content);
                 } catch (IOException e) {
                     throw new RuntimeException("Can not write resource content for restito stubbing.");
                 }
-                return input;
+                return response;
             }
         });
+    }
+
+    /**
+     * Writes string content to response
+     */
+    public static Action stringContent(final String content) {
+        return bytesContent(content.getBytes());
     }
 
     /**
@@ -156,6 +176,13 @@ public class Action implements Applicable {
                 return input;
             }
         });
+    }
+
+    /**
+     * Sets content type to the response
+     */
+    public static Action contentType(final MediaType contentType) {
+        return contentType(contentType.toString());
     }
 
     /**
@@ -182,6 +209,13 @@ public class Action implements Applicable {
                 return r;
             }
         });
+    }
+
+    /**
+     * Sets charset of the response (must come before stringContent/resourceContent Action)
+     */
+    public static Action charset(final Charset charset) {
+        return charset(charset.name());
     }
 
     /**
@@ -261,5 +295,12 @@ public class Action implements Applicable {
                 return input;
             }
         });
+    }
+
+    /**
+     * Doing nothing. To be used in DSLs for nicer syntax.
+     */
+    public static Action noop() {
+        return new Action(Functions.<Response>identity());
     }
 }

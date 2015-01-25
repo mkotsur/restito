@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
-import org.glassfish.grizzly.http.server.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
@@ -77,7 +75,7 @@ public class Condition {
             logger.debug("Can not auto-discover resource for URI [{}]", uri);
         }
 
-        return new ConditionWithApplicables(composite(method(m), uri(uri)), Action.custom(Functions.<Response>identity()));
+        return new ConditionWithApplicables(composite(method(m), uri(uri)), Action.noop());
     }
 
     /**

@@ -15,7 +15,7 @@ public class Stub {
 
     private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
 
-    private Action what = Action.custom(Functions.<Response>identity());
+    private Action what = Action.noop();
 
     private int appliedTimes = 0;
 
