@@ -1,6 +1,5 @@
 package integration;
 
-import javax.ws.rs.core.MediaType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +16,6 @@ import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Condition.startsWithUri;
 import static java.nio.charset.StandardCharsets.*;
 import static java.nio.charset.StandardCharsets.UTF_16;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -55,20 +52,20 @@ public class BinaryHttpDataTest {
                 then(resourceContent("content.UTF-8.ukr"));
 
         expect()
-                .header(CONTENT_TYPE, is(nullValue()))
-                .header(CONTENT_LENGTH, is(not(nullValue())))
+                .header("Content-Type", is(nullValue()))
+                .header("Content-Length", is(not(nullValue())))
                 .content(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-8");
 
         expect()
-                .header(CONTENT_TYPE, is(nullValue()))
-                .header(CONTENT_LENGTH, is(not(nullValue())))
+                .header("Content-Type", is(nullValue()))
+                .header("Content-Length", is(not(nullValue())))
                 .content(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
                 .when().get("/my-file-utf-16");
 
         expect()
-                .header(CONTENT_TYPE, is(nullValue()))
-                .header(CONTENT_LENGTH, is(not(nullValue())))
+                .header("Content-Type", is(nullValue()))
+                .header("Content-Length", is(not(nullValue())))
                 .content(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
                 .when().get("/my-file-utf-16");
     }
@@ -83,7 +80,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .content(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-16");
     }
@@ -99,27 +96,10 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .content(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-16");
     }
-
-    @Test
-    public void shouldSupportSpecificationOfContentTypeAsAnObject() {
-        whenHttp(server)
-                .match(startsWithUri("/my-file-utf-16")).
-                then(
-                        resourceContent("content.UTF-16.ukr"),
-                        contentType(MediaType.TEXT_PLAIN_TYPE),
-                        charset(UTF_16)
-                );
-
-        expect()
-                .header(CONTENT_TYPE, equalTo("text/plain;charset=UTF-16"))
-                .content(equalTo("Привіт, світ!"))
-                .when().get("/my-file-utf-16");
-    }
-
 
     @Test
     public void shouldSupportCharsetSpecBeforeStringContent() {
@@ -132,7 +112,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .when().get("/bla");
     }
 
@@ -147,7 +127,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .when().get("/bla");
     }
 
@@ -162,7 +142,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .when().get("/bla");
     }
 
@@ -177,7 +157,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .when().get("/bla");
     }
 
@@ -192,7 +172,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text;charset=UTF-16"))
+                .header("Content-Type", equalTo("application/text;charset=UTF-16"))
                 .when().get("/bla");
     }
 
@@ -206,7 +186,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text"))
+                .header("Content-Type", equalTo("application/text"))
                 .when().get("/bla");
     }
 
@@ -220,7 +200,7 @@ public class BinaryHttpDataTest {
                 );
 
         expect()
-                .header(CONTENT_TYPE, equalTo("application/text"))
+                .header("Content-Type", equalTo("application/text"))
                 .when().get("/bla");
     }
 

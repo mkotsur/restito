@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import javax.ws.rs.core.MediaType;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -176,13 +175,6 @@ public class Action implements Applicable {
                 return input;
             }
         });
-    }
-
-    /**
-     * Sets content type to the response
-     */
-    public static Action contentType(final MediaType contentType) {
-        return contentType(contentType.toString());
     }
 
     /**
