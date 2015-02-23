@@ -31,9 +31,9 @@ public class StubServer {
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
-    private List<Call> calls = Lists.newArrayList();
+    private final List<Call> calls = Lists.newArrayList();
     private List<Stub> stubs = Lists.newArrayList();
-    private HttpServer simpleServer;
+    private final HttpServer simpleServer;
 
     /**
      * Whether or not the server should run in HTTPS mode.
@@ -191,7 +191,9 @@ public class StubServer {
                     log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
                 }
 
-                calls.add(call);
+                synchronized (calls) {
+                    calls.add(call);
+                }
             }
         };
     }
