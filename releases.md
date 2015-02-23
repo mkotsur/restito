@@ -1,6 +1,10 @@
 Restito releases
 ============================================
 
+* 0.5
+    * Fixed synchronization with quick requests
+    * #24 removed dependency on javax.ws.rs
+    * Improved charset and content-type handling. Closes #24
 * 0.4
     * Added support for http basic authentication
     * Updated libs
