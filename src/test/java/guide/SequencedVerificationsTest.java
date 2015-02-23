@@ -62,4 +62,20 @@ public class SequencedVerificationsTest {
                 uri("/second")
         );
     }
+
+    @Test
+    public void shouldNotDependOnOrderByDefault() {
+        expect().statusCode(200).when().get("/second");
+        expect().statusCode(200).when().get("/first");
+
+        verifyHttp(server).once(
+                method(Method.GET),
+                uri("/first")
+        );
+
+        verifyHttp(server).once(
+                method(Method.GET),
+                uri("/second")
+        );
+    }
 }
