@@ -65,7 +65,7 @@ public class SimpleRequestsTest {
 <dependency>
     <groupId>com.xebialabs.restito</groupId>
     <artifactId>restito</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ```
 
