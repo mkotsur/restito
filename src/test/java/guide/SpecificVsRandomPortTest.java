@@ -20,7 +20,6 @@ public class SpecificVsRandomPortTest {
     @Before
     public void start() {
         server = new StubServer().run();
-        RestAssured.port = server.getPort();
     }
 
     @After
@@ -44,8 +43,8 @@ public class SpecificVsRandomPortTest {
     public void shouldSelectRandomFreePortWhenDefaultOneIsBusy() {
         StubServer server2 = new StubServer().run();
         assertTrue(
-                "Expected port " + server2.getPort() + " > " + server.getPort(),
-                server2.getPort() > server.getPort()
+                "Expected port " + server2.getPort() + " > " + StubServer.DEFAULT_PORT,
+                server2.getPort() > StubServer.DEFAULT_PORT
         );
     }
 }
