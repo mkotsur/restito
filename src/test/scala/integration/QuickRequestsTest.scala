@@ -27,7 +27,7 @@ class QuickRequestsTest extends FunSpec with BeforeAndAfterAll with  Matchers {
 
       whenHttp(server)
         .`match`(startsWithUri("/test"))
-        .then(status(HttpStatus.OK_200))
+        .`then`(status(HttpStatus.OK_200))
 
       val pipeline = sendReceive
       val req = Get(s"http://localhost:${server.getPort}/test")
