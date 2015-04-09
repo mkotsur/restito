@@ -12,8 +12,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 
-import sun.misc.Regexp;
-
 import static com.xebialabs.restito.semantics.Condition.delete;
 import static com.xebialabs.restito.semantics.Condition.endsWithUri;
 import static com.xebialabs.restito.semantics.Condition.get;
@@ -127,7 +125,7 @@ public class ConditionTest {
     @SuppressWarnings("deprecation")
     public void shouldMakeConditionForUriMatching() {
 
-        Condition condition = Condition.matchesUri(new Regexp("^/[0-9]*"));
+        Condition condition = Condition.matchesUri(Pattern.compile("^/[0-9]*"));
 
         when(call.getUri()).thenReturn("/232323");
         assertTrue(condition.check(call));
@@ -173,12 +171,12 @@ public class ConditionTest {
     @Test
     @SuppressWarnings("deprecation")
     public void shouldDistinguishByRegexpMatchInBody() {
-        Condition condition = Condition.withPostBodyContaining(new Regexp("[0-9]+"));
+        Condition condition = Condition.withPostBodyContaining(Pattern.compile("[0-9]+"));
 
         when(call.getPostBody()).thenReturn("331102");
         assertTrue(condition.check(call));
 
-        condition = Condition.withPostBodyContaining(new Regexp("[a-z]+"));
+        condition = Condition.withPostBodyContaining(Pattern.compile("[a-z]+"));
         assertFalse(condition.check(call));
     }
 
@@ -190,7 +188,7 @@ public class ConditionTest {
         when(call.getPostBody()).thenReturn("331102");
         assertTrue(condition.check(call));
 
-        condition = Condition.withPostBodyContaining(new Regexp("[a-z]+"));
+        condition = Condition.withPostBodyContaining(Pattern.compile("[a-z]+"));
         assertFalse(condition.check(call));
     }
 

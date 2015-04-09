@@ -13,8 +13,6 @@ import com.google.common.base.Predicates;
 
 import com.xebialabs.restito.resources.SmartDiscoverer;
 
-import sun.misc.Regexp;
-
 import static com.xebialabs.restito.semantics.Action.resourceContent;
 
 /**
@@ -135,20 +133,6 @@ public class Condition {
 
     /**
      * URI starts with
-     * @deprecated will be removed at 0.5
-     * @see {@link #matchesUri(java.util.regex.Pattern)}
-     */
-    @Deprecated
-    public static Condition matchesUri(final Regexp regexp) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUri().matches(regexp.exp);
-            }
-        });
-    }
-
-    /**
-     * URI starts with
      */
     public static Condition matchesUri(final Pattern p) {
         return new Condition(new Predicate<Call>() {
@@ -206,21 +190,6 @@ public class Condition {
             @Override
             public boolean apply(Call input) {
                 return input.getPostBody() != null && input.getPostBody().contains(str);
-            }
-        });
-    }
-
-    /**
-     * With post body matching regexp
-     * @deprecated will be removed at 0.5
-     * @see {@link #withPostBodyContaining(java.util.regex.Pattern)}
-     */
-    @Deprecated
-    public static Condition withPostBodyContaining(final Regexp regexp) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return input.getPostBody().matches(regexp.exp);
             }
         });
     }
