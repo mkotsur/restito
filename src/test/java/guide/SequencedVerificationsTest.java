@@ -1,6 +1,5 @@
 package guide;
 
-import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
@@ -40,13 +39,9 @@ public class SequencedVerificationsTest {
         expect().statusCode(200).when().get("/first");
         expect().statusCode(200).when().get("/second");
 
-        verifyHttp(server).once(
-                method(Method.GET),
-                uri("/first")
-        ).then().once(
-                method(Method.GET),
-                uri("/second")
-        );
+        verifyHttp(server)
+                .once(get("/first")).then()
+                .once(get("/second"));
     }
 
     @Test(expected = AssertionError.class)
@@ -54,13 +49,9 @@ public class SequencedVerificationsTest {
         expect().statusCode(200).when().get("/second");
         expect().statusCode(200).when().get("/first");
 
-        verifyHttp(server).once(
-                method(Method.GET),
-                uri("/first")
-        ).then().once(
-                method(Method.GET),
-                uri("/second")
-        );
+        verifyHttp(server)
+                .once(get("/first")).then()
+                .once(get("/second"));
     }
 
     @Test
@@ -68,14 +59,18 @@ public class SequencedVerificationsTest {
         expect().statusCode(200).when().get("/second");
         expect().statusCode(200).when().get("/first");
 
-        verifyHttp(server).once(
-                method(Method.GET),
-                uri("/first")
-        );
+        verifyHttp(server).once(get("/first"));
+        verifyHttp(server).once(get("/second"));
+    }
 
-        verifyHttp(server).once(
-                method(Method.GET),
-                uri("/second")
-        );
+    @Test
+    public void shouldAllowIntermediateChecks() {
+        expect().statusCode(200).when().get("/first");
+
+        verifyHttp(server).once(get("/first"));
+
+        expect().statusCode(200).when().get("/first");
+
+        verifyHttp(server).times(2, get("/first"));
     }
 }
