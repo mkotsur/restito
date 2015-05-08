@@ -1,8 +1,6 @@
 package com.xebialabs.restito.semantics;
 
 import org.glassfish.grizzly.http.server.Response;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicates;
 
 /**
  * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches XXX => do YYY)</p>

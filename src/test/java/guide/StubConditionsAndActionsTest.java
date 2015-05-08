@@ -1,11 +1,11 @@
 package guide;
 
+import com.xebialabs.restito.semantics.Predicate;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.google.common.base.Predicate;
 import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.semantics.Call;
@@ -61,7 +61,6 @@ public class StubConditionsAndActionsTest {
                 parameter("foo", "bar")
         );
     }
-
 
     @Test
     public void shouldReturnProperContentForProperRequests() {
@@ -140,6 +139,5 @@ public class StubConditionsAndActionsTest {
         whenHttp(server).match(not(basicAuth("admin", "secret"))).then(unauthorized("Custom realm"));
         expect().statusCode(401).header("WWW-Authenticate", "Basic realm=\"Custom realm\"").get("/");
     }
-
 
 }

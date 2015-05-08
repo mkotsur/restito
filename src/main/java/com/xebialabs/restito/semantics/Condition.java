@@ -8,8 +8,6 @@ import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 
 import com.xebialabs.restito.resources.SmartDiscoverer;
 
@@ -25,7 +23,6 @@ import static com.xebialabs.restito.semantics.Action.resourceContent;
  */
 @SuppressWarnings("SameParameterValue,")
 public class Condition {
-
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
@@ -299,7 +296,6 @@ public class Condition {
         Condition init = alwaysTrue();
 
         for (Condition condition : conditions) {
-
             Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());
             if (condition instanceof ConditionWithApplicables) {
                 init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());

@@ -8,9 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Maps;
 
 import static com.xebialabs.restito.semantics.Condition.delete;
 import static com.xebialabs.restito.semantics.Condition.endsWithUri;
@@ -197,7 +194,7 @@ public class ConditionTest {
         Condition withFoo = Condition.withHeader("foo");
         Condition withFooContainsBar = Condition.withHeader("foo", "bar");
 
-        when(call.getHeaders()).thenReturn(Maps.<String, String>newHashMap());
+        when(call.getHeaders()).thenReturn(new HashMap<String, String>());
 
         assertFalse(withFoo.check(call));
         assertFalse(withFooContainsBar.check(call));

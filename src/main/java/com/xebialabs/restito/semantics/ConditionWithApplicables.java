@@ -1,9 +1,7 @@
 package com.xebialabs.restito.semantics;
 
+import java.util.Arrays;
 import java.util.List;
-import com.google.common.base.Predicate;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
@@ -15,11 +13,11 @@ public class ConditionWithApplicables extends Condition {
     private List<Applicable> applicables;
 
     public ConditionWithApplicables(Predicate<Call> predicate, Applicable... applicables) {
-        this(predicate, newArrayList(applicables));
+        this(predicate, Arrays.asList(applicables));
     }
 
     public ConditionWithApplicables(Condition condition, Applicable... applicables) {
-        this(condition.getPredicate(), newArrayList(applicables));
+        this(condition.getPredicate(), Arrays.asList(applicables));
     }
 
     protected ConditionWithApplicables(Predicate<Call> predicate, List<Applicable> applicables) {

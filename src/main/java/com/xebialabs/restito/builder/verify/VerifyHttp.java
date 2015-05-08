@@ -1,13 +1,13 @@
 package com.xebialabs.restito.builder.verify;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import com.google.common.collect.Lists;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
 
-import static com.google.common.collect.Iterables.filter;
 import static java.lang.String.format;
 
 /**
@@ -82,10 +82,16 @@ public class VerifyHttp {
     }
 
     private List<Call> filterByConditions(Condition[] conditions) {
-        List<Call> filteredCalls = calls;
+        List<Call> filteredCalls = new ArrayList<>(calls);
 
         for (Condition condition : conditions) {
-            filteredCalls = Lists.newArrayList(filter(filteredCalls, condition.getPredicate()));
+            Iterator<Call> callsIterator = filteredCalls.iterator();
+            while (callsIterator.hasNext()) {
+                Call call = callsIterator.next();
+                if (!condition.getPredicate().apply(call)) {
+                    callsIterator.remove();
+                }
+            }
         }
         return filteredCalls;
     }

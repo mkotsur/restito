@@ -2,10 +2,12 @@ package com.xebialabs.restito.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+
 import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.http.server.*;
@@ -14,9 +16,6 @@ import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
@@ -31,8 +30,8 @@ public class StubServer {
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
-    private final List<Call> calls = Lists.newArrayList();
-    private List<Stub> stubs = Lists.newArrayList();
+    private final List<Call> calls = new ArrayList<>();
+    private List<Stub> stubs = new ArrayList<>();
     private final HttpServer simpleServer;
 
     /**
@@ -115,8 +114,11 @@ public class StubServer {
     private String createCertificateStore(String resourceName) throws IOException {
         URL resource = StubServer.class.getResource("/" + resourceName);
         File store = File.createTempFile(resourceName, "store");
-        Files.copy(Resources.newInputStreamSupplier(resource), store);
-        store.deleteOnExit();
+        try (InputStream input = resource.openStream()) {
+            Files.copy(input, store.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } finally {
+            store.deleteOnExit();
+        }
         return store.getAbsolutePath();
     }
 
@@ -175,8 +177,9 @@ public class StubServer {
                 CallsHelper.logCall(call);
 
                 boolean processed = false;
-
-                for (Stub stub : Lists.reverse(stubs)) {
+                ListIterator<Stub> iterator = stubs.listIterator(stubs.size());
+                while (iterator.hasPrevious()) {
+                    Stub stub = iterator.previous();
                     if (!stub.isApplicable(call)) {
                         continue;
                     }
