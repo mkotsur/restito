@@ -1,6 +1,9 @@
 Restito releases
 ============================================
 
+* 0.5.1
+    * Get rid of guava dependency.
+    * Removed deprecated methods. #9
 * 0.5
     * Fixed synchronization with quick requests
     * #24 removed dependency on javax.ws.rs

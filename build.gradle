@@ -1,5 +1,5 @@
-//version = '0.5'  // Last released version
-version '0.6-SNAPSHOT'
+version = '0.5.1'  // Last released version
+// version '0.6-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
@@ -74,23 +74,23 @@ uploadArchives {
 	    repositories {
 	        mavenDeployer {
 	            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-	
+
 	            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
 	                authentication(userName: sonatypeUsername, password: sonatypePassword)
 	            }
-	
+
 	            pom.project {
 	                name 'Restito'
 	                packaging 'jar'
 	                description 'Restito - testing framework for rest clients'
 	                url 'http://mkotsur.github.com/restito'
-	
+
 	                scm {
 	                    url 'scm:git@github.com:mkotsur/restito.git'
 	                    connection 'scm:git@github.com:mkotsur/restito.git'
 	                    developerConnection 'scm:git@github.com:mkotsur/restito.git'
 	                }
-	
+
 	                licenses {
 	                    license {
 	                        name 'MIT'
@@ -98,7 +98,7 @@ uploadArchives {
 	                        distribution 'repo'
 	                    }
 	                }
-	
+
 	                developers {
 	                    developer {
 	                        id 'mkotsur'
@@ -110,4 +110,3 @@ uploadArchives {
 	    }
     }
 }
-
