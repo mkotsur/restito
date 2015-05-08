@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
+
 import org.glassfish.grizzly.http.Method;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 
 import static java.lang.String.format;
 
@@ -46,7 +46,10 @@ public class SmartDiscoverer {
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
-                URL resource = Resources.getResource(resourcePrefix + "/" + URLDecoder.decode(s, "UTF-8"));
+                URL resource = this.getClass().getClassLoader().getResource(resourcePrefix + "/" + URLDecoder.decode(s, "UTF-8"));
+                if (resource == null) {
+                    throw new IllegalArgumentException(String.format("Resource %s not found.", uri));
+                }
                 if (!new File(URLDecoder.decode(resource.getFile(), "UTF-8")).isFile()) {
                     continue; // Probably directory
                 }
@@ -60,24 +63,46 @@ public class SmartDiscoverer {
         throw new IllegalArgumentException(format("Can not discover resource for method [%s] and URI [%s]", m, uri));
     }
 
-    private List<String> possibleLocations(Method m, String uri) {
+    private List<String> possibleLocations(final Method m, String uri) {
+        final Iterable<String> split = split(uri, "/");
 
-        Iterable<String> split = Splitter.on("/").omitEmptyStrings().split(uri);
+        return new ArrayList<String>() {{
+            add(m.toString().toLowerCase() + "." + join(split, "."));
+            add(m.toString().toLowerCase() + "/" + join(split, "/"));
+            add(join(split, "."));
+            add(join(split, "/"));
+            add(m.toString().toLowerCase() + "." + join(split, ".") + ".xml");
+            add(m.toString().toLowerCase() + "/" + join(split, "/") + ".xml");
+            add(join(split, ".") + ".xml");
+            add(join(split, "/") + ".xml");
+            add(m.toString().toLowerCase() + "." + join(split, ".") + ".json");
+            add(m.toString().toLowerCase() + "/" + join(split, "/") + ".json");
+            add(join(split, ".") + ".json");
+            add(join(split, "/") + ".json");
+        }};
+    }
 
-        return Lists.newArrayList(
-                m.toString().toLowerCase() + "." + Joiner.on(".").join(split),
-                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split),
-                Joiner.on(".").join(split),
-                Joiner.on("/").join(split),
+    private Iterable<String> split(String data, String delimiter) {
+        List<String> result = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(data, delimiter);
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken().trim();
+            if (token.length() > 0) {
+                result.add(token);
+            }
+        }
+        return result;
+    }
 
-                m.toString().toLowerCase() + "." + Joiner.on(".").join(split) + ".xml",
-                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split) + ".xml",
-                Joiner.on(".").join(split) + ".xml",
-                Joiner.on("/").join(split) + ".xml",
-                m.toString().toLowerCase() + "." + Joiner.on(".").join(split) + ".json",
-                m.toString().toLowerCase() + "/" + Joiner.on("/").join(split) + ".json",
-                Joiner.on(".").join(split) + ".json",
-                Joiner.on("/").join(split) + ".json"
-        );
+    private String join(Iterable<String> elements, String delimiter) {
+        Iterator<String> iter = elements.iterator();
+        StringBuilder result = new StringBuilder();
+        while (iter.hasNext()) {
+            result.append(iter.next());
+            if (iter.hasNext()) {
+                result.append(delimiter);
+            }
+        }
+        return result.toString();
     }
 }

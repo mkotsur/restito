@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
-import com.google.common.collect.Maps;
 
 /**
  * <p>Call that happened to server. Handy wrapper for Request values.</p>
@@ -19,8 +18,8 @@ public class Call {
     private String postBody;
     private String url;
     private String authorization;
-    private Map<String, String> headers = Maps.newHashMap();
-    private Map<String, String[]> parameters = Maps.newHashMap();
+    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String[]> parameters = new HashMap<>();
 
     private Call() {
     }

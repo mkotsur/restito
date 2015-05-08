@@ -1,16 +1,17 @@
 package com.xebialabs.restito.builder.verify;
 
+import com.xebialabs.restito.semantics.Predicates;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.server.StubServer;
+
+import java.util.ArrayList;
 
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 import static com.xebialabs.restito.semantics.Condition.custom;
@@ -35,7 +36,7 @@ public class VerifyHttpTest {
 
     @Test
     public void shouldPassWhenCorrectExpectations() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
 
         verifyHttp(stubServer).once(conditionTrue());
         verifyHttp(stubServer).times(1, conditionTrue());
@@ -44,67 +45,67 @@ public class VerifyHttpTest {
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenExpectedOnceButNeverHappens() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
         verifyHttp(stubServer).once(conditionFalse());
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenNeverExpectedButHappens() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
         verifyHttp(stubServer).never(conditionTrue());
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenHappensLessTimesThenExpected() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
         verifyHttp(stubServer).times(10, conditionTrue());
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenHappensMoreTimesThenExpected() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); add(mock(Call.class)); add(mock(Call.class)); }});
         verifyHttp(stubServer).times(2, conditionTrue());
     }
 
     @Test
     public void shouldPassWhenHappensMoreTimesThenAtLeastExpected() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); add(mock(Call.class)); add(mock(Call.class)); }});
         verifyHttp(stubServer).atLeast(2, conditionTrue());
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenHappensLessTimesThenAtLeastExpected() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); add(mock(Call.class)); add(mock(Call.class)); }});
         verifyHttp(stubServer).times(4, conditionTrue());
     }
 
     @Test
     public void shouldPassWhen2CallsInOrderHappenAsExpected() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(getCall, postCall));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(getCall); add(postCall); }});
         verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenSecondCallInOrderMissing() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(getCall));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(getCall); }});
         verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenFirstCallInOrderMissing() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(postCall));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(postCall); }});
         verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenOrderIsWrong() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(postCall, getCall));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(postCall); add(getCall); }});
         verifyHttp(stubServer).once(method(Method.GET)).then().once(method(Method.POST));
     }
 
     @Test(expected = AssertionError.class)
     public void shouldVerifyTwoIdenticalWhenCalledOnlyOne() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
         verifyHttp(stubServer).once(
                 conditionTrue()
         ).then().once(
@@ -114,7 +115,7 @@ public class VerifyHttpTest {
 
     @Test
     public void shouldPassWhenFirstConditionDoesNotHappen() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); }});
         verifyHttp(stubServer).never(
                 conditionFalse()
         ).then().once(
@@ -124,7 +125,7 @@ public class VerifyHttpTest {
 
     @Test(expected = AssertionError.class)
     public void shouldFailWhenConditionHappensMoreTimesThenExpectedEvenIfThenItExpectedAgain() {
-        when(stubServer.getCalls()).thenReturn(Lists.<Call>newArrayList(mock(Call.class), mock(Call.class), mock(Call.class)));
+        when(stubServer.getCalls()).thenReturn(new ArrayList<Call>() {{ add(mock(Call.class)); add(mock(Call.class)); add(mock(Call.class)); }});
         verifyHttp(stubServer).times(2,
                 conditionTrue()
         ).then().once(

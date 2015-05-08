@@ -18,7 +18,6 @@ repositories {
 }
 
 dependencies {
-
     testCompile 'org.scala-lang:scala-library:2.11.5'
 
     compile 'junit:junit:4.12'
@@ -27,8 +26,6 @@ dependencies {
     testCompile 'org.slf4j:slf4j-simple:1.7.5'
 
     compile 'org.mockito:mockito-core:1.10.17'
-    compile 'com.google.guava:guava:14.0.1'
-
     compile 'org.glassfish.grizzly:grizzly-http-server:2.3.17'
     compile 'com.sun.jersey:jersey-grizzly2:1.18.3'
 

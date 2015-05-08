@@ -5,9 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicates;
 
 import static com.xebialabs.restito.semantics.Action.contentType;
 import static com.xebialabs.restito.semantics.Action.ok;
@@ -92,7 +89,12 @@ public class StubTest {
     public void shouldIncreaseAppliedTimesCounter() {
         Stub stub = new Stub(
                 Condition.custom(Predicates.<Call>alwaysTrue()),
-                Action.custom(Functions.<Response>identity())
+                Action.custom(new Function<Response, Response>() {
+                    @Override
+                    public Response apply(Response input) {
+                        return input;
+                    }
+                })
         );
 
         assertEquals(0, stub.getAppliedTimes());

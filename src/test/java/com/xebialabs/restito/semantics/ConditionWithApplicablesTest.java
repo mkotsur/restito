@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.google.common.base.Predicates;
 
 import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 import static org.junit.Assert.assertFalse;
@@ -38,7 +37,6 @@ public class ConditionWithApplicablesTest {
 
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionTrue() {
-
         new Stub(
                 new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable),
                 Action.header("foo", "bar")
@@ -51,7 +49,6 @@ public class ConditionWithApplicablesTest {
 
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionHadBeenComposed() {
-
         new Stub(
                 Condition.composite(trueCondition, new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable)),
                 Action.header("foo", "bar")

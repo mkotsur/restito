@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
+
+import com.xebialabs.restito.support.file.FileHelper;
+import com.xebialabs.restito.support.resource.ResourceHelper;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 
 /**
  * Action is a modifier for Response
@@ -95,7 +94,11 @@ public class Action implements Applicable {
      */
     @Deprecated
     public static Action resourceContent(String resourcePath, String charset) {
-        return resourceContent(Resources.getResource(resourcePath), charset == null ? null : Charset.forName(charset));
+        URL resource = Action.class.getClassLoader().getResource(resourcePath);
+        if (resource == null) {
+            throw new IllegalArgumentException(String.format("Resource %s not found.", resourcePath));
+        }
+        return resourceContent(resource, charset == null ? null : Charset.forName(charset));
     }
 
     /**
@@ -117,9 +120,9 @@ public class Action implements Applicable {
     @Deprecated
     public static Action resourceContent(URL resourceUrl, Charset charset) {
         try {
-            final byte[] bytes = Resources.toByteArray(resourceUrl);
+            final byte[] bytes = ResourceHelper.getBytes(resourceUrl);
 
-            String fileExtension = Files.getFileExtension(resourceUrl.getPath());
+            String fileExtension = FileHelper.getFileExtension(resourceUrl.getPath());
 
             final Action charsetAction = charset != null ? charset(charset) : Action.noop();
             final Action contentTypeAction;
@@ -293,6 +296,11 @@ public class Action implements Applicable {
      * Doing nothing. To be used in DSLs for nicer syntax.
      */
     public static Action noop() {
-        return new Action(Functions.<Response>identity());
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                return input;
+            }
+        });
     }
 }
