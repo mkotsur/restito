@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import com.jayway.jsonpath.JsonPath;
 import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
 import org.slf4j.Logger;
@@ -199,6 +201,15 @@ public class Condition {
             @Override
             public boolean apply(Call input) {
                 return input.getPostBody().matches(pattern.pattern());
+            }
+        });
+    }
+
+    public static Condition withPostBodyContainingJsonPath(final String pattern, final String value) {
+        return new Condition(new Predicate<Call>() {
+            @Override
+            public boolean apply(Call input) {
+                return value.equals(JsonPath.parse(input.getPostBody()).read(pattern));
             }
         });
     }

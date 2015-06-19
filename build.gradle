@@ -29,6 +29,8 @@ dependencies {
     compile 'org.glassfish.grizzly:grizzly-http-server:2.3.17'
     compile 'com.sun.jersey:jersey-grizzly2:1.18.3'
 
+	compile 'com.jayway.jsonpath:json-path:2.0.0'
+
     compile 'org.apache.mina:mina-core:2.0.4'
 
     testCompile 'org.hamcrest:hamcrest-all:1.3'
