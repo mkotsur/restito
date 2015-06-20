@@ -205,6 +205,15 @@ public class Condition {
         });
     }
 
+    /**
+     * With Valid Json Path.
+     * Check to see if incoming path has a valid string value selected via a <a href="https://github.com/jayway/JsonPath/">
+     * JSONPath</a> expression.
+     *
+     * @param - Json Path
+     * @param - value to check against
+     * @return
+     */
     public static Condition withPostBodyContainingJsonPath(final String pattern, final String value) {
         return new Condition(new Predicate<Call>() {
             @Override
