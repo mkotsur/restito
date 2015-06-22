@@ -165,6 +165,19 @@ public class ConditionTest {
         assertFalse(condition.check(call));
     }
 
+
+    @Test
+    public void shouldDistinguishByStringInJsonPath() {
+        Condition condition = Condition.withPostBodyContainingJsonPath("$.name", "foo");
+
+
+        when(call.getPostBody()).thenReturn("{\"name\":\"foo\"}");
+        assertTrue(condition.check(call));
+
+        condition = Condition.withPostBodyContainingJsonPath("$.name","bar");
+        assertFalse(condition.check(call));
+    }
+
     @Test
     @SuppressWarnings("deprecation")
     public void shouldDistinguishByRegexpMatchInBody() {
