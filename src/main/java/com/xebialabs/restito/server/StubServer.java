@@ -22,6 +22,8 @@ import com.xebialabs.restito.semantics.Stub;
 import com.xebialabs.restito.support.behavior.Behavior;
 import com.xebialabs.restito.support.log.CallsHelper;
 
+import static java.util.Collections.unmodifiableList;
+
 /**
  * The HttpServer wrapper which is responsible for operations like starting and stopping and holding objects that describe server behavior.
  */
@@ -158,14 +160,14 @@ public class StubServer {
      * Returns calls performed to the serer
      */
     public List<Call> getCalls() {
-        return calls;
+        return unmodifiableList(calls);
     }
 
     /**
      * Returns stubs associated with the server
      */
     public List<Stub> getStubs() {
-        return stubs;
+        return unmodifiableList(stubs);
     }
 
     private HttpHandler stubsToHandler() {
