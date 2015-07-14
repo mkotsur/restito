@@ -1,5 +1,5 @@
-// version = '0.5.1'  // Last released version
-version '0.6'
+// version = '0.6'  // Last released version
+version '0.7-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
