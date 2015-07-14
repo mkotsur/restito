@@ -1,6 +1,9 @@
 Restito releases
 ============================================
 
+* 0.6
+    * Supporting post body validation using JSON path.
+    * Not allowing external modifications of calls and stubs lists.
 * 0.5.1
     * Get rid of guava dependency.
     * Removed deprecated methods. #9
