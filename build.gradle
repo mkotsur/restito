@@ -72,43 +72,44 @@ signing {
 }
 
 uploadArchives {
-    if (project.hasProperty("sonatypeUsername")) {
-	    repositories {
-	        mavenDeployer {
-	            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+  def username = System.console().readLine("\nEnter sonatype username: ")
+  def password = new String(System.console().readPassword("\nEnter sonatype password: "))
+  repositories {
+      mavenDeployer {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-	            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-	                authentication(userName: sonatypeUsername, password: sonatypePassword)
-	            }
+          repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: username, password: password)
+          }
 
-	            pom.project {
-	                name 'Restito'
-	                packaging 'jar'
-	                description 'Restito - testing framework for rest clients'
-	                url 'http://mkotsur.github.com/restito'
+          pom.project {
+              name 'Restito'
+              packaging 'jar'
+              description 'Restito - testing framework for rest clients'
+              url 'http://mkotsur.github.com/restito'
 
-	                scm {
-	                    url 'scm:git@github.com:mkotsur/restito.git'
-	                    connection 'scm:git@github.com:mkotsur/restito.git'
-	                    developerConnection 'scm:git@github.com:mkotsur/restito.git'
-	                }
+              scm {
+                  url 'scm:git@github.com:mkotsur/restito.git'
+                  connection 'scm:git@github.com:mkotsur/restito.git'
+                  developerConnection 'scm:git@github.com:mkotsur/restito.git'
+              }
 
-	                licenses {
-	                    license {
-	                        name 'MIT'
-	                        url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
-	                        distribution 'repo'
-	                    }
-	                }
+              licenses {
+                  license {
+                      name 'MIT'
+                      url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
+                      distribution 'repo'
+                  }
+              }
 
-	                developers {
-	                    developer {
-	                        id 'mkotsur'
-	                        name 'Mykhailo Kotsur'
-	                    }
-	                }
-	            }
-	        }
-	    }
-    }
+              developers {
+                  developer {
+                      id 'mkotsur'
+                      name 'Mykhailo Kotsur'
+                  }
+              }
+          }
+      }
+  }
+
 }
