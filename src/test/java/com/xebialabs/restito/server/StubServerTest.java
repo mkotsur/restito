@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
 
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Stub;
+
 import static com.jayway.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.ok;
@@ -54,5 +57,29 @@ public class StubServerTest {
     public void shouldBePossibleToStubRootUri() {
         whenHttp(server).match(get("/")).then(ok()).mustHappen();
         expect().statusCode(200).get("/");
+    }
+
+    @Test
+    public void shouldBePossibleToIterateThroughCallsWhileNewItemsAreAdded() {
+        whenHttp(server).match(get("/")).then(ok()).mustHappen();
+
+        expect().statusCode(200).get("/");
+        expect().statusCode(200).get("/");
+
+        for (Call call : server.getCalls()) {
+            expect().statusCode(200).get("/");
+            expect().statusCode(200).get("/");
+        }
+    }
+
+    @Test
+    public void shouldBePossibleToIterateThroughStubsAndModifyIt() {
+        whenHttp(server).match(get("/")).then(ok());
+
+        expect().statusCode(200).get("/");
+
+        for (Stub stub : server.getStubs()) {
+            whenHttp(server).match(get("/newstub")).then(ok());
+        }
     }
 }

@@ -157,17 +157,17 @@ public class StubServer {
     }
 
     /**
-     * Returns calls performed to the serer
+     * Returns calls performed to the server. Returned list is actually a copy of the original one. This is done to prevent concurrency issues. See <a href="https://github.com/mkotsur/restito/issues/33">#33</a>.
      */
     public List<Call> getCalls() {
-        return unmodifiableList(calls);
+        return unmodifiableList(new ArrayList<>(calls));
     }
 
     /**
-     * Returns stubs associated with the server
+     * Returns stubs associated with the server. Returned list is actually a copy of the original one. This is done to prevent concurrency issues. See <a href="https://github.com/mkotsur/restito/issues/33">#33</a>.
      */
     public List<Stub> getStubs() {
-        return unmodifiableList(stubs);
+        return unmodifiableList(new ArrayList<>(stubs));
     }
 
     private HttpHandler stubsToHandler() {
