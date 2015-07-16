@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.grizzly.PortRange;
@@ -32,8 +33,8 @@ public class StubServer {
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
-    private final List<Call> calls = new ArrayList<>();
-    private List<Stub> stubs = new ArrayList<>();
+    private final List<Call> calls = new CopyOnWriteArrayList<>();
+    private final List<Stub> stubs = new CopyOnWriteArrayList<>();
     private final HttpServer simpleServer;
 
     /**
@@ -48,7 +49,7 @@ public class StubServer {
      * Creates a server based on stubs that are used to determine behavior.
      */
     public StubServer(Stub... stubs) {
-        this.stubs = new ArrayList<>(Arrays.asList(stubs));
+        this.stubs.addAll(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(null, new PortRange(DEFAULT_PORT, AvailablePortFinder.MAX_PORT_NUMBER));
     }
 
@@ -57,7 +58,7 @@ public class StubServer {
      * If the port is busy, Restito won't try to pick different one and java.net.BindException will be thrown.
      */
     public StubServer(int port, Stub... stubs) {
-        this.stubs = new ArrayList<>(Arrays.asList(stubs));
+        this.stubs.addAll(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(null, port);
     }
 
@@ -160,14 +161,14 @@ public class StubServer {
      * Returns calls performed to the server. Returned list is actually a copy of the original one. This is done to prevent concurrency issues. See <a href="https://github.com/mkotsur/restito/issues/33">#33</a>.
      */
     public List<Call> getCalls() {
-        return unmodifiableList(new ArrayList<>(calls));
+        return unmodifiableList(calls);
     }
 
     /**
      * Returns stubs associated with the server. Returned list is actually a copy of the original one. This is done to prevent concurrency issues. See <a href="https://github.com/mkotsur/restito/issues/33">#33</a>.
      */
     public List<Stub> getStubs() {
-        return unmodifiableList(new ArrayList<>(stubs));
+        return unmodifiableList(stubs);
     }
 
     private HttpHandler stubsToHandler() {
@@ -196,9 +197,7 @@ public class StubServer {
                     log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
                 }
 
-                synchronized (calls) {
-                    calls.add(call);
-                }
+                calls.add(call);
             }
         };
     }
