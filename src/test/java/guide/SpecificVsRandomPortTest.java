@@ -1,5 +1,6 @@
 package guide;
 
+import org.glassfish.grizzly.PortRange;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,14 @@ public class SpecificVsRandomPortTest {
     public void shouldBePossibleToSpecifyPort() {
         StubServer server1 = new StubServer(8888).run();
         assertEquals(8888, server1.getPort());
+        server1.stop();
+    }
+
+    @Test
+    public void shouldBePossibleToSpecifyPortRange() {
+        StubServer server1 = new StubServer(8888, 8889).run();
+        assertTrue(server1.getPort() >= 8888);
+        assertTrue(server1.getPort() <= 8889);
         server1.stop();
     }
 

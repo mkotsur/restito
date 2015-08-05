@@ -49,8 +49,16 @@ public class StubServer {
      * Creates a server based on stubs that are used to determine behavior.
      */
     public StubServer(Stub... stubs) {
+        this(DEFAULT_PORT, AvailablePortFinder.MAX_PORT_NUMBER, stubs);
+    }
+
+    /**
+     * This constructor allows to specify the port range beside stubs.
+     * Grizzly will select the first available port.
+     */
+    public StubServer(int portRangeStart, int portRangeEnd, Stub... stubs) {
         this.stubs.addAll(Arrays.asList(stubs));
-        simpleServer = HttpServer.createSimpleServer(null, new PortRange(DEFAULT_PORT, AvailablePortFinder.MAX_PORT_NUMBER));
+        simpleServer = HttpServer.createSimpleServer(null, new PortRange(portRangeStart, portRangeEnd));
     }
 
     /**
