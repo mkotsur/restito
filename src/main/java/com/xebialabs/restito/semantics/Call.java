@@ -20,6 +20,7 @@ public class Call {
     private String authorization;
     private Map<String, String> headers = new HashMap<>();
     private Map<String, String[]> parameters = new HashMap<>();
+    private Request request;
 
     private Call() {
     }
@@ -30,6 +31,7 @@ public class Call {
     public static Call fromRequest(final Request request) {
         Call call = new Call();
 
+        call.request = request;
         call.method = request.getMethod();
         call.authorization = request.getAuthorization();
         call.uri = request.getRequestURI();
@@ -102,6 +104,13 @@ public class Call {
      */
     public String getAuthorization() {
         return authorization;
+    }
+
+    /**
+     * Returns raw HTTP request
+     */
+    public Request getRequest() {
+        return request;
     }
 }
 
