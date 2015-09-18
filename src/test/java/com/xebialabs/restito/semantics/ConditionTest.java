@@ -179,13 +179,13 @@ public class ConditionTest {
 
     @Test
     public void shouldDistinguishNumberByStringInJsonPath() {
-        Condition condition = Condition.withPostBodyContainingJsonPath("$.name", 5);
+        Condition condition = Condition.withPostBodyContainingJsonPath("$.age", 5);
 
 
-        when(call.getPostBody()).thenReturn("{\"name\": 5}");
+        when(call.getPostBody()).thenReturn("{\"age\": 5}");
         assertTrue(condition.check(call));
 
-        condition = Condition.withPostBodyContainingJsonPath("$.name",6);
+        condition = Condition.withPostBodyContainingJsonPath("$.age",6);
         assertFalse(condition.check(call));
     }
 
