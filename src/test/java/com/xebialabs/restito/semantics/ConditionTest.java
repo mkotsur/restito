@@ -165,7 +165,6 @@ public class ConditionTest {
         assertFalse(condition.check(call));
     }
 
-
     @Test
     public void shouldDistinguishByStringInJsonPath() {
         Condition condition = Condition.withPostBodyContainingJsonPath("$.name", "foo");
@@ -175,6 +174,18 @@ public class ConditionTest {
         assertTrue(condition.check(call));
 
         condition = Condition.withPostBodyContainingJsonPath("$.name","bar");
+        assertFalse(condition.check(call));
+    }
+
+    @Test
+    public void shouldDistinguishNumberByStringInJsonPath() {
+        Condition condition = Condition.withPostBodyContainingJsonPath("$.name", 5);
+
+
+        when(call.getPostBody()).thenReturn("{\"name\": 5}");
+        assertTrue(condition.check(call));
+
+        condition = Condition.withPostBodyContainingJsonPath("$.name",6);
         assertFalse(condition.check(call));
     }
 

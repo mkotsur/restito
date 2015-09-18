@@ -214,7 +214,7 @@ public class Condition {
      * @param - value to check against
      * @return
      */
-    public static Condition withPostBodyContainingJsonPath(final String pattern, final String value) {
+    public static Condition withPostBodyContainingJsonPath(final String pattern, final Object value) {
         return new Condition(new Predicate<Call>() {
             @Override
             public boolean apply(Call input) {
