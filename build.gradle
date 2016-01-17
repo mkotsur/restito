@@ -14,105 +14,107 @@ sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    testCompile 'org.scala-lang:scala-library:2.11.5'
+	testCompile 'org.scala-lang:scala-library:2.11.5'
 
-    compile 'junit:junit:4.12'
+	compile 'junit:junit:4.12'
 
-    compile 'org.slf4j:slf4j-api:1.7.5'
-    testCompile 'org.slf4j:slf4j-simple:1.7.5'
+	compile 'org.slf4j:slf4j-api:1.7.5'
+	testCompile 'org.slf4j:slf4j-simple:1.7.5'
 
-    compile 'org.mockito:mockito-core:1.10.17'
-    compile 'org.glassfish.grizzly:grizzly-http-server:2.3.17'
-    compile 'com.sun.jersey:jersey-grizzly2:1.18.3'
+	compile 'org.mockito:mockito-core:1.10.17'
+	compile 'org.glassfish.grizzly:grizzly-http-server:2.3.17'
+	compile 'com.sun.jersey:jersey-grizzly2:1.18.3'
 
 	compile 'com.jayway.jsonpath:json-path:2.1.0'
 
-    compile 'org.apache.mina:mina-core:2.0.4'
+	compile 'org.apache.mina:mina-core:2.0.4'
 
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
+	testCompile 'org.hamcrest:hamcrest-all:1.3'
 
-    testCompile ('com.jayway.restassured:rest-assured:2.4.0') {
-      exclude(module: 'groovy')
-    }
+	testCompile ('com.jayway.restassured:rest-assured:2.4.0') {
+		exclude(module: 'groovy')
+	}
 
-    testCompile "io.spray:spray-client_2.11:1.3.2"
-    testCompile "com.typesafe.akka:akka-actor_2.11:2.3.9"
-    testCompile "org.scalatest:scalatest_2.11:2.2.4"
+	testCompile "io.spray:spray-client_2.11:1.3.2"
+	testCompile "com.typesafe.akka:akka-actor_2.11:2.3.9"
+	testCompile "org.scalatest:scalatest_2.11:2.2.4"
 
-    testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version:'2.3.2'
+	testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version:'2.3.2'
 }
 
 tasks.withType(JavaCompile) { compile ->
-    compile.options.compilerArgs << '-Xlint:deprecation'
-    compile.options.compilerArgs << '-Xlint:unchecked'
+	compile.options.compilerArgs << '-Xlint:deprecation'
+	compile.options.compilerArgs << '-Xlint:unchecked'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+	classifier = 'sources'
+	from sourceSets.main.allSource
 }
 
 javadoc {
-	options.addStringOption('Xdoclint:none', '-quiet')
+	if(JavaVersion.current() == JavaVersion.VERSION_1_8) {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+	classifier = 'javadoc'
+	from javadoc.destinationDir
 }
 
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+	archives sourcesJar
+	archives javadocJar
 }
 
 signing {
-    required { gradle.taskGraph.hasTask('uploadArchives') }
-    sign configurations.archives
+	required { gradle.taskGraph.hasTask('uploadArchives') }
+	sign configurations.archives
 }
 
 uploadArchives {
-    if (project.hasProperty("sonatypeUsername")) {
-	    repositories {
-	        mavenDeployer {
-	            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	if (project.hasProperty("sonatypeUsername")) {
+		repositories {
+			mavenDeployer {
+				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-	            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-	                authentication(userName: sonatypeUsername, password: sonatypePassword)
-	            }
+				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+					authentication(userName: sonatypeUsername, password: sonatypePassword)
+				}
 
-	            pom.project {
-	                name 'Restito'
-	                packaging 'jar'
-	                description 'Restito - testing framework for rest clients'
-	                url 'http://mkotsur.github.com/restito'
+				pom.project {
+					name 'Restito'
+					packaging 'jar'
+					description 'Restito - testing framework for rest clients'
+					url 'http://mkotsur.github.com/restito'
 
-	                scm {
-	                    url 'scm:git@github.com:mkotsur/restito.git'
-	                    connection 'scm:git@github.com:mkotsur/restito.git'
-	                    developerConnection 'scm:git@github.com:mkotsur/restito.git'
-	                }
+					scm {
+						url 'scm:git@github.com:mkotsur/restito.git'
+						connection 'scm:git@github.com:mkotsur/restito.git'
+						developerConnection 'scm:git@github.com:mkotsur/restito.git'
+					}
 
-	                licenses {
-	                    license {
-	                        name 'MIT'
-	                        url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
-	                        distribution 'repo'
-	                    }
-	                }
+					licenses {
+						license {
+							name 'MIT'
+							url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
+							distribution 'repo'
+						}
+					}
 
-	                developers {
-	                    developer {
-	                        id 'mkotsur'
-	                        name 'Mykhailo Kotsur'
-	                    }
-	                }
-	            }
-	        }
-	    }
-    }
+					developers {
+						developer {
+							id 'mkotsur'
+							name 'Mykhailo Kotsur'
+						}
+					}
+				}
+			}
+		}
+	}
 }
