@@ -86,6 +86,31 @@ public class StubServer {
     }
 
     /**
+     * Removes any previously registered stubs.
+     */
+    public StubServer clearStubs() {
+        this.stubs.clear();
+        return this;
+    }
+
+    /**
+     * Removes any registered stubs calls.
+     */
+    public StubServer clearCalls() {
+        this.calls.clear();
+        return this;
+    }
+
+    /**
+     * Clears the server state.
+     */
+    public StubServer clear() {
+        this.clearStubs();
+        this.clearCalls();
+        return this;
+    }
+
+    /**
      * Starts the server
      */
     public StubServer run() {
