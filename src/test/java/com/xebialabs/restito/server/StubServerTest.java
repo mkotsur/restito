@@ -82,4 +82,40 @@ public class StubServerTest {
             whenHttp(server).match(get("/newstub")).then(ok());
         }
     }
+
+    @Test
+    public void shouldClearRegisteredStubs() {
+        whenHttp(server).match(get("/")).then(ok());
+        assertEquals(1, server.getStubs().size());
+
+        server.clearStubs();
+
+        assertEquals(0, server.getStubs().size());
+    }
+
+    @Test
+    public void shouldClearStubCalls() {
+        whenHttp(server).match(get("/")).then(ok());
+        expect().statusCode(200).get("/");
+
+        assertEquals(1, server.getCalls().size());
+
+        server.clearCalls();
+
+        assertEquals(0, server.getCalls().size());
+    }
+
+    @Test
+    public void shouldClearStubAndCalls() {
+        whenHttp(server).match(get("/")).then(ok());
+        expect().statusCode(200).get("/");
+
+        assertEquals(1, server.getStubs().size());
+        assertEquals(1, server.getCalls().size());
+
+        server.clear();
+
+        assertEquals(0, server.getStubs().size());
+        assertEquals(0, server.getCalls().size());
+    }
 }
