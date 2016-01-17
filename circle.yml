@@ -1,0 +1,3 @@
+test:
+  post:
+    - gradle javadoc
