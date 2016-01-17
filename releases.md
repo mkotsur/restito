@@ -1,6 +1,14 @@
 Restito releases
 ============================================
 
+* 0.8
+    * Clearing StubServer state
+    * Using new json-path implementation
+    * JUnit 4 rule to start stub server
+    * Allow to match for other types then String in Condition.withPostBodyContainingJsonPath() method
+* 0.7
+    * Now possible to specify port range. Closes #35
+    * Returning copies of stubs and calls lists. Closes #33
 * 0.6
     * Supporting post body validation using JSON path.
     * Not allowing external modifications of calls and stubs lists.
