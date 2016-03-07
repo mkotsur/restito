@@ -1,6 +1,8 @@
 Restito releases
 ============================================
 
+* 0.8.1
+    * Fixed expired SSL certificate.
 * 0.8
     * Clearing StubServer state
     * Using new json-path implementation
