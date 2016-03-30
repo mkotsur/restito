@@ -34,7 +34,7 @@ public class UsingHttpsTest {
 
     @Before
     public void start() {
-        server = new StubServer().secured().run();
+        server = new StubServer().secured();
         RestAssured.port = server.getPort();
     }
 
@@ -45,6 +45,27 @@ public class UsingHttpsTest {
 
     @Test
     public void shouldPassWhenExpectedStubDidHappen() throws GeneralSecurityException, IOException {
+        server.run();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
+
+        HttpResponse execute = sslReadyHttpClient().execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+
+        assertThat(execute.getStatusLine().getStatusCode(), equalTo(200));
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    @Test
+    public void shouldBePossibleToSpecifyKeyStoresWithStandardProperties() throws GeneralSecurityException, IOException {
+
+        System.setProperty("javax.net.ssl.trustStore","build/resources/main/keystore_server");
+
+        System.setProperty("javax.net.ssl.keyStore","build/resources/main/truststore_server");
+
+        System.setProperty("javax.net.ssl.trustStorePassword","secret");
+
+        System.setProperty("javax.net.ssl.keyStorePassword","secret");
+
+        server.run();
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
 
         HttpResponse execute = sslReadyHttpClient().execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
