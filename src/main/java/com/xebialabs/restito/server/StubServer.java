@@ -131,6 +131,10 @@ public class StubServer {
     }
 
     private SSLContextConfigurator getSslConfig() throws IOException {
+        if(SSLContextConfigurator.DEFAULT_CONFIG.validateConfiguration(true))
+        {
+            return SSLContextConfigurator.DEFAULT_CONFIG;
+        }
         SSLContextConfigurator defaultConfig = SSLContextConfigurator.DEFAULT_CONFIG;
         String keystore_server = createCertificateStore("keystore_server");
         String truststore_server = createCertificateStore("truststore_server");
