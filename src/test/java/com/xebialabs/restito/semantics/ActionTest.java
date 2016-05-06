@@ -14,6 +14,7 @@ import static com.xebialabs.restito.semantics.Action.charset;
 import static com.xebialabs.restito.semantics.Action.composite;
 import static com.xebialabs.restito.semantics.Action.header;
 import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static com.xebialabs.restito.semantics.Action.sequence;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static org.mockito.Mockito.any;
@@ -131,4 +132,27 @@ public class ActionTest {
 
         verify(response).setStatus(HttpStatus.NOT_ACCEPTABLE_406);
     }
+
+    @Test
+    public void shouldCreateSequenceActionFromSingleAction() throws Exception {
+        Action action = sequence(stringContent("foo"));
+
+        action.apply(response);
+        verify(response.getOutputStream()).write("foo".getBytes());
+    }
+
+    @Test
+    public void shouldCreateSequenceActionFromActions() throws Exception {
+        Action action = sequence(stringContent("foo"), stringContent("bar"), stringContent("baz"));
+
+        action.apply(response);
+        verify(response.getOutputStream()).write("foo".getBytes());
+
+        action.apply(response);
+        verify(response.getOutputStream()).write("bar".getBytes());
+
+        action.apply(response);
+        verify(response.getOutputStream()).write("baz".getBytes());
+    }
+
 }
