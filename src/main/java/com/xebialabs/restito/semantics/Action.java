@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.xebialabs.restito.support.file.FileHelper;
 import com.xebialabs.restito.support.resource.ResourceHelper;
@@ -287,6 +289,33 @@ public class Action implements Applicable {
                     action.apply(input);
                 }
 
+                return input;
+            }
+        });
+    }
+
+    /**
+     * Creates a sequence action which contains all passed actions and
+     * executes one by one of them in the same order if {@link Action#apply(Response)} is repeated.
+     * If all passed actions has been already applied it behaves like {@link #noop()} action.
+     *
+     * @param actions queue of actions to be used one by one when {@link Action#apply(Response)} invoked.
+     */
+    public static Action sequence(final Action... actions) {
+        return new Action(new Function<Response, Response>() {
+            private Queue<Action> queue = new LinkedList<>();
+            {
+                for (Action action : actions) {
+                    this.queue.offer(action);
+                }
+            }
+
+            @Override
+            public Response apply(Response input) {
+                Action next = queue.poll();
+                if (next != null) {
+                    input = next.apply(input);
+                }
                 return input;
             }
         });
