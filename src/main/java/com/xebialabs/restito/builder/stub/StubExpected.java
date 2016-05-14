@@ -9,8 +9,9 @@ import com.xebialabs.restito.semantics.Stub;
  */
 public class StubExpected {
 
-    private Stub stub;
+    protected Stub stub;
 
+    //TODO extract into StubBuilder base class
     public StubExpected(Stub stub) {
         this.stub = stub;
     }

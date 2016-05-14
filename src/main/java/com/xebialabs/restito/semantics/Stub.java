@@ -2,6 +2,12 @@ package com.xebialabs.restito.semantics;
 
 import org.glassfish.grizzly.http.server.Response;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.UnaryOperator;
+
+import static com.xebialabs.restito.semantics.Action.noop;
+
 /**
  * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches XXX => do YYY)</p>
  * <p>Just a wrapper for the {@link Action} which will should be performed when {@link Condition} is true.</p>
@@ -13,7 +19,7 @@ public class Stub {
 
     private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
 
-    private Action what = Action.noop();
+    private List<Applicable> what = new CopyOnWriteArrayList<>();
 
     private int appliedTimes = 0;
 
@@ -24,7 +30,19 @@ public class Stub {
      */
     public Stub(Condition when, Action what) {
         this.when = when;
-        this.what = what;
+        this.what.add(what);
+    }
+
+    public Stub(Condition when) {
+        this.when = when;
+    }
+
+    /**
+     * Creates a stub with action and condition
+     */
+    public Stub(Condition when, ActionSequence what) {
+        this.when = when;
+        this.what.addAll(what.getActions());
     }
 
     /**
@@ -38,8 +56,19 @@ public class Stub {
     /**
      * Appends an extra action to the stub
      */
-    public Stub alsoWhat(final Action extraWhat) {
-        what = Action.composite(what, extraWhat);
+    public Stub alsoWhat(final Applicable extraWhat) {
+        //TODO remove?
+        what.replaceAll(new UnaryOperator<Applicable>() {
+            @Override
+            public Applicable apply(Applicable action) {
+                return Action.composite(action, extraWhat);
+            }
+        });
+        return this;
+    }
+
+    public Stub thenWhat(final Applicable nextWhat) {
+        what.add(nextWhat);
         return this;
     }
 
@@ -47,7 +76,7 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return this.when.getPredicate().apply(call);
+        return when.getPredicate().apply(call) && (what.size() == 1 || what.size() > appliedTimes);
     }
 
     /**
@@ -60,7 +89,17 @@ public class Stub {
             }
         }
 
-        response = this.what.apply(response);
+        Applicable action;
+
+        if (what.size() == 1) {
+            action = what.get(0);
+        } else if (what.size() > appliedTimes) {
+            action = what.get(appliedTimes);
+        } else {
+            action = noop();
+        }
+
+        response = action.apply(response);
         appliedTimes++;
         return response;
     }
@@ -86,3 +125,10 @@ public class Stub {
         return expectedTimes;
     }
 }
+
+
+// OK_200, SEQ(1, 2), SEQ(A, B)
+
+
+// OK_200, 1, A
+// OK_200,

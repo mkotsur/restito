@@ -1,7 +1,8 @@
 package guide;
 
 import com.jayway.restassured.RestAssured;
-import com.xebialabs.restito.semantics.Action;
+import com.xebialabs.restito.semantics.ActionSequence;
+import com.xebialabs.restito.semantics.Applicable;
 import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 import org.junit.After;
@@ -12,7 +13,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 import static com.xebialabs.restito.semantics.Action.composite;
-import static com.xebialabs.restito.semantics.Action.sequence;
+import static com.xebialabs.restito.semantics.ActionSequence.sequence;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Condition.delete;
@@ -34,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 
 /**
- * Demonstrates use of {@link com.xebialabs.restito.semantics.Action#sequence(Action...)}.
+ * Demonstrates use of {@link com.xebialabs.restito.semantics.ActionSequence#sequence(Applicable...)}.
  */
 public class SequencedSubActionsTest {
 
@@ -104,17 +105,23 @@ public class SequencedSubActionsTest {
     }
 
     @Test
-    public void shouldReturnDifferentBodyAndStatusForSameRequestByTwoSequences() {
-        whenHttp(server).
-                match(post("/foo")).
-                then(sequence(status(CREATED_201),
-                              status(CONFLICT_409),
-                              status(CREATED_201),
-                              status(NOT_FOUND_404)),
-                     sequence(stringContent("status=CREATED"),
-                              stringContent("status=CONFLICT"),
-                              stringContent("status=CREATED2"))
-                );
+    public void shouldReturnDifferentBodyAndStatusForSameRequestByTwoSequences() throws Exception {
+        ActionSequence responseCodes = sequence(
+                status(CREATED_201),
+                status(CONFLICT_409),
+                status(CREATED_201)
+        );
+
+
+        ActionSequence responseContents = sequence(
+                stringContent("status=CREATED"),
+                stringContent("status=CONFLICT"),
+                stringContent("status=CREATED2")
+        );
+
+        whenHttp(server)
+                .match(post("/foo"))
+                .then(responseCodes, responseContents);
 
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED"));
         given().post("/foo").then().assertThat().statusCode(is(409)).body(equalTo("status=CONFLICT"));

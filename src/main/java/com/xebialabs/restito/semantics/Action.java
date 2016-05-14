@@ -18,12 +18,17 @@ import org.glassfish.grizzly.http.util.HttpStatus;
  *
  * @see org.glassfish.grizzly.http.server.Response
  */
-public class Action implements Applicable {
+public class Action implements Applicable, ActionLike {
 
     private Function<Response, Response> function;
 
     private Action(Function<Response, Response> function) {
         this.function = function;
+    }
+
+    @Override
+    public int sequenceSize() {
+        return 1;
     }
 
     /**
@@ -294,32 +299,6 @@ public class Action implements Applicable {
         });
     }
 
-    /**
-     * Creates a sequence action which contains all passed actions and
-     * executes one by one of them in the same order if {@link Action#apply(Response)} is repeated.
-     * If all passed actions has been already applied it behaves like {@link #noop()} action.
-     *
-     * @param actions queue of actions to be used one by one when {@link Action#apply(Response)} invoked.
-     */
-    public static Action sequence(final Action... actions) {
-        return new Action(new Function<Response, Response>() {
-            private Queue<Action> queue = new LinkedList<>();
-            {
-                for (Action action : actions) {
-                    this.queue.offer(action);
-                }
-            }
-
-            @Override
-            public Response apply(Response input) {
-                Action next = queue.poll();
-                if (next != null) {
-                    input = next.apply(input);
-                }
-                return input;
-            }
-        });
-    }
 
     /**
      * Doing nothing. To be used in DSLs for nicer syntax.

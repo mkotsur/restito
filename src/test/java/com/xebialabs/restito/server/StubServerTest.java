@@ -118,4 +118,9 @@ public class StubServerTest {
         assertEquals(0, server.getStubs().size());
         assertEquals(0, server.getCalls().size());
     }
+
+    @Test
+    public void shouldReturn404WhenTheRequestIsNotCoveredByStubs() {
+        expect().statusCode(404).get("/");
+    }
 }
