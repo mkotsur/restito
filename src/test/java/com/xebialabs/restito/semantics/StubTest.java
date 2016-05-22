@@ -1,7 +1,6 @@
 package com.xebialabs.restito.semantics;
 
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -74,7 +73,7 @@ public class StubTest {
     public void shouldComposeMutationsNegative() {
         Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), contentType("myType"));
 
-        stub.alsoWhat(Action.custom(new Function<Response, Response>() {
+        stub.withExtraAction(Action.custom(new Function<Response, Response>() {
             @Override
             public Response apply(Response input) {
                 input.setCharacterEncoding("UTF-9");
@@ -137,11 +136,12 @@ public class StubTest {
         Function<Response, Response> f1 = mock(Function.class);
         Function<Response, Response> f2 = mock(Function.class);
 
-        Stub stub = new Stub(ALWAYS_TRUE, Action.custom(f1));
-
-        stub.thenWhat(Action.custom(f2));
+        Stub stub = new Stub(ALWAYS_TRUE)
+                .withSequenceItem(Action.custom(f1))
+                .withSequenceItem(Action.custom(f2));
 
         stub.apply(response);
+
         assertEquals(1, stub.getAppliedTimes());
         verify(f1, times(1)).apply(response);
         verify(f2, never()).apply(response);

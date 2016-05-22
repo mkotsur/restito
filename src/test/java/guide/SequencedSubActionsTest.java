@@ -56,9 +56,10 @@ public class SequencedSubActionsTest {
     public void shouldReturnDifferentBodyForSameRequest() {
         whenHttp(server).
                 match(get("/foo")).
-                then(status(OK_200),
-                     sequence(stringContent("Hello Restito."),
-                              stringContent("Hello, again!"))
+                then(status(OK_200))
+                .withSequence(
+                        stringContent("Hello Restito."),
+                        stringContent("Hello, again!")
                 );
 
         // First action from sequence:
@@ -77,26 +78,25 @@ public class SequencedSubActionsTest {
     public void shouldReturnDifferentResponseTwoEndpoints() {
         whenHttp(server).
                 match(get("/foo")).
-                then(status(OK_200),
-                     sequence(stringContent("Hello Restito."),
-                              stringContent("Hello, again!"))
+                then(status(OK_200))
+                .withSequence(stringContent("Hello Restito."),
+                        stringContent("Hello, again!")
                 );
+
         whenHttp(server).
                 match(get("/bar")).
                 then(sequence(status(NOT_FOUND_404),
-                              composite(status(OK_200), stringContent("body")),
-                              composite(status(FORBIDDEN_403), stringContent("admin required"))
-                     )
-                );
+                        composite(status(OK_200), stringContent("body")),
+                        composite(status(FORBIDDEN_403), stringContent("admin required"))
+                ));
 
         given().get("/foo").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("Hello Restito."));
         given().get("/bar").then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(isEmptyString());
         given().get("/foo").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("Hello, again!"));
         given().get("/bar").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("body"));
-        given().get("/foo").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(isEmptyString());
         given().get("/bar").then().assertThat().statusCode(is(FORBIDDEN_403.getStatusCode())).body(equalTo("admin required"));
 
-        verifyHttp(server).times(3,
+        verifyHttp(server).times(2,
                                  method(Method.GET),
                                  uri("/foo"));
         verifyHttp(server).times(3,
@@ -185,10 +185,10 @@ public class SequencedSubActionsTest {
 
         given().get("/foo")
                 .then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(isEmptyString());
-        given().body("UPDATED VALUE").put("/foo")
-                .then().assertThat().statusCode(is(BAD_REQUEST_400.getStatusCode())).body(isEmptyString());
         given().body("INITIAL VALUE").post("/foo")
                 .then().assertThat().statusCode(is(CREATED_201.getStatusCode())).body(isEmptyString());
+        given().body("UPDATED VALUE").put("/foo")
+                .then().assertThat().statusCode(is(BAD_REQUEST_400.getStatusCode())).body(isEmptyString());
         given().get("/foo")
                 .then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("INITIAL VALUE"));
         given().body("INITIAL VALUE, AGAIN").post("/foo")

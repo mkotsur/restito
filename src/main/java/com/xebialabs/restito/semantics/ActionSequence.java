@@ -3,13 +3,13 @@ package com.xebialabs.restito.semantics;
 import org.glassfish.grizzly.http.server.Response;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ActionSequence implements ActionLike {
 
     private List<Applicable> actions;
+
+    private Applicable defaultAction = Action.noop();
 
     public ActionSequence(List<Applicable> actions) {
         this.actions = actions;
@@ -23,7 +23,7 @@ public class ActionSequence implements ActionLike {
     /**
      * Creates a sequence action which contains all passed actions and
      * executes one by one of them in the same order if {@link Action#apply(Response)} is repeated.
-     * If all passed actions has been already applied it behaves like {@link Action#noop()} action.
+     * If all passed actions has been already applied it behaves like {@link #defaultAction} action.
      *
      * @param actions queue of actions to be used one by one when {@link Action#apply(Response)} invoked.
      */
@@ -31,7 +31,19 @@ public class ActionSequence implements ActionLike {
         return new ActionSequence(Arrays.asList(actions));
     }
 
+    /**
+     * Set the action which will be invoked, when all the other actions from this sequence are exhausted.
+     */
+    public ActionSequence withDefaultAction(Applicable defaultAction) {
+        this.defaultAction = defaultAction;
+        return this;
+    }
+
     public List<Applicable> getActions() {
         return actions;
+    }
+
+    public Applicable getDefaultAction() {
+        return defaultAction;
     }
 }

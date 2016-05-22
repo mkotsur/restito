@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.UnaryOperator;
 
+import static com.xebialabs.restito.semantics.Action.composite;
 import static com.xebialabs.restito.semantics.Action.noop;
 
 /**
@@ -19,7 +20,9 @@ public class Stub {
 
     private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
 
-    private List<Applicable> what = new CopyOnWriteArrayList<>();
+    private Applicable action = noop();
+
+    private List<Applicable> actionSequence = new CopyOnWriteArrayList<>();
 
     private int appliedTimes = 0;
 
@@ -28,9 +31,9 @@ public class Stub {
     /**
      * Creates a stub with action and condition
      */
-    public Stub(Condition when, Action what) {
+    public Stub(Condition when, Applicable action) {
         this.when = when;
-        this.what.add(what);
+        this.action = action;
     }
 
     public Stub(Condition when) {
@@ -40,9 +43,9 @@ public class Stub {
     /**
      * Creates a stub with action and condition
      */
-    public Stub(Condition when, ActionSequence what) {
+    public Stub(Condition when, ActionSequence actionSequence) {
         this.when = when;
-        this.what.addAll(what.getActions());
+        this.actionSequence.addAll(actionSequence.getActions());
     }
 
     /**
@@ -56,19 +59,13 @@ public class Stub {
     /**
      * Appends an extra action to the stub
      */
-    public Stub alsoWhat(final Applicable extraWhat) {
-        //TODO remove?
-        what.replaceAll(new UnaryOperator<Applicable>() {
-            @Override
-            public Applicable apply(Applicable action) {
-                return Action.composite(action, extraWhat);
-            }
-        });
+    public Stub withExtraAction(final Applicable extraAction) {
+       action = composite(action, extraAction);
         return this;
     }
 
-    public Stub thenWhat(final Applicable nextWhat) {
-        what.add(nextWhat);
+    public Stub withSequenceItem(final Applicable nextWhat) {
+        actionSequence.add(nextWhat);
         return this;
     }
 
@@ -76,7 +73,7 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return when.getPredicate().apply(call) && (what.size() == 1 || what.size() > appliedTimes);
+        return when.getPredicate().apply(call) && (actionSequence.size() == 0 || actionSequence.size() > appliedTimes);
     }
 
     /**
@@ -89,19 +86,28 @@ public class Stub {
             }
         }
 
-        Applicable action;
+        Applicable chosenAction;
 
-        if (what.size() == 1) {
-            action = what.get(0);
-        } else if (what.size() > appliedTimes) {
-            action = what.get(appliedTimes);
+        if (actionSequence.isEmpty()) {
+            chosenAction = action;
+        } else if (actionSequence.size() > appliedTimes) {
+            chosenAction = composite(action, actionSequence.get(appliedTimes));
         } else {
-            action = noop();
+            chosenAction = action;
         }
 
-        response = action.apply(response);
+        response = chosenAction.apply(response);
         appliedTimes++;
         return response;
+    }
+
+    public Stub withAction(Applicable action) {
+        this.action = action;
+        return this;
+    }
+
+    public void withActionSequence(List<Applicable> actionSequence) {
+        this.actionSequence = new CopyOnWriteArrayList<>(actionSequence);
     }
 
     /**
@@ -125,10 +131,3 @@ public class Stub {
         return expectedTimes;
     }
 }
-
-
-// OK_200, SEQ(1, 2), SEQ(A, B)
-
-
-// OK_200, 1, A
-// OK_200,

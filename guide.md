@@ -192,20 +192,55 @@ See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/sr
 Makes sure that certain stubbed condition has been called some number of times. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
 
 <a name="sequenced_stub_actions" />
-## Sequenced stub actions
+## Sequenced stub actions !!!DRAFT!!!
 
-You can easily chain stub actions:
+Sometimes you need to have different responses based on the sequence number of a request.
+
+### Giving a different response every time
 
 ```java
     whenHttp(server).
             match(get("/demo")).
-            then(status(HttpStatus.OK_200),
-                 sequence(stringContent("Hello Restito."),
-                          stringContent("Hello, again!"))
-            );
+            then(sequence(
+                compose(status(OK_200), stringContent("This is 1")),
+                compose(status(OK_200), stringContent("This is 2"))
+            ));
 ```
 
+The first 2 GETs to `/demo` will return different strings, just as you would expect. All the following requests will be treated as if there was no stub for those: 404 response.
+ 
+### Extracting a shared action
+
+```java
+     whenHttp(server).
+             match(get("/demo")).
+             then(status(OK_200)).
+             withSequence(
+                 composite(stringContent("This is 1")),
+                 composite(stringContent("This is 2"))
+             );
+ ```
+ 
+ `OK_200` will be applied to each GET to `/demo`. First 2 requests will also receive respective string contents. All the following requests will still get `OK_200`.
+    
+    
+### Explicitly defining an action for the overfull requests 
+ 
+ ```java
+      whenHttp(server).
+              match(get("/demo")).
+              then(status(OK_200)).
+              withSequence(
+                  compose(stringContent("This is 1")),
+                  compose(stringContent("This is 2"))
+              ).whenExceeded(
+                status(NOT_ACCEPTABLE_406)
+              );
+  ```
+
 See [SequencedSubActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedSubActionsTest.java).
+
+Credits to @shamoh for this feature.
 
 <a name="autodiscovery_of_stubs_content" />
 ## Autodiscovery of stubs content

@@ -16,7 +16,6 @@ import static com.xebialabs.restito.semantics.Condition.*;
 
 public class SequencedVerificationsTest {
 
-
     private StubServer server;
 
     @Before
