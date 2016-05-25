@@ -24,6 +24,8 @@ public class Stub {
 
     private List<Applicable> actionSequence = new CopyOnWriteArrayList<>();
 
+    private Applicable exceededAction = null;
+
     private int appliedTimes = 0;
 
     private int expectedTimes = 0;
@@ -73,7 +75,7 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return when.getPredicate().apply(call) && (actionSequence.size() == 0 || actionSequence.size() > appliedTimes);
+        return when.getPredicate().apply(call) && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
     }
 
     /**
@@ -92,6 +94,8 @@ public class Stub {
             chosenAction = action;
         } else if (actionSequence.size() > appliedTimes) {
             chosenAction = composite(action, actionSequence.get(appliedTimes));
+        } else if(exceededAction != null) {
+            chosenAction = exceededAction;
         } else {
             chosenAction = action;
         }
@@ -106,8 +110,14 @@ public class Stub {
         return this;
     }
 
-    public void withActionSequence(List<Applicable> actionSequence) {
+    public Stub withActionSequence(List<Applicable> actionSequence) {
         this.actionSequence = new CopyOnWriteArrayList<>(actionSequence);
+        return this;
+    }
+
+    public Stub withExceededAction(Applicable exceededAction) {
+        this.exceededAction = exceededAction;
+        return this;
     }
 
     /**

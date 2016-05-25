@@ -192,7 +192,7 @@ See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/sr
 Makes sure that certain stubbed condition has been called some number of times. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
 
 <a name="sequenced_stub_actions" />
-## Sequenced stub actions !!!DRAFT!!!
+## Sequenced stub actions
 
 Sometimes you need to have different responses based on the sequence number of a request.
 
@@ -237,6 +237,15 @@ The first 2 GETs to `/demo` will return different strings, just as you would exp
                 status(NOT_ACCEPTABLE_406)
               );
   ```
+Will result in:
+
+```  
+GET /demo -> OK_200, "This is 1"
+GET /demo -> OK_200, "This is 1"
+GET /demo -> NOT_ACCEPTABLE_406
+```
+
+If there is no `whenExceeded`, the overfull requests will be treated as if there is no stub for those (i.e. 404).
 
 See [SequencedSubActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedSubActionsTest.java).
 
