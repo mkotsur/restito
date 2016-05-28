@@ -14,7 +14,6 @@ import static com.xebialabs.restito.semantics.Action.charset;
 import static com.xebialabs.restito.semantics.Action.composite;
 import static com.xebialabs.restito.semantics.Action.header;
 import static com.xebialabs.restito.semantics.Action.resourceContent;
-import static com.xebialabs.restito.semantics.ActionSequence.sequence;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static org.mockito.Mockito.any;

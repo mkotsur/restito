@@ -7,8 +7,7 @@ import com.xebialabs.restito.semantics.Action._
 import com.xebialabs.restito.semantics.Condition
 import com.xebialabs.restito.server.StubServer
 import org.glassfish.grizzly.http.util.HttpStatus
-import org.glassfish.grizzly.http.util.HttpStatus.ACCEPTED_202
-import org.glassfish.grizzly.http.util.HttpStatus.NON_AUTHORATIVE_INFORMATION_203
+import org.glassfish.grizzly.http.util.HttpStatus.{ACCEPTED_202, NON_AUTHORATIVE_INFORMATION_203, OK_200}
 import org.hamcrest.Matchers.equalTo
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -32,6 +31,24 @@ class ActionSequencesTest extends FunSpec with BeforeAndAfterAll with Matchers {
   }
 
   describe("Sequence action builder") {
+
+    it("should add actions to the stub via 'withSequence' with an empty `then()`") {
+      whenHttp(server).
+        `match`(Condition.get("/demo")).
+        `then`().
+        withSequence(
+          composite(stringContent("This is 1"), status(OK_200)),
+          composite(stringContent("This is 2"), status(OK_200))
+        )
+
+      given().get("/demo").`then`().assertThat()
+        .statusCode(OK_200.getStatusCode)
+        .body(equalTo("This is 1"))
+
+      given().get("/demo").`then`().assertThat()
+        .statusCode(OK_200.getStatusCode)
+        .body(equalTo("This is 2"))
+    }
 
     it("should add actions to the stub via 'withSequence'") {
       whenHttp(server).

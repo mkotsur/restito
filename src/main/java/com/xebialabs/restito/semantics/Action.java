@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import com.xebialabs.restito.support.file.FileHelper;
 import com.xebialabs.restito.support.resource.ResourceHelper;
@@ -18,17 +16,12 @@ import org.glassfish.grizzly.http.util.HttpStatus;
  *
  * @see org.glassfish.grizzly.http.server.Response
  */
-public class Action implements Applicable, ActionLike {
+public class Action implements Applicable {
 
     private Function<Response, Response> function;
 
     private Action(Function<Response, Response> function) {
         this.function = function;
-    }
-
-    @Override
-    public int sequenceSize() {
-        return 1;
     }
 
     /**
@@ -298,7 +291,6 @@ public class Action implements Applicable, ActionLike {
             }
         });
     }
-
 
     /**
      * Doing nothing. To be used in DSLs for nicer syntax.

@@ -1,10 +1,10 @@
 package com.xebialabs.restito.semantics;
 
+import com.xebialabs.restito.builder.ensure.EnsureHttp;
 import org.glassfish.grizzly.http.server.Response;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.UnaryOperator;
 
 import static com.xebialabs.restito.semantics.Action.composite;
 import static com.xebialabs.restito.semantics.Action.noop;
@@ -18,7 +18,7 @@ import static com.xebialabs.restito.semantics.Action.noop;
  */
 public class Stub {
 
-    private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
+    private Condition when = Condition.custom(Predicates.alwaysTrue());
 
     private Applicable action = noop();
 
@@ -28,7 +28,15 @@ public class Stub {
 
     private int appliedTimes = 0;
 
+    /**
+     * How many times stub has been called
+     */
     private int expectedTimes = 0;
+
+    /**
+     * Should the sequence be completed or not in order to pass {@link EnsureHttp#gotStubsCommitmentsDone}
+     */
+    private Boolean expectSequenceCompleted = false;
 
     /**
      * Creates a stub with action and condition
@@ -120,18 +128,24 @@ public class Stub {
         return this;
     }
 
-    /**
-     * How many times stub has been called
-     */
     public int getAppliedTimes() {
         return appliedTimes;
     }
 
-    /**
-     * Set how many times stub expected to be called
-     */
     public void setExpectedTimes(int expectedTimes) {
         this.expectedTimes = expectedTimes;
+    }
+
+    public void setExpectSequenceCompleted(Boolean expectSequenceCompleted) {
+        this.expectSequenceCompleted = expectSequenceCompleted;
+    }
+
+    public List<Applicable> getActionSequence() {
+        return actionSequence;
+    }
+
+    public Boolean getExpectSequenceCompleted() {
+        return expectSequenceCompleted;
     }
 
     /**

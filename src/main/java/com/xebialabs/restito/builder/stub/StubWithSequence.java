@@ -4,7 +4,7 @@ import com.xebialabs.restito.semantics.Applicable;
 import com.xebialabs.restito.semantics.Stub;
 
 /**
- * <p>Stub which already has a sequence attached.</p>
+ * <p>Stub building stage with a sequence attached..</p>
  */
 public class StubWithSequence {
 
@@ -15,20 +15,16 @@ public class StubWithSequence {
     }
 
     /**
-     * Should happen once
+     * Should receive requests for all steps of the sequence
      */
-    public void mustHappen() {
-        stub.setExpectedTimes(1);
+    public void mustComplete() {
+        stub.setExpectSequenceCompleted(true);
     }
+
 
     /**
-     * Set number of times it should happen
+     * <p>The action to apply for the requests that are exceeding the sequence configuration.</p>
      */
-    public void mustHappen(int times) {
-        stub.setExpectedTimes(times);
-    }
-
-
     public StubWithSequence whenExceeded(Applicable action) {
         this.stub.withExceededAction(action);
         return this;

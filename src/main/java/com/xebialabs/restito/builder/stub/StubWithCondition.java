@@ -5,12 +5,11 @@ import com.xebialabs.restito.server.StubServer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.xebialabs.restito.semantics.Action.*;
 
 /**
- * Next step in stub building. New actions can be attached.
+ * <p>Stub building stage with condition attached.</p>
  */
 public class StubWithCondition {
 
@@ -24,20 +23,25 @@ public class StubWithCondition {
         this.stubServer = stubServer;
     }
 
-    // TODO fix this API!
-    public StubWithAction then(ActionSequence... sequences) {
+    public StubWithAction then() {
+        stubServer.addStub(this.stub);
+        return new StubWithAction(stub);
+    }
+
+
+    public StubWithSequence then(ActionSequence... sequences) {
 
         List<ActionSequence> sequencesList = Arrays.asList(sequences);
 
         int longestSeqSize = 0;
         for (ActionSequence as : sequencesList) {
-            longestSeqSize = as.sequenceSize() > longestSeqSize ? as.sequenceSize() : longestSeqSize;
+            longestSeqSize = as.size() > longestSeqSize ? as.size() : longestSeqSize;
         }
 
         for(int level = 0; level < longestSeqSize; level++) {
             final int currentLevel = level;
             Action reduce = sequencesList.stream().reduce(noop(), (action, actionSequence) -> {
-                if (actionSequence.sequenceSize() <= currentLevel) {
+                if (actionSequence.size() <= currentLevel) {
                     return action;
                 }
 
@@ -48,7 +52,7 @@ public class StubWithCondition {
         }
 
         stubServer.addStub(this.stub);
-        return new StubWithAction(this.stub);
+        return new StubWithSequence(this.stub);
     }
 
     /**
@@ -56,41 +60,6 @@ public class StubWithCondition {
      */
     public StubWithAction then(Applicable... actions) {
         Stub s = this.stub.withAction(composite(actions));
-//        List<Applicable> actionsList = Arrays.asList(actions);
-
-//        int longestSeqSize = 0;
-//        for (ActionLike action : actions) {
-//            if (action.sequenceSize() > longestSeqSize) {
-//                longestSeqSize = action.sequenceSize();
-//            }
-//        }
-//
-//
-//        Action combinedFlatActions = actionsList.stream()
-//                .filter(a -> a instanceof Action)
-//                .map(a -> (Action)a)
-//                .reduce(noop(), (a, acc) -> composite(a, acc));
-//
-//
-//        List<ActionSequence> actionSequences = actionsList.stream()
-//                .filter(a -> a instanceof ActionSequence)
-//                .map(a -> (ActionSequence) a)
-//                .collect(Collectors.toList());
-//
-//        for(int level = 0; level < longestSeqSize; level++) {
-//            final int currentLevel = level;
-//            Action reduce = actionSequences.stream().reduce(combinedFlatActions, (action, actionSequence) -> {
-//                if (actionSequence.sequenceSize() <= currentLevel) {
-//                    return action;
-//                }
-//
-//                return composite(action, actionSequence.getActions().get(currentLevel));
-//            }, (a1, a2) -> Action.composite(a1, a2));
-//
-//            stub.withSequenceItem(reduce);
-//        }
-
-
         stubServer.addStub(s);
         return new StubWithAction(s);
     }

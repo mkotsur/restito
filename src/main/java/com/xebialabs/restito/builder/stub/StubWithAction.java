@@ -5,7 +5,7 @@ import com.xebialabs.restito.semantics.Applicable;
 import com.xebialabs.restito.semantics.Stub;
 
 /**
- * <p>Stub which already has actions attached.</p>
+ * <p>Stub building stage with actions attached.</p>
  */
 public class StubWithAction {
 
@@ -29,12 +29,8 @@ public class StubWithAction {
         stub.setExpectedTimes(times);
     }
 
-    public StubWithSequence withSequence(ActionSequence sequence) {
-        stub.withActionSequence(sequence.getActions());
-        return new StubWithSequence(stub);
-    }
-
     public StubWithSequence withSequence(Applicable... actions) {
-        return withSequence(ActionSequence.sequence(actions));
+        stub.withActionSequence(ActionSequence.sequence(actions).getActions());
+        return new StubWithSequence(stub);
     }
 }

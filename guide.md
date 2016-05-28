@@ -189,7 +189,7 @@ See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/sr
 <a name="expected_stubs" />
 ## Expected stubs
 
-Makes sure that certain stubbed condition has been called some number of times. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
+Makes sure that certain stubbed condition has been called some number of times, or the sequence has been completed. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
 
 <a name="sequenced_stub_actions" />
 ## Sequenced stub actions
@@ -249,7 +249,7 @@ If there is no `whenExceeded`, the overfull requests will be treated as if there
 
 See [SequencedSubActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedSubActionsTest.java).
 
-Credits to @shamoh for this feature.
+Credits to [@shamoh](https://github.com/shamoh) for this feature.
 
 <a name="autodiscovery_of_stubs_content" />
 ## Autodiscovery of stubs content

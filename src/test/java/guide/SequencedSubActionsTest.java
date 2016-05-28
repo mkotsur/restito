@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 
 /**
- * Demonstrates use of {@link com.xebialabs.restito.semantics.ActionSequence#sequence(Applicable...)}.
+ * Demonstrates use of {@link ActionSequence#sequence(Applicable...)}.
  */
 public class SequencedSubActionsTest {
 
@@ -56,7 +56,7 @@ public class SequencedSubActionsTest {
     public void shouldReturnDifferentBodyForSameRequest() {
         whenHttp(server).
                 match(get("/foo")).
-                then(status(OK_200))
+                then(status(OK_200)) // This action will be applied to each response of the sequence
                 .withSequence(
                         stringContent("Hello Restito."),
                         stringContent("Hello, again!")
@@ -70,8 +70,8 @@ public class SequencedSubActionsTest {
         given().get("/foo").then().assertThat().body(isEmptyString());
 
         verifyHttp(server).times(3,
-                                 method(Method.GET),
-                                 uri("/foo"));
+                method(Method.GET),
+                uri("/foo"));
     }
 
     @Test
@@ -97,11 +97,11 @@ public class SequencedSubActionsTest {
         given().get("/bar").then().assertThat().statusCode(is(FORBIDDEN_403.getStatusCode())).body(equalTo("admin required"));
 
         verifyHttp(server).times(2,
-                                 method(Method.GET),
-                                 uri("/foo"));
+                method(Method.GET),
+                uri("/foo"));
         verifyHttp(server).times(3,
-                                 method(Method.GET),
-                                 uri("/bar"));
+                method(Method.GET),
+                uri("/bar"));
     }
 
     @Test
@@ -111,7 +111,6 @@ public class SequencedSubActionsTest {
                 status(CONFLICT_409),
                 status(CREATED_201)
         );
-
 
         ActionSequence responseContents = sequence(
                 stringContent("status=CREATED"),
@@ -130,8 +129,8 @@ public class SequencedSubActionsTest {
         given().post("/foo").then().assertThat().body(isEmptyString());
 
         verifyHttp(server).times(5,
-                                 method(Method.POST),
-                                 uri("/foo"));
+                method(Method.POST),
+                uri("/foo"));
     }
 
     @Test
@@ -139,9 +138,9 @@ public class SequencedSubActionsTest {
         whenHttp(server).
                 match(post("/foo")).
                 then(sequence(composite(status(CREATED_201), stringContent("status=CREATED")),
-                              composite(status(CONFLICT_409), stringContent("status=CONFLICT")),
-                              composite(status(CREATED_201), stringContent("status=CREATED2")),
-                              status(NOT_FOUND_404))
+                        composite(status(CONFLICT_409), stringContent("status=CONFLICT")),
+                        composite(status(CREATED_201), stringContent("status=CREATED2")),
+                        status(NOT_FOUND_404))
                 );
 
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED"));
@@ -151,8 +150,8 @@ public class SequencedSubActionsTest {
         given().post("/foo").then().assertThat().body(isEmptyString());
 
         verifyHttp(server).times(5,
-                                 method(Method.POST),
-                                 uri("/foo"));
+                method(Method.POST),
+                uri("/foo"));
     }
 
     // two sequences in multiple whenHttp, different endpoints
