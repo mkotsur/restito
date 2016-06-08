@@ -85,4 +85,9 @@ public class Stub {
     public int getExpectedTimes() {
         return expectedTimes;
     }
+
+    @Override
+    public String toString() {
+        return "Stub@" + this.hashCode();
+    }
 }
