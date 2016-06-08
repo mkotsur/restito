@@ -303,4 +303,21 @@ public class Action implements Applicable {
             }
         });
     }
+
+    /**
+     * Sleeps so many milliseconds, emulating slow requests.
+     */
+    public static Action delay(final Integer delay) {
+        return new Action(new Function<Response, Response>() {
+            @Override
+            public Response apply(Response input) {
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return input;
+            }
+        });
+    }
 }
