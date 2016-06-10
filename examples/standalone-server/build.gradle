@@ -7,11 +7,12 @@ version = '1.0'
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-  compile 'com.xebialabs.restito:restito:0.8.1' //  Restito dependency
+  compile 'com.xebialabs.restito:restito:0.8.2' //  Restito dependency
 }
 
 mainClassName = "com.xebialabs.restito.examples.MyServer"
