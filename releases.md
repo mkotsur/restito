@@ -1,6 +1,14 @@
 Restito releases
 ============================================
 
+**0.8.2 is the last feature-release which works with Java 7**
+
+In order to add new features more productively I'd like to switch to Java 8. Few users were asked and indicated that this wouldn't pose a problem for them.
+
+* 0.8.2
+    * Some documentation/links fixes
+    * Added the ability to specify keystore and truststore through the standard java system properties. #47
+    * Added delay() action. Closes #51
 * 0.8.1
     * Fixed expired SSL certificate.
 * 0.8
