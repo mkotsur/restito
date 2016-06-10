@@ -5,6 +5,7 @@
 .idea/
 out/
 
+build/
 examples/*/target
 
 .gradle/
