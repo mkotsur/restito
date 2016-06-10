@@ -1,4 +1,10 @@
-build
-*.iml
-*.ipr
+# Idea project files
 *.iws
+*.ipr
+*.iml
+.idea/
+out/
+
+examples/*/target
+
+.gradle/
