@@ -64,11 +64,11 @@ public class ComplexScenarioTest {
 
         public String concatenate() {
             final Response b = given()
-                    .contentType(ContentType.JSON)
+                    .contentType("application/json; charset=ISO-8859-1")
                     .get("/serviceB");
             final Response c = given().
                     body("{}").
-                    contentType(ContentType.JSON).
+                    contentType("application/json; charset=ISO-8859-1").
                     when().
                     post("/serviceC");
 
