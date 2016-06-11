@@ -1,3 +1,7 @@
 test:
   post:
     - gradle javadoc
+
+machine:
+  java:
+    version: openjdk8

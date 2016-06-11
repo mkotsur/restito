@@ -24,7 +24,7 @@ public class StubHttp {
     /**
      * Adds some conditions to the stub
      */
-    public StubActioned match(Condition... conditions) {
-        return new StubActioned(stubServer, Condition.composite(conditions));
+    public StubWithCondition match(Condition... conditions) {
+        return new StubWithCondition(stubServer, Condition.composite(conditions));
     }
 }

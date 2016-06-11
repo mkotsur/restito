@@ -13,6 +13,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
     * [Basic authentication](#basic_authentication)
     * [Automatic content type](#automatic_content_type)
     * [Expected stubs](#expected_stubs)
+    * [Sequenced stub actions](#sequenced_stub_actions)
     * [Autodiscovery of stubs content](#autodiscovery_of_stubs_content) <sup style="color: orange">Experimental!</sup>
 * [Verifying calls to server](#verifying_calls_to_server)
     * [Simple verifications](#simple_verifications)
@@ -31,14 +32,14 @@ There is a [nice example](https://github.com/mkotsur/restito/blob/master/example
 # Starting and stopping stub server
 
 ```java
-	@Before
-	public void start() {
-		server = new StubServer().run();
-	}
+    @Before
+    public void start() {
+        server = new StubServer().run();
+    }
 
-	...
+    ...
 
-	@After
+    @After
     public void stop() {
         server.stop();
     }
@@ -50,12 +51,12 @@ There is a [nice example](https://github.com/mkotsur/restito/blob/master/example
 By default, [StubServer.DEFAULT_PORT](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html#DEFAULT_PORT) is used, but if it's busy, then next available will be taken.
 
 ```java
-	@Test
-	public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
-		StubServer server1 = new StubServer().run();
-		StubServer server2 = new StubServer().run();
-		assertTrue(server2.getPort() > server1.getPort());
-	}
+    @Test
+    public void shouldStartServerOnRandomPortWhenDefaultPortIsBusy() {
+        StubServer server1 = new StubServer().run();
+        StubServer server2 = new StubServer().run();
+        assertTrue(server2.getPort() > server1.getPort());
+    }
 ```
 If you want to specify port explicitly, then you can do something like that:
 
@@ -104,9 +105,9 @@ import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Condition.*;
     ...
-		whenHttp(server).
-				match(get("/asd"), parameter("bar", "foo")).
-				then(ok(), stringContent("GET asd with parameter bar=foo"));
+        whenHttp(server).
+                match(get("/asd"), parameter("bar", "foo")).
+                then(ok(), stringContent("GET asd with parameter bar=foo"));
 ```
 
 In this example your stub will return mentioned string content when GET request with HTTP parameter bar=foo is done.
@@ -117,7 +118,7 @@ If you want to use a custom condition, it's also very easy:
 
 ```java
 import static com.xebialabs.restito.semantics.Condition.*;
-import com.google.common.base.Predicate;
+import com.xebialabs.restito.semantics.Predicate;
 import com.xebialabs.restito.semantics.Call;
     ...
         Predicate<Call> uriEndsWithA = new Predicate<Call>() {
@@ -178,7 +179,7 @@ The first line makes sure that server responds with status `200` when client sen
 <a name="automatic_content_type" />
 ## Automatic content type
 
-When you use action [resourceContent\(\)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent\(java.lang.String\)), Restito will look at file extension and if it it's one of the types below, appropriate Content-Type will be set:
+When you use action [resourceContent\(\)](https://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent-java.lang.String-), Restito will look at file extension and if it it's one of the types below, appropriate Content-Type will be set:
 
 * .xml => application/xml
 * .json => application/json
@@ -188,7 +189,67 @@ See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/sr
 <a name="expected_stubs" />
 ## Expected stubs
 
-Makes sure that certain stubbed condition has been called some number of times. See [StubExpectedTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubExpectedTest.java) to learn how to do it.
+Makes sure that certain stubbed condition has been called some number of times, or the sequence has been completed. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
+
+<a name="sequenced_stub_actions" />
+## Sequenced stub actions
+
+Sometimes you need to have different responses based on the sequence number of a request.
+
+### Giving a different response every time
+
+```java
+    whenHttp(server).
+            match(get("/demo")).
+            then(sequence(
+                compose(status(OK_200), stringContent("This is 1")),
+                compose(status(OK_200), stringContent("This is 2"))
+            ));
+```
+
+The first 2 GETs to `/demo` will return different strings, just as you would expect. All the following requests will be treated as if there was no stub for those: 404 response.
+ 
+### Extracting a shared action
+
+```java
+     whenHttp(server).
+             match(get("/demo")).
+             then(status(OK_200)).
+             withSequence(
+                 composite(stringContent("This is 1")),
+                 composite(stringContent("This is 2"))
+             );
+ ```
+ 
+ `OK_200` will be applied to each GET to `/demo`. First 2 requests will also receive respective string contents. All the following requests will still get `OK_200`.
+    
+    
+### Explicitly defining an action for the overfull requests 
+ 
+ ```java
+      whenHttp(server).
+              match(get("/demo")).
+              then(status(OK_200)).
+              withSequence(
+                  compose(stringContent("This is 1")),
+                  compose(stringContent("This is 2"))
+              ).whenExceeded(
+                status(NOT_ACCEPTABLE_406)
+              );
+  ```
+Will result in:
+
+```  
+GET /demo -> OK_200, "This is 1"
+GET /demo -> OK_200, "This is 1"
+GET /demo -> NOT_ACCEPTABLE_406
+```
+
+If there is no `whenExceeded`, the overfull requests will be treated as if there is no stub for those (i.e. 404).
+
+See [SequencedSubActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedSubActionsTest.java).
+
+Credits to [@shamoh](https://github.com/shamoh) for this feature.
 
 <a name="autodiscovery_of_stubs_content" />
 ## Autodiscovery of stubs content
@@ -228,7 +289,7 @@ To verify that some call to the server has happened once, you may use following 
     );
 ```
 
-For verifications you use the same conditions as for stubbing and complete list of them can be found at [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) javadoc and [custom conditions](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html#custom\(com.google.common.base.Predicate\)) can easily be created.
+For verifications you use the same conditions as for stubbing and complete list of them can be found at [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) javadoc and [custom conditions](https://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html#custom-com.xebialabs.restito.semantics.Predicate-) can easily be created.
 
 See [SimpleVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SimpleVerificationsTest.java).
 
@@ -238,8 +299,8 @@ See [SimpleVerificationsTest](https://github.com/mkotsur/restito/blob/master/src
 
 You have more options to limit number of calls:
 
-* [never(Condition... conditions)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#never\(com.xebialabs.restito.semantics.Condition...\))
-* [times(int t, Condition... conditions)](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#times\(int,%20com.xebialabs.restito.semantics.Condition...\))
+* [never(Condition... conditions)](https://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#never-com.xebialabs.restito.semantics.Condition...-)
+* [times(int t, Condition... conditions)](https://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/builder/verify/VerifyHttp.html#times-int-com.xebialabs.restito.semantics.Condition...-)
 
 See [LimitingNumberOfCallsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/LimitingNumberOfCallsTest.java).
 

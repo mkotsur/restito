@@ -27,12 +27,24 @@ public class EnsureHttp {
 
     public void gotStubsCommitmentsDone() {
         for (Stub stub : stubs) {
-            if (stub.getExpectedTimes() == stub.getAppliedTimes()) {
-                continue;
+            if (stub.getExpectedTimes() > 0) {
+                if (stub.getExpectedTimes() == stub.getAppliedTimes()) {
+                    continue;
+                }
+                throw new AssertionError(
+                        format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes())
+                );
             }
-            throw new AssertionError(
-                format("Expected stub %s to be called %s times, called %s times instead", stub.toString(), stub.getExpectedTimes(), stub.getAppliedTimes())
-            );
+
+            if (stub.getExpectSequenceCompleted()) {
+                if (stub.getAppliedTimes() < stub.getActionSequence().size()) {
+                    throw new AssertionError(
+                            format("Expected stub %s to cover all %s sequence steps, called %s times instead", stub.toString(), stub.getActionSequence().size(), stub.getAppliedTimes())
+                    );
+                }
+            }
+
+
         }
 
     }

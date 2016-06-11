@@ -17,7 +17,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @RunWith(classOf[JUnitRunner])
-class QuickRequestsTest extends FunSpec with BeforeAndAfterAll with  Matchers {
+class QuickRequestsTest extends FunSpec with BeforeAndAfterAll with Matchers {
 
   implicit val system: ActorSystem = ActorSystem()
 

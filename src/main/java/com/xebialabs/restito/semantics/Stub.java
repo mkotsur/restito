@@ -1,6 +1,13 @@
 package com.xebialabs.restito.semantics;
 
+import com.xebialabs.restito.builder.ensure.EnsureHttp;
 import org.glassfish.grizzly.http.server.Response;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.xebialabs.restito.semantics.Action.composite;
+import static com.xebialabs.restito.semantics.Action.noop;
 
 /**
  * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches XXX => do YYY)</p>
@@ -11,20 +18,44 @@ import org.glassfish.grizzly.http.server.Response;
  */
 public class Stub {
 
-    private Condition when = Condition.custom(Predicates.<Call>alwaysTrue());
+    private Condition when = Condition.custom(Predicates.alwaysTrue());
 
-    private Action what = Action.noop();
+    private Applicable action = noop();
+
+    private List<Applicable> actionSequence = new CopyOnWriteArrayList<>();
+
+    private Applicable exceededAction = null;
 
     private int appliedTimes = 0;
 
+    /**
+     * How many times stub has been called
+     */
     private int expectedTimes = 0;
+
+    /**
+     * Should the sequence be completed or not in order to pass {@link EnsureHttp#gotStubsCommitmentsDone}
+     */
+    private Boolean expectSequenceCompleted = false;
 
     /**
      * Creates a stub with action and condition
      */
-    public Stub(Condition when, Action what) {
+    public Stub(Condition when, Applicable action) {
         this.when = when;
-        this.what = what;
+        this.action = action;
+    }
+
+    public Stub(Condition when) {
+        this.when = when;
+    }
+
+    /**
+     * Creates a stub with action and condition
+     */
+    public Stub(Condition when, ActionSequence actionSequence) {
+        this.when = when;
+        this.actionSequence.addAll(actionSequence.getActions());
     }
 
     /**
@@ -38,8 +69,13 @@ public class Stub {
     /**
      * Appends an extra action to the stub
      */
-    public Stub alsoWhat(final Action extraWhat) {
-        what = Action.composite(what, extraWhat);
+    public Stub withExtraAction(final Applicable extraAction) {
+       action = composite(action, extraAction);
+        return this;
+    }
+
+    public Stub withSequenceItem(final Applicable nextWhat) {
+        actionSequence.add(nextWhat);
         return this;
     }
 
@@ -47,7 +83,7 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return this.when.getPredicate().apply(call);
+        return when.getPredicate().apply(call) && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
     }
 
     /**
@@ -60,23 +96,56 @@ public class Stub {
             }
         }
 
-        response = this.what.apply(response);
+        Applicable chosenAction;
+
+        if (actionSequence.isEmpty()) {
+            chosenAction = action;
+        } else if (actionSequence.size() > appliedTimes) {
+            chosenAction = composite(action, actionSequence.get(appliedTimes));
+        } else if(exceededAction != null) {
+            chosenAction = exceededAction;
+        } else {
+            chosenAction = action;
+        }
+
+        response = chosenAction.apply(response);
         appliedTimes++;
         return response;
     }
 
-    /**
-     * How many times stub has been called
-     */
+    public Stub withAction(Applicable action) {
+        this.action = action;
+        return this;
+    }
+
+    public Stub withActionSequence(List<Applicable> actionSequence) {
+        this.actionSequence = new CopyOnWriteArrayList<>(actionSequence);
+        return this;
+    }
+
+    public Stub withExceededAction(Applicable exceededAction) {
+        this.exceededAction = exceededAction;
+        return this;
+    }
+
     public int getAppliedTimes() {
         return appliedTimes;
     }
 
-    /**
-     * Set how many times stub expected to be called
-     */
     public void setExpectedTimes(int expectedTimes) {
         this.expectedTimes = expectedTimes;
+    }
+
+    public void setExpectSequenceCompleted(Boolean expectSequenceCompleted) {
+        this.expectSequenceCompleted = expectSequenceCompleted;
+    }
+
+    public List<Applicable> getActionSequence() {
+        return actionSequence;
+    }
+
+    public Boolean getExpectSequenceCompleted() {
+        return expectSequenceCompleted;
     }
 
     /**

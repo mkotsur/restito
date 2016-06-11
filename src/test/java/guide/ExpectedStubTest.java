@@ -11,10 +11,12 @@ import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
-import static com.xebialabs.restito.semantics.Action.ok;
-import static com.xebialabs.restito.semantics.Action.success;
+import static com.xebialabs.restito.semantics.Action.*;
+import static com.xebialabs.restito.semantics.Action.stringContent;
+import static com.xebialabs.restito.semantics.ActionSequence.sequence;
 import static com.xebialabs.restito.semantics.Condition.get;
 import static com.xebialabs.restito.semantics.Condition.uri;
+import static org.glassfish.grizzly.http.util.HttpStatus.OK_200;
 
 public class ExpectedStubTest {
 
@@ -76,6 +78,37 @@ public class ExpectedStubTest {
 
     @Test
     public void shouldPassWhenNoStubCommitments() {
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+
+
+    @Test(expected = AssertionError.class)
+    public void shouldFailWhenTheSequenceHasNotBeenCompleted() {
+        whenHttp(server).
+                match(get("/should-be-completed")).
+                then(sequence(
+                        composite(status(OK_200), stringContent("1")),
+                        composite(status(OK_200), stringContent("2"))
+                )).mustComplete();
+
+        given().get("/should-be-completed");
+
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    @Test
+    public void shouldPassWhenTheSequenceHasBeenCompleted() {
+        whenHttp(server).
+                match(get("/should-be-completed")).
+                then(sequence(
+                        composite(status(OK_200), stringContent("1")),
+                        composite(status(OK_200), stringContent("2"))
+                )).mustComplete();
+
+        given().get("/should-be-completed");
+        given().get("/should-be-completed");
+
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 }
