@@ -2,6 +2,7 @@ package com.xebialabs.restito.semantics;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>

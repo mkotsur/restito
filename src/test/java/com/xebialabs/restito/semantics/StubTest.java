@@ -6,14 +6,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.function.Function;
+
 import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.ActionSequence.sequence;
-import static org.glassfish.grizzly.http.util.HttpStatus.ACCEPTED_202;
-import static org.glassfish.grizzly.http.util.HttpStatus.CREATED_201;
-import static org.glassfish.grizzly.http.util.HttpStatus.OK_200;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.glassfish.grizzly.http.util.HttpStatus.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 

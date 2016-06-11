@@ -1,14 +1,8 @@
 package com.xebialabs.restito.server;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Stub;
+import com.xebialabs.restito.support.log.CallsHelper;
 import org.apache.mina.util.AvailablePortFinder;
 import org.glassfish.grizzly.PortRange;
 import org.glassfish.grizzly.http.server.*;
@@ -18,10 +12,16 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.xebialabs.restito.semantics.Call;
-import com.xebialabs.restito.semantics.Stub;
-import com.xebialabs.restito.support.behavior.Behavior;
-import com.xebialabs.restito.support.log.CallsHelper;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.Collections.unmodifiableList;
 
@@ -68,13 +68,6 @@ public class StubServer {
     public StubServer(int port, Stub... stubs) {
         this.stubs.addAll(Arrays.asList(stubs));
         simpleServer = HttpServer.createSimpleServer(null, port);
-    }
-
-    /**
-     * Creates a server based on Behavior object
-     */
-    public StubServer(Behavior behavior) {
-        this(behavior.getStubs().toArray(new Stub[behavior.getStubs().size()]));
     }
 
     /**

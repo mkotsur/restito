@@ -1,6 +1,5 @@
 package guide;
 
-import com.xebialabs.restito.semantics.Predicate;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
@@ -10,6 +9,8 @@ import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.server.StubServer;
+
+import java.util.function.Predicate;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
@@ -89,12 +90,7 @@ public class StubConditionsAndActionsTest {
 
     @Test
     public void shouldAllowStubbingWithCustomCondition() {
-        Predicate<Call> uriEndsWithA = new Predicate<Call>() {
-            @Override
-            public boolean apply(final Call input) {
-                return input.getUri().endsWith("a");
-            }
-        };
+        Predicate<Call> uriEndsWithA = input -> input.getUri().endsWith("a");
         whenHttp(server).match(custom(uriEndsWithA)).then(ok());
         expect().statusCode(200).get("/a");
         expect().statusCode(404).get("/b");

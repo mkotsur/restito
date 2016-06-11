@@ -128,7 +128,6 @@ public class ActionTest {
     @Test
     public void shouldCreateCompositeActionFromApplicables() {
         composite((Applicable)status(HttpStatus.NOT_ACCEPTABLE_406)).apply(response);
-
         verify(response).setStatus(HttpStatus.NOT_ACCEPTABLE_406);
     }
 

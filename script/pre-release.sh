@@ -12,4 +12,4 @@ sed -i '' -e "s/$CURRENT_VERSION/$1/g" examples/standalone-server/build.gradle
 
 echo "Don't forget to create release notes. This is what has been done up till now"
 
-git log --pretty=oneline --abbrev-commit $CURRENT_VERSION...HEAD
+git log --pretty=oneline --abbrev-commit ${CURRENT_VERSION}...HEAD

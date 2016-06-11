@@ -3,6 +3,7 @@ package com.xebialabs.restito.semantics;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.jayway.jsonpath.JsonPath;
@@ -45,7 +46,7 @@ public class Condition {
      * Check if call satisfies the condition
      */
     public boolean check(Call input) {
-        return getPredicate().apply(input);
+        return getPredicate().test(input);
     }
 
     // Factory methods
@@ -54,11 +55,7 @@ public class Condition {
      * Checks HTTP method
      */
     public static Condition method(final Method m) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return m.equals(input.getMethod());
-            }
-        });
+        return new Condition(input -> m.equals(input.getMethod()));
     }
 
     /**
@@ -79,78 +76,49 @@ public class Condition {
      * Checks HTTP parameters. Also work with multi-valued parameters
      */
     public static Condition parameter(final String key, final String... parameterValues) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return Arrays.equals(input.getParameters().get(key), parameterValues);
-            }
-        });
+        return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues));
     }
 
     /**
      * URI exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURI()}
      */
     public static Condition uri(final String uri) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUri().equals(uri);
-            }
-        });
+        return new Condition(input -> input.getUri().equals(uri));
     }
 
     /**
      * URL exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURL)}
      */
     public static Condition url(final String url) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUrl().equals(url);
-            }
-        });
+        return new Condition(input -> input.getUrl().equals(url));
     }
 
     /**
      * URI ends with
      */
     public static Condition endsWithUri(final String uri) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUri().endsWith(uri);
-            }
-        });
+        return new Condition(input -> input.getUri().endsWith(uri));
     }
 
     /**
      * URI starts with
      */
     public static Condition startsWithUri(final String uri) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUri().startsWith(uri);
-            }
-        });
+        return new Condition(input -> input.getUri().startsWith(uri));
     }
 
     /**
      * URI starts with
      */
     public static Condition matchesUri(final Pattern p) {
-        return new Condition(new Predicate<Call>() {
-            public boolean apply(Call input) {
-                return input.getUri().matches(p.pattern());
-            }
-        });
+        return new Condition(input -> input.getUri().matches(p.pattern()));
     }
 
     /**
      * Contains non-empty POST body
      */
     public static Condition withPostBody() {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return input.getPostBody() != null && input.getPostBody().length() > 0;
-            }
-        });
+        return new Condition(input -> input.getPostBody() != null && input.getPostBody().length() > 0);
     }
 
     /**
@@ -159,12 +127,7 @@ public class Condition {
     public static Condition basicAuth(String username, String password) {
         final String authString = username + ":" + password;
         final String encodedAuthString = new String(Base64.encodeBase64(authString.getBytes()));
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return ("Basic " + encodedAuthString).equals(input.getAuthorization());
-            }
-        });
+        return new Condition(input -> ("Basic " + encodedAuthString).equals(input.getAuthorization()));
     }
 
     /**
@@ -185,24 +148,14 @@ public class Condition {
      * With POST body containing string
      */
     public static Condition withPostBodyContaining(final String str) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return input.getPostBody() != null && input.getPostBody().contains(str);
-            }
-        });
+        return new Condition(input -> input.getPostBody() != null && input.getPostBody().contains(str));
     }
 
     /**
      * With post body matching pattern
      */
     public static Condition withPostBodyContaining(final Pattern pattern) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return input.getPostBody().matches(pattern.pattern());
-            }
-        });
+        return new Condition(input -> input.getPostBody().matches(pattern.pattern()));
     }
 
     /**
@@ -215,12 +168,7 @@ public class Condition {
      * @return
      */
     public static Condition withPostBodyContainingJsonPath(final String pattern, final Object value) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                return value.equals(JsonPath.parse(input.getPostBody()).read(pattern));
-            }
-        });
+        return new Condition(input -> value.equals(JsonPath.parse(input.getPostBody()).read(pattern)));
     }
 
     /**
@@ -228,14 +176,11 @@ public class Condition {
      * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
      */
     public static Condition withHeader(final String key) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                for (String k : input.getHeaders().keySet()) {
-                    if (k.equalsIgnoreCase(key)) return true;
-                }
-                return false;
+        return new Condition(input -> {
+            for (String k : input.getHeaders().keySet()) {
+                if (k.equalsIgnoreCase(key)) return true;
             }
+            return false;
         });
     }
 
@@ -244,16 +189,13 @@ public class Condition {
      * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
      */
     public static Condition withHeader(final String key, final String value) {
-        return new Condition(new Predicate<Call>() {
-            @Override
-            public boolean apply(Call input) {
-                for (Map.Entry<String, String> e : input.getHeaders().entrySet()) {
-                    if (e.getKey().equalsIgnoreCase(key)) {
-                        return (value == null && e.getValue() == null) || e.getValue().equals(value);
-                    }
+        return new Condition(input -> {
+            for (Map.Entry<String, String> e : input.getHeaders().entrySet()) {
+                if (e.getKey().equalsIgnoreCase(key)) {
+                    return (value == null && e.getValue() == null) || e.getValue().equals(value);
                 }
-                return false;
             }
+            return false;
         });
     }
 

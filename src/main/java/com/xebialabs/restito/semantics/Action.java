@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.function.Function;
 
 import com.xebialabs.restito.support.file.FileHelper;
 import com.xebialabs.restito.support.resource.ResourceHelper;
@@ -61,11 +62,9 @@ public class Action implements Applicable {
      * Sets HTTP status to response
      */
     public static Action status(final HttpStatus status) {
-        return new Action(new Function<Response, Response>() {
-            public Response apply(Response input) {
-                input.setStatus(status);
-                return input;
-            }
+        return new Action(input -> {
+            input.setStatus(status);
+            return input;
         });
     }
 
@@ -79,13 +78,10 @@ public class Action implements Applicable {
      * </ul>
      */
     public static Action resourceContent(final String resourcePath) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                final HttpResponsePacket responsePacket = input.getResponse();
-                String encoding = responsePacket == null ? input.getCharacterEncoding() : responsePacket.getCharacterEncoding();
-                return resourceContent(resourcePath, encoding).apply(input);
-            }
+        return new Action(input -> {
+            final HttpResponsePacket responsePacket = input.getResponse();
+            String encoding = responsePacket == null ? input.getCharacterEncoding() : responsePacket.getCharacterEncoding();
+            return resourceContent(resourcePath, encoding).apply(input);
         });
     }
 
@@ -146,17 +142,15 @@ public class Action implements Applicable {
      * Writes bytes content to response
      */
     public static Action bytesContent(final byte[] content) {
-        return new Action(new Function<Response, Response>() {
-            public Response apply(Response response) {
+        return new Action(response -> {
 
-                response.setContentLength(content.length);
-                try {
-                    response.getOutputStream().write(content);
-                } catch (IOException e) {
-                    throw new RuntimeException("Can not write resource content for restito stubbing.");
-                }
-                return response;
+            response.setContentLength(content.length);
+            try {
+                response.getOutputStream().write(content);
+            } catch (IOException e) {
+                throw new RuntimeException("Can not write resource content for restito stubbing.");
             }
+            return response;
         });
     }
 
@@ -171,12 +165,9 @@ public class Action implements Applicable {
      * Sets key-value header on response
      */
     public static Action header(final String key, final String value) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                input.setHeader(key, value);
-                return input;
-            }
+        return new Action(input -> {
+            input.setHeader(key, value);
+            return input;
         });
     }
 
@@ -184,12 +175,9 @@ public class Action implements Applicable {
      * Sets content type to the response
      */
     public static Action contentType(final String contentType) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(final Response r) {
-                r.setContentType(contentType);
-                return r;
-            }
+        return new Action(r -> {
+            r.setContentType(contentType);
+            return r;
         });
     }
 
@@ -197,12 +185,9 @@ public class Action implements Applicable {
      * Sets charset of the response (must come before stringContent/resourceContent Action)
      */
     public static Action charset(final String charset) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(final Response r) {
-                r.setCharacterEncoding(charset);
-                return r;
-            }
+        return new Action(r -> {
+            r.setCharacterEncoding(charset);
+            return r;
         });
     }
 
@@ -224,13 +209,10 @@ public class Action implements Applicable {
      * Returns unauthorized response
      */
     public static Action unauthorized(final String realm) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response r) {
-                r.addHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
-                r.setStatus(HttpStatus.UNAUTHORIZED_401);
-                return r;
-            }
+        return new Action(r -> {
+            r.addHeader("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
+            r.setStatus(HttpStatus.UNAUTHORIZED_401);
+            return r;
         });
     }
 
@@ -246,15 +228,12 @@ public class Action implements Applicable {
      * executes them in the same order.
      */
     public static Action composite(final Applicable... actions) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                for (Applicable action : actions) {
-                    action.apply(input);
-                }
-
-                return input;
+        return new Action(input -> {
+            for (Applicable action : actions) {
+                action.apply(input);
             }
+
+            return input;
         });
     }
 
@@ -263,15 +242,12 @@ public class Action implements Applicable {
      * executes them in the same order.
      */
     public static Action composite(final Collection<Applicable> applicables) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                for (Applicable action : applicables) {
-                    action.apply(input);
-                }
-
-                return input;
+        return new Action(input -> {
+            for (Applicable action : applicables) {
+                action.apply(input);
             }
+
+            return input;
         });
     }
 
@@ -280,15 +256,12 @@ public class Action implements Applicable {
      * executes them in the same order.
      */
     public static Action composite(final Action... actions) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                for (Applicable action : actions) {
-                    action.apply(input);
-                }
-
-                return input;
+        return new Action(input -> {
+            for (Applicable action : actions) {
+                action.apply(input);
             }
+
+            return input;
         });
     }
 
@@ -296,28 +269,20 @@ public class Action implements Applicable {
      * Doing nothing. To be used in DSLs for nicer syntax.
      */
     public static Action noop() {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                return input;
-            }
-        });
+        return new Action(input -> input);
     }
 
     /**
      * Sleeps so many milliseconds, emulating slow requests.
      */
     public static Action delay(final Integer delay) {
-        return new Action(new Function<Response, Response>() {
-            @Override
-            public Response apply(Response input) {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                return input;
+        return new Action(input -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
+            return input;
         });
     }
 }

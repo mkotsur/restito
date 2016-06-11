@@ -2,6 +2,7 @@ package com.xebialabs.restito.semantics;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
