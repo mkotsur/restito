@@ -12,7 +12,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
-import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.ActionSequence.sequence;
 import static com.xebialabs.restito.semantics.Condition.get;
 import static com.xebialabs.restito.semantics.Condition.uri;

@@ -86,15 +86,15 @@ public class Action implements Applicable {
     }
 
     /**
-     * @deprecated Use {@link #resourceContent(String)} and specify charset using {@link #charset(String)}
+     * Combines {@link #resourceContent(String)} and {@link #charset(String)}
      */
-    @Deprecated
     public static Action resourceContent(String resourcePath, String charset) {
         URL resource = Action.class.getClassLoader().getResource(resourcePath);
         if (resource == null) {
             throw new IllegalArgumentException(String.format("Resource %s not found.", resourcePath));
         }
-        return resourceContent(resource, charset == null ? null : Charset.forName(charset));
+        Action charsetAction = charset == null ? noop() : charset(Charset.forName(charset));
+        return composite(resourceContent(resource), charsetAction);
     }
 
     /**
@@ -107,35 +107,31 @@ public class Action implements Applicable {
      * </ul>
      */
     public static Action resourceContent(URL resourceUrl) {
-        return resourceContent(resourceUrl, null);
-    }
-
-    /**
-     * @deprecated Use {@link #resourceContent(java.net.URL)} and specify charset using {@link #charset(java.nio.charset.Charset)}
-     */
-    @Deprecated
-    public static Action resourceContent(URL resourceUrl, Charset charset) {
         try {
             final byte[] bytes = ResourceHelper.getBytes(resourceUrl);
 
             String fileExtension = FileHelper.getFileExtension(resourceUrl.getPath());
 
-            final Action charsetAction = charset != null ? charset(charset) : Action.noop();
-            final Action contentTypeAction;
+            Action mainAction = bytesContent(bytes);
 
             if (fileExtension.equalsIgnoreCase("xml")) {
-                contentTypeAction = composite(charsetAction, contentType("application/xml"));
+                mainAction = composite(mainAction, contentType("application/xml"));
             } else if (fileExtension.equalsIgnoreCase("json")) {
-                contentTypeAction = composite(charsetAction, contentType("application/json"));
-            } else {
-                contentTypeAction = charsetAction;
+                mainAction = composite(mainAction, contentType("application/json"));
             }
 
-            return composite(contentTypeAction, bytesContent(bytes));
-
+            return mainAction;
         } catch (IOException e) {
             throw new RuntimeException("Can not read resource for restito stubbing.");
         }
+    }
+
+    /**
+     * Combines {@link #resourceContent(java.net.URL)} and {@link #charset(java.nio.charset.Charset)}
+     */
+    public static Action resourceContent(URL resourceUrl, Charset charset) {
+        final Action charsetAction = charset != null ? charset(charset) : Action.noop();
+        return composite(resourceContent(resourceUrl), charsetAction);
     }
 
     /**

@@ -15,6 +15,7 @@ import spray.client.pipelining._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
 
 @RunWith(classOf[JUnitRunner])
 class QuickRequestsTest extends FunSpec with BeforeAndAfterAll with Matchers {

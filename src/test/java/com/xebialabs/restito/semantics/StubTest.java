@@ -130,6 +130,7 @@ public class StubTest {
 
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldAccumulateSequencedActions() {
         Function<Response, Response> f1 = mock(Function.class);
         Function<Response, Response> f2 = mock(Function.class);

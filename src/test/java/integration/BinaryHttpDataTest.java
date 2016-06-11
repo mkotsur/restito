@@ -15,7 +15,6 @@ import static com.xebialabs.restito.semantics.Action.resourceContent;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Condition.startsWithUri;
 import static java.nio.charset.StandardCharsets.*;
-import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;

@@ -1,10 +1,8 @@
 package guide;
 
-import org.glassfish.grizzly.PortRange;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 
