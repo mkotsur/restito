@@ -4,7 +4,6 @@ com.xebialabs.restito.builder.verify
 com.xebialabs.restito.resources
 com.xebialabs.restito.semantics
 com.xebialabs.restito.server
-com.xebialabs.restito.support.behavior
 com.xebialabs.restito.support.file
 com.xebialabs.restito.support.junit
 com.xebialabs.restito.support.log
