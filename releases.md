@@ -1,6 +1,11 @@
 Restito releases
 ============================================
 
+* 0.9.0
+    * Fixed bunch of deprecations, IDE warnings, etc...
+    * Java8fication Closes #52
+    * Sequenced stub actions, as a first class citizen! + Java 8 (#50)
+
 **0.8.2 is the last feature-release which works with Java 7**
 
 In order to add new features more productively I'd like to switch to Java 8. Few users were asked and indicated that this wouldn't pose a problem for them.
