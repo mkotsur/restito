@@ -115,9 +115,9 @@ public class Action implements Applicable {
             Action mainAction = bytesContent(bytes);
 
             if (fileExtension.equalsIgnoreCase("xml")) {
-                mainAction = composite(mainAction, contentType("application/xml"));
+                mainAction = composite(contentType("application/xml"), mainAction);
             } else if (fileExtension.equalsIgnoreCase("json")) {
-                mainAction = composite(mainAction, contentType("application/json"));
+                mainAction = composite(contentType("application/json"), mainAction);
             }
 
             return mainAction;
