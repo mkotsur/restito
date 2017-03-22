@@ -1,6 +1,9 @@
 Restito releases
 ============================================
 
+* 0.9.1
+    * Fix large content order test (#54)
+
 * 0.9.0
     * Fixed bunch of deprecations, IDE warnings, etc...
     * Java8fication Closes #52
