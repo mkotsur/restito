@@ -120,6 +120,15 @@ public class StubServerTest {
     }
 
     @Test
+    public void shouldNotRegisterCallsWhenFlagDisabled() {
+        server.setRegisterCalls(false);
+        whenHttp(server).match(get("/")).then(ok());
+        expect().statusCode(200).get("/");
+
+        assertEquals(0, server.getCalls().size());
+    }
+
+    @Test
     public void shouldReturn404WhenTheRequestIsNotCoveredByStubs() {
         expect().statusCode(404).get("/");
     }
