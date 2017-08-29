@@ -36,6 +36,7 @@ public class StubServer {
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private final List<Stub> stubs = new CopyOnWriteArrayList<>();
     private final HttpServer simpleServer;
+    private boolean registerCalls = true;
 
     /**
      * Whether or not the server should run in HTTPS mode.
@@ -101,6 +102,24 @@ public class StubServer {
         this.clearStubs();
         this.clearCalls();
         return this;
+    }
+
+    /**
+     * Defines whether stubs calls will be registered or not.
+     *
+     * @return current flag value
+     */
+    public boolean isRegisterCalls() {
+        return registerCalls;
+    }
+
+    /**
+     * Defines whether stubs calls will be registered or not.
+     *
+     * @param registerCalls new flag value
+     */
+    public void setRegisterCalls(boolean registerCalls) {
+        this.registerCalls = registerCalls;
     }
 
     /**
@@ -226,8 +245,9 @@ public class StubServer {
                     response.setStatus(HttpStatus.NOT_FOUND_404);
                     log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
                 }
-
-                calls.add(call);
+                if (isRegisterCalls()) {
+                    calls.add(call);
+                }
             }
         };
     }
