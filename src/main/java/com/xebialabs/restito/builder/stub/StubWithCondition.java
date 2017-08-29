@@ -13,7 +13,7 @@ import static com.xebialabs.restito.semantics.Action.*;
  */
 public class StubWithCondition {
 
-    protected Stub stub;
+    Stub stub;
 
     private StubServer stubServer;
 

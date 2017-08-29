@@ -39,6 +39,11 @@ public class Stub {
     private Boolean expectSequenceCompleted = false;
 
     /**
+     * Label, which is used in the error messages
+     */
+    private String label;
+
+    /**
      * Creates a stub with action and condition
      */
     public Stub(Condition when, Applicable action) {
@@ -157,6 +162,16 @@ public class Stub {
 
     @Override
     public String toString() {
-        return "Stub@" + this.hashCode();
+        StringBuilder toString = new StringBuilder("Stub@" + this.hashCode());
+        if (label != null) {
+            toString.append(" [").append(label).append("]");
+        }
+
+        return toString.toString();
+    }
+
+    public Stub withLabel(String label) {
+        this.label = label;
+        return this;
     }
 }

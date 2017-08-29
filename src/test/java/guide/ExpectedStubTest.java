@@ -1,11 +1,13 @@
 package guide;
 
+import com.jayway.restassured.RestAssured;
+import com.xebialabs.restito.server.StubServer;
+import org.hamcrest.CustomTypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
-
-import com.xebialabs.restito.server.StubServer;
+import org.junit.rules.ExpectedException;
 
 import static com.jayway.restassured.RestAssured.expect;
 import static com.jayway.restassured.RestAssured.given;
@@ -20,6 +22,10 @@ import static org.glassfish.grizzly.http.util.HttpStatus.OK_200;
 public class ExpectedStubTest {
 
     private StubServer server;
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
 
     @Before
     public void start() {
@@ -53,18 +59,35 @@ public class ExpectedStubTest {
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldFailWhenSecondExpectedStubDidNotHappen() {
+        expectedEx.expect(AssertionError.class);
+        expectedEx.expectMessage(errorMessageMatcher("Expected stub Stub@", " to be called 1 times, called 0 times instead"));
+
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
         whenHttp(server).match(get("/neverHappens")).then(ok()).mustHappen();
         expect().statusCode(200).get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
+    public void shouldFailWithTheErrorMessageThatContainsStubLabel() {
+        expectedEx.expect(AssertionError.class);
+        expectedEx.expectMessage(errorMessageMatcher("Expected stub Stub@", " [Fancy stub] to be called 1 times, called 0 times instead"));
+
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
+        whenHttp(server).match("Fancy stub", get("/neverHappens")).then(ok()).mustHappen();
+        expect().statusCode(200).get("/asd");
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    @Test
     public void shouldFailWhenStubNotTriggeredMoreThenExpected() {
+        expectedEx.expect(AssertionError.class);
+        expectedEx.expectMessage(errorMessageMatcher("Expected stub Stub@", " [Demo URL] to be called 2 times, called 3 times instead"));
+
         whenHttp(server).
-                match(uri("/demo")).
+                match("Demo URL", uri("/demo")).
                 then(ok()).
                 mustHappen(2);
 
@@ -82,10 +105,13 @@ public class ExpectedStubTest {
 
 
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldFailWhenTheSequenceHasNotBeenCompleted() {
+        expectedEx.expect(AssertionError.class);
+        expectedEx.expectMessage(errorMessageMatcher("Expected stub Stub@", " [Some stub] to cover all 2 sequence steps, called 1 times instead"));
+
         whenHttp(server).
-                match(get("/should-be-completed")).
+                match("Some stub", get("/should-be-completed")).
                 then(sequence(
                         composite(status(OK_200), stringContent("1")),
                         composite(status(OK_200), stringContent("2"))
@@ -109,5 +135,14 @@ public class ExpectedStubTest {
         given().get("/should-be-completed");
 
         ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    private CustomTypeSafeMatcher<String> errorMessageMatcher(String prefix, String suffix) {
+        return new CustomTypeSafeMatcher<String>("Error message didn't match") {
+            @Override
+            protected boolean matchesSafely(String item) {
+                return item.startsWith(prefix) && item.endsWith(suffix);
+            }
+        };
     }
 }

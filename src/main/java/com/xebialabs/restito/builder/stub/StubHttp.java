@@ -27,4 +27,13 @@ public class StubHttp {
     public StubWithCondition match(Condition... conditions) {
         return new StubWithCondition(stubServer, Condition.composite(conditions));
     }
+
+    /**
+     * Creates a stub with a label, and adds a condition to it
+     */
+    public StubWithCondition match(String label, Condition... conditions) {
+        StubWithCondition swc = new StubWithCondition(stubServer, Condition.composite(conditions));
+        swc.stub.withLabel(label);
+        return swc;
+    }
 }

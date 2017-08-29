@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.ActionSequence.sequence;
+import static java.lang.String.format;
 import static org.glassfish.grizzly.http.util.HttpStatus.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -25,7 +26,7 @@ public class StubTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    private static Condition ALWAYS_TRUE = Condition.custom(Predicates.<Call>alwaysTrue());
+    private static Condition ALWAYS_TRUE = Condition.custom(Predicates.alwaysTrue());
 
     @Test
     public void shouldBeApplicableWhenConditionIsTrue() {
@@ -35,7 +36,7 @@ public class StubTest {
 
     @Test
     public void shouldBeNotApplicableWhenConditionIsFalse() {
-        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysFalse()), ok());
+        Stub stub = new Stub(Condition.custom(Predicates.alwaysFalse()), ok());
         assertFalse(stub.isApplicable(mock(Call.class)));
     }
 
@@ -47,29 +48,29 @@ public class StubTest {
 
     @Test
     public void shouldComposeConditionsNegative() {
-        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), ok());
+        Stub stub = new Stub(Condition.custom(Predicates.alwaysTrue()), ok());
 
         assertTrue(stub.isApplicable(mock(Call.class)));
 
-        stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysFalse()));
+        stub.alsoWhen(Condition.custom(Predicates.alwaysFalse()));
 
         assertFalse(stub.isApplicable(mock(Call.class)));
     }
 
     @Test
     public void shouldComposeConditionsPositive() {
-        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), ok());
+        Stub stub = new Stub(Condition.custom(Predicates.alwaysTrue()), ok());
 
         assertTrue(stub.isApplicable(mock(Call.class)));
 
-        stub.alsoWhen(Condition.custom(Predicates.<Call>alwaysTrue()));
+        stub.alsoWhen(Condition.custom(Predicates.alwaysTrue()));
 
         assertTrue(stub.isApplicable(mock(Call.class)));
     }
 
     @Test
     public void shouldComposeMutationsNegative() {
-        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), contentType("myType"));
+        Stub stub = new Stub(Condition.custom(Predicates.alwaysTrue()), contentType("myType"));
 
         stub.withExtraAction(Action.custom(new Function<Response, Response>() {
             @Override
@@ -88,7 +89,7 @@ public class StubTest {
     @Test
     public void shouldIncreaseAppliedTimesCounter() {
         Stub stub = new Stub(
-                Condition.custom(Predicates.<Call>alwaysTrue()),
+                Condition.custom(Predicates.alwaysTrue()),
                 Action.custom(new Function<Response, Response>() {
                     @Override
                     public Response apply(Response input) {
@@ -108,7 +109,7 @@ public class StubTest {
     public void shouldCreateStubsWithSequenceActions() throws Exception {
         ActionSequence action = sequence(status(OK_200), status(CREATED_201), status(ACCEPTED_202));
 
-        Stub stub = new Stub(Condition.custom(Predicates.<Call>alwaysTrue()), action);
+        Stub stub = new Stub(Condition.custom(Predicates.alwaysTrue()), action);
 
         stub.apply(response);
         verify(response).setStatus(OK_200);
@@ -148,6 +149,18 @@ public class StubTest {
         stub.apply(response);
         assertEquals(2, stub.getAppliedTimes());
         verify(f2, times(1)).apply(response);
+    }
+
+    @Test
+    public void shouldAllowToSetLabel() {
+        Stub stub = new Stub(ALWAYS_TRUE).withLabel("source of truth");
+        assertEquals(format("Stub@%s [%s]", stub.hashCode(), "source of truth"), stub.toString());
+    }
+
+    @Test
+    public void shouldGenerateLabelWithHashCode() {
+        Stub stub = new Stub(ALWAYS_TRUE);
+        assertEquals(format("Stub@%s", Integer.toString(stub.hashCode())), stub.toString());
     }
 
 }
