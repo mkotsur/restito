@@ -1,6 +1,10 @@
 Restito releases
 ============================================
 
+* 0.9.2
+    * Added registerCalls flag. Closes #62
+    * Possibility to assign labels to stubs. Closes #45
+
 * 0.9.1
     * Fix large content order test (#54)
 
