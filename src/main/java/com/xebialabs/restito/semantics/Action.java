@@ -127,7 +127,7 @@ public class Action implements Applicable {
     }
 
     /**
-     * Combines {@link #resourceContent(java.net.URL)} and {@link #charset(java.nio.charset.Charset)}
+     * Combines {@link #resourceContent(java.net.URL)} and {@link #charset(Charset)}
      */
     public static Action resourceContent(URL resourceUrl, Charset charset) {
         final Action charsetAction = charset != null ? charset(charset) : Action.noop();
@@ -151,10 +151,25 @@ public class Action implements Applicable {
     }
 
     /**
-     * Writes string content to response
+     * Writes string content into response. Important: when using this method, the string gets encoded
+     * into a sequence of bytes using the platform's default charset. Please use {@link #stringContent(String, Charset)}
+     * if you need to be specific about the encoding.
      */
     public static Action stringContent(final String content) {
         return bytesContent(content.getBytes());
+    }
+
+    /**
+     * Writes string content into response. The passed charset is used:
+     *  - To encoded the string into bytes;
+     *  - As character set of the response.
+     * The latter will result in a <pre>charset=XXX</pre> part of <pre>Content-Type</pre> header
+     * if and only if the header has been set in some way (e.g. by using {@link #contentType(String)} action.
+     *
+     * See `integration.CharsetAndEncodingTest` for more details.
+     */
+    public static Action stringContent(final String content, final Charset charset) {
+        return composite(charset(charset), bytesContent(content.getBytes(charset)));
     }
 
     /**
