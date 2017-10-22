@@ -1,10 +1,12 @@
 package com.xebialabs.restito.semantics;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import javax.ws.rs.core.UriBuilder;
 
 import com.jayway.jsonpath.JsonPath;
 import org.apache.mina.util.Base64;
@@ -200,41 +202,110 @@ public class Condition {
     }
 
     /**
-     * Method GET with given URI
+     * Method GET with given URI in String format.
      */
     public static ConditionWithApplicables get(final String uri) {
         return methodWithUriAndAutoDiscovery(Method.GET, uri);
     }
-
+    
     /**
-     * Method POST with given URI
+     * Method GET with given URI as a URI object, with values for the UriBuilder template.
+     */
+    public static ConditionWithApplicables get(final URI uri, Object... values) {
+      return get(UriBuilder.fromUri(uri).build(values).toASCIIString());
+    }
+    
+    /**
+     * Method GET using a UriBuilder and values for UriBuilder template.
+     */
+    public static ConditionWithApplicables get(final UriBuilder uriBuilder, Object... values) {
+      return get(uriBuilder.clone().build(values).toASCIIString());
+    }
+    
+    /**
+     * Method POST with given URI in String representation.
      */
     public static ConditionWithApplicables post(String uri) {
         return methodWithUriAndAutoDiscovery(Method.POST, uri);
     }
-
+    
     /**
-     * Method PUT with given URI
+     * Method POST with a given URI as a URI object, with optional values for UriBuilder template.
+     */
+    public static ConditionWithApplicables post(URI uri, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.POST, UriBuilder.fromUri(uri).build(values).toASCIIString());
+    }
+    
+    /**
+     * Method POST with a given UriBuilder, with optional values for building.
+     */
+    public static ConditionWithApplicables post(UriBuilder uriBuilder, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.POST, uriBuilder.clone().build(values).toASCIIString());
+    }
+    
+    /**
+     * Method PUT with given URI in String representation.
      */
     public static ConditionWithApplicables put(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PUT, uri);
     }
-
+    
     /**
-     * Method DELETE with given URI
+     * Method PUT with a given URI as a URI object and optional values for UriBuilder
+     */
+    public static ConditionWithApplicables put(URI uri, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.PUT, UriBuilder.fromUri(uri).build(values).toASCIIString());
+    }
+    
+    /**
+     * Method PUT with a given UriBuilder, with optional values for building.
+     */
+    public static ConditionWithApplicables put(UriBuilder uriBuilder, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.PUT, uriBuilder.clone().build(values).toASCIIString());
+    }
+    
+    /**
+     * Method DELETE with given URI in String representation.
      */
     public static ConditionWithApplicables delete(String uri) {
         return methodWithUriAndAutoDiscovery(Method.DELETE, uri);
     }
-
+    
     /**
-     * Method PATCH with given URI
+     * Method DELETE with given URI as a URI object with optional values for UriBuilder.
+     */
+    public static ConditionWithApplicables delete(URI uri, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.DELETE, UriBuilder.fromUri(uri).build(values).toASCIIString());
+    }
+    
+    /**
+     * Method DELETE with a given UriBuilder, with optional values for building.
+     */
+    public static ConditionWithApplicables delete(UriBuilder uriBuilder, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.DELETE, uriBuilder.clone().build(values).toASCIIString());
+    }
+    
+    /**
+     * Method PATCH with given URI in String representation.
      */
     public static ConditionWithApplicables patch(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PATCH, uri);
     }
 
-
+    /**
+     * Method PATCH with given URI as a URI object with optional values for UriBuilder.
+     */
+    public static ConditionWithApplicables patch(URI uri, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.PATCH, UriBuilder.fromUri(uri).build(values).toASCIIString());
+    }
+    
+    /**
+     * Method PATCH with a given UriBuilder, with optional values for building.
+     */
+    public static ConditionWithApplicables patch(UriBuilder uriBuilder, Object...values) {
+      return methodWithUriAndAutoDiscovery(Method.PATCH, uriBuilder.clone().build(values).toASCIIString());
+    }
+    
     /**
      * Always true
      */
