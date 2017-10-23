@@ -3,8 +3,10 @@ package com.xebialabs.restito.semantics;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import com.jayway.jsonpath.JsonPath;
 import org.apache.mina.util.Base64;
@@ -77,6 +79,13 @@ public class Condition {
      */
     public static Condition parameter(final String key, final String... parameterValues) {
         return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues));
+    }
+
+    /**
+     * Checks HTTP parameter present.
+     */
+    public static Condition hasParameter(final String key) {
+        return new Condition(input -> input.getParameters().containsKey(key));
     }
 
     /**
@@ -196,6 +205,33 @@ public class Condition {
                 }
             }
             return false;
+        });
+    }
+
+    /**
+     * With header present and contains all values.
+     * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
+     */
+    public static Condition withMultiHeaderContains(final String key, final String... values) {
+        return new Condition(input -> {
+            final String[] actualHeaderValues = input.getMultiHeaders().get(key);
+            return Optional.ofNullable(actualHeaderValues)
+                           .filter(it -> Stream.of(values).allMatch(val -> Arrays.binarySearch(it, val) >= 0))
+                           .isPresent();
+        });
+    }
+
+    /**
+     * With header present and matches all values. Header should contain exact number of elements. Order does not matter.
+     * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
+     */
+    public static Condition withMultiHeaderMatches(final String key, final String... values) {
+        return new Condition(input -> {
+            final String[] actualHeaderValues = input.getMultiHeaders().get(key);
+            return Optional.ofNullable(actualHeaderValues)
+                           .filter(it -> it.length == values.length)
+                           .filter(it -> Stream.of(values).allMatch(val -> Arrays.binarySearch(it, val) >= 0))
+                           .isPresent();
         });
     }
 

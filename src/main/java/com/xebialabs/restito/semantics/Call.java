@@ -2,8 +2,8 @@ package com.xebialabs.restito.semantics;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 
@@ -18,6 +18,7 @@ public class Call {
     private String postBody;
     private String url;
     private String authorization;
+    private Map<String, String[]> multiHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private Map<String, String> headers = new HashMap<>();
     private Map<String, String[]> parameters = new HashMap<>();
     private Request request;
@@ -40,6 +41,10 @@ public class Call {
 
         for (String s : request.getHeaderNames()) {
             call.headers.put(s, request.getHeader(s));
+
+            final List<String> values = new ArrayList<>();
+            request.getHeaders(s).forEach(values::add);
+            call.multiHeaders.put(s, values.toArray(new String[values.size()]));
         }
 
         call.parameters = new HashMap<>(request.getParameterMap());
@@ -76,6 +81,13 @@ public class Call {
      */
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    /**
+     * Map of headers. All headers considered as if they were multi-valued.
+     */
+    public Map<String, String[]> getMultiHeaders() {
+        return multiHeaders;
     }
 
     /**
