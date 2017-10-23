@@ -3,6 +3,7 @@ package integration;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import com.xebialabs.restito.server.StubServer;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +41,10 @@ public class CharsetAndEncodingTest {
                 .match("/default-charset").
                 then(stringContent("Хеллоу"));
 
-        expect().header("Content-Type", is(nullValue()))
-                .content(equalTo("Хеллоу"))
+        Response response = expect().header("Content-Type", is(nullValue()))
                 .when().get("/default-charset");
+
+        assertArrayEquals(response.body().asByteArray(), "Хеллоу".getBytes());
     }
 
     @Test
