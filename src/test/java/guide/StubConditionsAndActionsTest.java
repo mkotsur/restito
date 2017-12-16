@@ -20,17 +20,7 @@ import static com.xebialabs.restito.semantics.Action.ok;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Action.stringContent;
 import static com.xebialabs.restito.semantics.Action.unauthorized;
-import static com.xebialabs.restito.semantics.Condition.alwaysTrue;
-import static com.xebialabs.restito.semantics.Condition.basicAuth;
-import static com.xebialabs.restito.semantics.Condition.custom;
-import static com.xebialabs.restito.semantics.Condition.endsWithUri;
-import static com.xebialabs.restito.semantics.Condition.get;
-import static com.xebialabs.restito.semantics.Condition.method;
-import static com.xebialabs.restito.semantics.Condition.not;
-import static com.xebialabs.restito.semantics.Condition.parameter;
-import static com.xebialabs.restito.semantics.Condition.post;
-import static com.xebialabs.restito.semantics.Condition.uri;
-import static com.xebialabs.restito.semantics.Condition.url;
+import static com.xebialabs.restito.semantics.Condition.*;
 import static org.hamcrest.Matchers.equalTo;
 
 public class StubConditionsAndActionsTest {
@@ -62,6 +52,23 @@ public class StubConditionsAndActionsTest {
                 parameter("foo", "bar")
         );
     }
+
+    @Test
+    public void shouldNotAllowedDuplicateHeadersWhen() {
+        whenHttp(server).
+                match(
+                    endsWithUri("/multiplyHeaders"),
+                    withHeader("Authorize","TEST_1")
+                ).
+                then(status(HttpStatus.OK_200));
+
+        given()
+            .header("Authorize", "TEST_1", "TEST_2")
+            .get("/multiplyHeaders");
+
+        expect().statusCode(404).get("/multiplyHeaders");
+    }
+
 
     @Test
     public void shouldReturnProperContentForProperRequests() {
