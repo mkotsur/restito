@@ -17,7 +17,7 @@ import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
 @RunWith(classOf[JUnitRunner])
 class ActionSequencesTest extends FunSpec with BeforeAndAfterAll with Matchers {
 
-  var server = new StubServer()
+  val server = new StubServer()
 
   override def beforeAll() = {
     super.beforeAll()

@@ -9,9 +9,9 @@ if [[ ! -d "${BUILD_JAVADOC_PATH}" ]]; then echo "Could not find generated javad
 
 
 if [[ ! -d "./src" ]]; then echo "Should be started from the project root."; exit 10; fi
-if [[ ! `git branch | grep "${PAGES_BRANCH}"` ]]; then echo "  --> Branch ${PAGES_BRANCH} does not exist."; exit 20; fi
+if [[ ! $(git branch | grep "${PAGES_BRANCH}") ]]; then echo "  --> Branch ${PAGES_BRANCH} does not exist."; exit 20; fi
 
-initial_branch="`git rev-parse --symbolic-full-name --abbrev-ref HEAD`"
+initial_branch="$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)"
 echo "  --> You are on branch: ${initial_branch}. Checking out ${PAGES_BRANCH}."
 git co "${PAGES_BRANCH}"
 

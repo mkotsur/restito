@@ -18,6 +18,8 @@ import static org.mockito.Mockito.*;
 
 public class StubTest {
 
+    private static Condition ALWAYS_TRUE = Condition.custom(Predicates.alwaysTrue());
+
     @Mock
     Response response;
 
@@ -25,8 +27,6 @@ public class StubTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
     }
-
-    private static Condition ALWAYS_TRUE = Condition.custom(Predicates.alwaysTrue());
 
     @Test
     public void shouldBeApplicableWhenConditionIsTrue() {

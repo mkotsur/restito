@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 
 import org.glassfish.grizzly.http.Method;
 
-import static java.lang.String.format;
+import java.lang.String;
 
 /**
  * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
@@ -54,13 +54,11 @@ public class SmartDiscoverer {
                     continue; // Probably directory
                 }
                 return resource;
-            } catch (IllegalArgumentException ignored) {
-            } // just go on
-            catch (UnsupportedEncodingException ignored) {
+            } catch (IllegalArgumentException | UnsupportedEncodingException ignored) {
             } // just go on
         }
 
-        throw new IllegalArgumentException(format("Can not discover resource for method [%s] and URI [%s]", m, uri));
+        throw new IllegalArgumentException(String.format("Can not discover resource for method [%s] and URI [%s]", m, uri));
     }
 
     private List<String> possibleLocations(final Method m, String uri) {

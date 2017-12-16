@@ -2,7 +2,7 @@
 
 [ -z "$1" ] && echo 'Error: pass the new version' && exit 1
 
-CURRENT_VERSION=`cat build.gradle  | head -n 1 | grep -o -e '\d\.\d\.\d'`
+CURRENT_VERSION=$(head -n 1 build.gradle | grep -o -e '\d\.\d\.\d')
 
 
 sed -i '' -e "s/$CURRENT_VERSION/$1/g" README.md

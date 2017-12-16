@@ -43,17 +43,13 @@ public class LargeHttpDataTest {
 
     @Test
     public void testLargeContent() {
-        try {
-            whenHttp(server)
-                    .match(startsWithUri("/test-large")).
-                    then(resourceContent("large-content.json"));
+        whenHttp(server)
+                .match(startsWithUri("/test-large")).
+                then(resourceContent("large-content.json"));
 
-            expect()
-                    .header("Content-Type", is("application/json"))
-                    .header("Content-Length", is(not(nullValue())))
-                    .when().get("/test-large");
-        } finally {
-
-        }
+        expect()
+                .header("Content-Type", is("application/json"))
+                .header("Content-Length", is(not(nullValue())))
+                .when().get("/test-large");
     }
 }
