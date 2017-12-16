@@ -1,6 +1,8 @@
 package com.xebialabs.restito.semantics;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -219,7 +221,7 @@ public class ConditionTest {
         Condition withFoo = Condition.withHeader("foo");
         Condition withFooContainsBar = Condition.withHeader("foo", "bar");
 
-        when(call.getHeaders()).thenReturn(new HashMap<String, String>());
+        when(call.getHeaders()).thenReturn(new HashMap<>());
 
         assertFalse(withFoo.check(call));
         assertFalse(withFooContainsBar.check(call));
@@ -307,9 +309,9 @@ public class ConditionTest {
         }};
     }
 
-    private Map<String, String> header(final String key, final String value) {
-        return new HashMap<String, String>() {{
-            put(key, value);
+    private Map<String, List<String>> header(final String key, final String value) {
+        return new HashMap<String, List<String>>() {{
+            put(key, Arrays.asList(value));
         }};
     }
 }

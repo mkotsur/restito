@@ -2,7 +2,9 @@ package com.xebialabs.restito.semantics;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
@@ -18,7 +20,7 @@ public class Call {
     private String postBody;
     private String url;
     private String authorization;
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, List<String>> headers = new HashMap<>();
     private Map<String, String[]> parameters = new HashMap<>();
     private Request request;
 
@@ -38,8 +40,10 @@ public class Call {
         call.contentType = request.getContentType();
         call.url = request.getRequestURL().toString();
 
-        for (String s : request.getHeaderNames()) {
-            call.headers.put(s, request.getHeader(s));
+        for (String headerName : request.getHeaderNames()) {
+            List<String> headers = new ArrayList<>();
+            request.getHeaders(headerName).forEach(headers::add);
+            call.headers.put(headerName, headers);
         }
 
         call.parameters = new HashMap<>(request.getParameterMap());
@@ -74,7 +78,7 @@ public class Call {
     /**
      * Map of headers
      */
-    public Map<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 

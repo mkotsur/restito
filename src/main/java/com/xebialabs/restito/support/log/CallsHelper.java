@@ -1,7 +1,11 @@
 package com.xebialabs.restito.support.log;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +28,12 @@ public class CallsHelper {
 
     public static void logCall(Call call) {
         log.info("{} Request to URL: {} of type {}", va(call.getMethod(), call.getUrl(), call.getContentType()));
-        for (Map.Entry<String, String> e : call.getHeaders().entrySet()) {
-            log.info(" --> Header [{}] with value: [{}]", e.getKey(), e.getValue());
+        for (Map.Entry<String, List<String>> e : call.getHeaders().entrySet()) {
+            String headers = Optional.ofNullable(e.getValue())
+                    .map(Collection::stream)
+                    .map(stream -> stream.collect(Collectors.joining(",")))
+                    .orElse("");
+            log.info(" --> Header [{}] with value: [{}]", e.getKey(),headers);
         }
 
         for (Map.Entry<String, String[]> e : call.getParameters().entrySet()) {

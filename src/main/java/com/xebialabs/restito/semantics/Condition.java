@@ -2,6 +2,7 @@ package com.xebialabs.restito.semantics;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.xebialabs.restito.resources.SmartDiscoverer;
 
 import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static java.util.Arrays.asList;
 
 /**
  * <p>Condition is something that can be true or false given the Call.</p>
@@ -188,15 +190,20 @@ public class Condition {
      * With header present and equals.
      * Header key is case insensitive. More information <a href="http://stackoverflow.com/questions/5258977/are-http-headers-case-sensitive">here</a>.
      */
-    public static Condition withHeader(final String key, final String value) {
+    public static Condition withHeader(final String key, final String... expectedHeaders) {
         return new Condition(input -> {
-            for (Map.Entry<String, String> e : input.getHeaders().entrySet()) {
+            for (Map.Entry<String, List<String>> e : input.getHeaders().entrySet()) {
                 if (e.getKey().equalsIgnoreCase(key)) {
-                    return (value == null && e.getValue() == null) || e.getValue().equals(value);
+                    return (expectedHeaders == null && e.getValue() == null)
+                            || match(e.getValue(), asList(expectedHeaders));
                 }
             }
             return false;
         });
+    }
+
+    private static boolean match(List<String> incomeHeaders, List<String> expectedValues) {
+        return incomeHeaders.containsAll(expectedValues) && expectedValues.containsAll(incomeHeaders);
     }
 
     /**
