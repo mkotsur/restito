@@ -11,3 +11,4 @@ out/
 examples/*/target
 
 .gradle/
+.java-version
