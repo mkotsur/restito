@@ -1,5 +1,8 @@
 Restito releases
 ============================================
+* 0.9.3
+    * #68: Implement mulitply headers matching in expecting request (#69)
+    * (fix) Severe encoding bug in Action.stringContent(String content). See #66
 
 * 0.9.2
     * Added registerCalls flag. Closes #62
