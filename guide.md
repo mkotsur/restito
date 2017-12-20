@@ -22,13 +22,13 @@ One test can be better then dozen lines of documentation, so there are tests in 
 * [Using like a standalone stub server](#using_like_a_standalone_stub_server)
 * [Logging](#logging)
 
-<a name="motivation"/>
+<a name="motivation"></a>
 # Motivation
 Let's imagine you have an application or library which uses a REST interface. At some point you would like to make sure that it works exactly as expected and mocking low-level HTTP client is not always the best option. That's where <b>Restito</b> comes to play: it gives you a DSL to test your application with mocked server just like you would do it with any mocking framework.
 
 There is a [nice example](https://github.com/mkotsur/restito/blob/master/examples/popular-page/README.md) of the use case when <b>Restito</b> helps.
 
-<a name="starting_and_stopping_stub_server"/>
+<a name="starting_and_stopping_stub_server"></a>
 # Starting and stopping stub server
 
 ```java
@@ -45,7 +45,7 @@ There is a [nice example](https://github.com/mkotsur/restito/blob/master/example
     }
 ```
 
-<a name="specific_vs_random_port" />
+<a name="specific_vs_random_port"></a>
 ## Specific vs random port
 
 By default, [StubServer.DEFAULT_PORT](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html#DEFAULT_PORT) is used, but if it's busy, then next available will be taken.
@@ -70,7 +70,7 @@ If you want to specify port explicitly, then you can do something like that:
 
 See [SpecificVsRandomPortTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SpecificVsRandomPortTest.java).
 
-<a name="using_https" />
+<a name="using_https"></a>
 #Using HTTPS
 
 When you need to use HTTPS, this is just one configuration call...
@@ -81,7 +81,7 @@ See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/jav
     server = new StubServer().secured().run();
 ```
 
-<a name="junit_integration" />
+<a name="junit_integration"></a>
 #Junit integration
 
 **!! To use this you must have junit 4.10+ on your classpath. Restito doesn't contain it bundled to save you from the dependency nightmare. !!**
@@ -90,11 +90,11 @@ When you use [Junit](http://junit.org) and want to reduce boilerplate code which
 
 Check [this test](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/JunitIntegrationTest.java) for more details.
 
-<a name="stubbing_server_behavior" />
+<a name="stubbing_server_behavior"></a>
 # Stubbing server behavior.
 
 
-<a name="stub_conditions" />
+<a name="stub_conditions"></a>
 ## Stub conditions
 _In fact, Restito's stub server is not just a stub. It also behaves like a mock and spy object according to M. Fowler's terminology. However it's called just a StubServer._
 
@@ -143,7 +143,7 @@ If no matching conditions found at all, restito will respond with HTTP status _4
 
 See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubConditionsAndActionsTest.java).
 
-<a name="stub_actions" />
+<a name="stub_actions"></a>
 ## Stub actions
 
 Action is a second component of Stubs. When condition is met, action will be performed on the response (like adding content, setting header, etc.)
@@ -164,7 +164,7 @@ Full list of actions can be found in the [appropriate javadoc](http://mkotsur.gi
 
 See [StubConditionsAndActionsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/StubConditionsAndActionsTest.java).
 
-<a name="basic_authentication" />
+<a name="basic_authentication"></a>
 ## Stub actions
 
 You can make you server to respond with [basic access authentication](http://en.wikipedia.org/wiki/Basic_access_authentication).
@@ -176,7 +176,7 @@ whenHttp(server).match(not(basicAuth("admin", "secret"))).then(unauthorized());
 
 The first line makes sure that server responds with status `200` when client sends username `admin` and password `secret`, and the second line tells the server to respond with status code `401` and special `WWW-Authenticate` header in other case.
 
-<a name="automatic_content_type" />
+<a name="automatic_content_type"></a>
 ## Automatic content type
 
 When you use action [resourceContent\(\)](https://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html#resourceContent-java.lang.String-), Restito will look at file extension and if it it's one of the types below, appropriate Content-Type will be set:
@@ -186,12 +186,12 @@ When you use action [resourceContent\(\)](https://mkotsur.github.io/restito/java
 
 See [AutomaticContentTypeTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutomaticContentTypeTest.java).
 
-<a name="expected_stubs" />
+<a name="expected_stubs"></a>
 ## Expected stubs
 
 Makes sure that certain stubbed condition has been called some number of times, or the sequence has been completed. See [ExpectedStubTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/ExpectedStubTest.java) to learn how to do it.
 
-<a name="sequenced_stub_actions" />
+<a name="sequenced_stub_actions"></a>
 ## Sequenced stub actions
 
 Sometimes you need to have different responses based on the sequence number of a request.
@@ -251,7 +251,7 @@ See [SequencedSubActionsTest](https://github.com/mkotsur/restito/blob/master/src
 
 Credits to [@shamoh](https://github.com/shamoh) for this feature.
 
-<a name="autodiscovery_of_stubs_content" />
+<a name="autodiscovery_of_stubs_content"></a>
 ## Autodiscovery of stubs content
 
 **This is an experimental feature, api will be changed in next releases**
@@ -273,10 +273,10 @@ When you use _get()_, _put()_, _post()_ or _delete()_ condition, Restito will tr
 
 See [AutodiscoveryOfStubsContentTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/AutodiscoveryOfStubsContentTest.java) to get some inspiration.
 
-<a name="verifying_calls_to_server" />
+<a name="verifying_calls_to_server"></a>
 # Verifying calls to server
 
-<a name="simple_verifications" />
+<a name="simple_verifications"></a>
 ## Simple verifications
 
 To verify that some call to the server has happened once, you may use following DSL:
@@ -294,7 +294,7 @@ For verifications you use the same conditions as for stubbing and complete list 
 See [SimpleVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SimpleVerificationsTest.java).
 
 
-<a name="limiting_number_of_calls" />
+<a name="limiting_number_of_calls"></a>
 ## Limiting number of calls
 
 You have more options to limit number of calls:
@@ -304,7 +304,7 @@ You have more options to limit number of calls:
 
 See [LimitingNumberOfCallsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/LimitingNumberOfCallsTest.java).
 
-<a name="sequenced_verification" />
+<a name="sequenced_verification"></a>
 ## Sequenced verifications
 
 You can easily chain verifications:
@@ -322,13 +322,13 @@ You can easily chain verifications:
 See [SequencedVerificationsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SequencedVerificationsTest.java).
 
 
-<a name="using_like_a_standalone_stub_server" />
+<a name="using_like_a_standalone_stub_server"></a>
 ## Using like a standalone stub server
 
 It is possible to use <b>Restito</b> as a standalone server (if you need to have a server, which runs continuously, e.g. to develop against it).
 There is an [example](https://github.com/mkotsur/restito/blob/master/examples/standalone-server/README.md) how to achieve it.
 
-<a name="logging" />
+<a name="logging"></a>
 ## Logging
 
 Restito uses [slf4j](http://www.slf4j.org/index.html) as a logging abstraction, which by default does not have any implementations: it collect logs It allows you to receive all the logging via the library, that your application is using.
