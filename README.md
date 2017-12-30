@@ -1,5 +1,5 @@
 Restito - testing framework for rest clients [![Build Status](https://circleci.com/gh/mkotsur/restito.svg?&style=shield&circle-token=2cd0c54c357ba4e7962777c4fde462c86a1aa194)](https://circleci.com/gh/mkotsur/restito)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.xebialabs.restito/restito/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.xebialabs.restito%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.xebialabs.restito/restito.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.xebialabs.restito%22)
 ============================================
 
 Restito is a tool which is inspired by [mockito](http://code.google.com/p/mockito/) and functionally is diametrically opposite to the [Rest Assured](http://code.google.com/p/rest-assured).
