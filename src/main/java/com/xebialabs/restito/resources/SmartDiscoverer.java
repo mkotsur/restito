@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.StringTokenizer;
 import org.glassfish.grizzly.http.Method;
 
 import java.lang.String;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * <p><u><b>!EXPERIMENTAL!</b> This stuff is experimental. Which means it may change significantly in future versions.</u></p>
@@ -29,32 +32,32 @@ public class SmartDiscoverer {
      * Discovers resource based on request
      * Tries different options:
      * <ul>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.xml</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.xml</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.xml</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.xml</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get.asd.bsd.asd.json</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/get/asd/bsd/asd.json</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd.bsd.asd.json</li>
-     * <li>GET asd/bsd/asd => resource: {resourcePrefix}/asd/bsd/asd.json</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get.asd.bsd.asd</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get/asd/bsd/asd</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd.bsd.asd</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd/bsd/asd</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get.asd.bsd.asd.xml</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get/asd/bsd/asd.xml</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd.bsd.asd.xml</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd/bsd/asd.xml</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get.asd.bsd.asd.json</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/get/asd/bsd/asd.json</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd.bsd.asd.json</li>
+     * <li>GET asd/bsd/asd - resource: {resourcePrefix}/asd/bsd/asd.json</li>
      * </ul>
      */
     public URL discoverResource(Method m, String uri) {
         for (String s : possibleLocations(m, uri)) {
             try {
-                URL resource = this.getClass().getClassLoader().getResource(resourcePrefix + "/" + URLDecoder.decode(s, "UTF-8"));
+                URL resource = this.getClass().getClassLoader().getResource(resourcePrefix + "/" + URLDecoder.decode(s, UTF_8));
                 if (resource == null) {
                     throw new IllegalArgumentException(String.format("Resource %s not found.", uri));
                 }
-                if (!new File(URLDecoder.decode(resource.getFile(), "UTF-8")).isFile()) {
+                if (!new File(URLDecoder.decode(resource.getFile(), UTF_8)).isFile()) {
                     continue; // Probably directory
                 }
                 return resource;
-            } catch (IllegalArgumentException | UnsupportedEncodingException ignored) {
+            } catch (IllegalArgumentException ignored) {
             } // just go on
         }
 
@@ -64,7 +67,7 @@ public class SmartDiscoverer {
     private List<String> possibleLocations(final Method m, String uri) {
         final Iterable<String> split = split(uri, "/");
 
-        return new ArrayList<String>() {{
+        return new ArrayList<>() {{
             add(m.toString().toLowerCase() + "." + join(split, "."));
             add(m.toString().toLowerCase() + "/" + join(split, "/"));
             add(join(split, "."));

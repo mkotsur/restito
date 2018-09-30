@@ -10,7 +10,7 @@ import static com.xebialabs.restito.semantics.Action.composite;
 import static com.xebialabs.restito.semantics.Action.noop;
 
 /**
- * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches XXX => do YYY)</p>
+ * <p>Stub is not responsible for decision whether to execute action or not (e.g. when request matches `XXX` - do `YYY`)</p>
  * <p>Just a wrapper for the {@link Action} which will should be performed when {@link Condition} is true.</p>
  *
  * @see com.xebialabs.restito.semantics.Action

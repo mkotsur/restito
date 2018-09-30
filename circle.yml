@@ -1,7 +1,9 @@
-test:
-  post:
-    - gradle javadoc
-
-machine:
-  java:
-    version: openjdk10
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/openjdk:10
+    steps:
+    - checkout
+    - run: ./gradlew test
+    - run: ./gradlew javadoc

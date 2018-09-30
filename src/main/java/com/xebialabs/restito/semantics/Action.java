@@ -38,7 +38,7 @@ public class Action implements Applicable {
     /**
      * Sets HTTP status 200 to response.
      * Consider using {@link #ok()} as more concise and less ambiguous option.
-     * @see {@link #ok()}
+     * @see #ok()
      */
     public static Action success() {
         return status(HttpStatus.OK_200);
@@ -70,11 +70,11 @@ public class Action implements Applicable {
 
     /**
      * Writes content and content-type of resource file to response.
-     * Tries to detect content type based on file extension. If can not detect => content-type is not set.
+     * Tries to detect content type based on file extension. If can not detect - content-type is not set.
      * For now there are following bindings:
      * <ul>
-     * <li>.xml => application/xml</li>
-     * <li>.json => application/xml</li>
+     * <li>.xml - `application/xml`</li>
+     * <li>.json - `application/xml`</li>
      * </ul>
      */
     public static Action resourceContent(final String resourcePath) {
@@ -99,11 +99,11 @@ public class Action implements Applicable {
 
     /**
      * Writes content using the specified encoding and content-type of resource file to response.
-     * Tries to detect content type based on file extension. If can not detect => content-type is not set.
+     * Tries to detect content type based on file extension. If can not detect, content-type is not set.
      * For now there are following bindings:
      * <ul>
-     * <li>.xml => application/xml</li>
-     * <li>.json => application/xml</li>
+     * <li>.xml - `application/xml`</li>
+     * <li>.json - `application/xml`</li>
      * </ul>
      */
     public static Action resourceContent(URL resourceUrl) {

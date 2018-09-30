@@ -89,7 +89,7 @@ public class Condition {
     }
 
     /**
-     * URL exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURL)}
+     * URL exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURL()}
      */
     public static Condition url(final String url) {
         return new Condition(input -> input.getUrl().equals(url));
@@ -164,10 +164,6 @@ public class Condition {
      * With Valid Json Path.
      * Check to see if incoming path has a valid string value selected via a <a href="https://github.com/jayway/JsonPath/">
      * JSONPath</a> expression.
-     *
-     * @param - Json Path
-     * @param - value to check against
-     * @return
      */
     public static Condition withPostBodyContainingJsonPath(final String pattern, final Object value) {
         return new Condition(input -> value.equals(JsonPath.parse(input.getPostBody()).read(pattern)));
@@ -246,14 +242,14 @@ public class Condition {
      * Always true
      */
     public static Condition alwaysTrue() {
-        return custom(Predicates.<Call>alwaysTrue());
+        return custom(Predicates.alwaysTrue());
     }
 
     /**
      * Always false
      */
     public static Condition alwaysFalse() {
-        return custom(Predicates.<Call>alwaysFalse());
+        return custom(Predicates.alwaysFalse());
     }
 
     /**
