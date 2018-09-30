@@ -76,7 +76,7 @@ public class ExpectedStubTest {
 
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
         whenHttp(server).match("Fancy stub", get("/neverHappens")).then(ok()).mustHappen();
-        expect().statusCode(200).get("/asd");
+        expect().statusCode(200).when().get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 
@@ -137,7 +137,7 @@ public class ExpectedStubTest {
     }
 
     private CustomTypeSafeMatcher<String> errorMessageMatcher(String prefix, String suffix) {
-        return new CustomTypeSafeMatcher<String>("Error message didn't match") {
+        return new CustomTypeSafeMatcher<>("Error message didn't match") {
             @Override
             protected boolean matchesSafely(String item) {
                 return item.startsWith(prefix) && item.endsWith(suffix);

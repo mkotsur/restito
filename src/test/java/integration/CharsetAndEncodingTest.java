@@ -1,17 +1,17 @@
 package integration;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import com.xebialabs.restito.server.StubServer;
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static io.restassured.RestAssured.expect;
 import static org.junit.Assert.*;
 
 import java.nio.charset.Charset;
 
-import static com.jayway.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
 import static org.hamcrest.Matchers.*;
@@ -58,11 +58,11 @@ public class CharsetAndEncodingTest {
                 then(stringContent("Хеллоу", CP_1251), contentType("application/text"));
 
         expect().header("Content-Type", is("application/text;charset=windows-1251"))
-                .content(equalTo("Хеллоу"))
+                .body(equalTo("Хеллоу"))
                 .when().get("/custom-charset-1");
 
         expect().header("Content-Type", is("application/text;charset=windows-1251"))
-                .content(equalTo("Хеллоу"))
+                .body(equalTo("Хеллоу"))
                 .when().get("/custom-charset-2");
     }
 

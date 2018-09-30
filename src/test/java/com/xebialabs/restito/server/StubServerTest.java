@@ -124,7 +124,7 @@ public class StubServerTest {
     public void shouldNotRegisterCallsWhenFlagDisabled() {
         server.setRegisterCalls(false);
         whenHttp(server).match(get("/")).then(ok());
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
 
         assertEquals(0, server.getCalls().size());
     }

@@ -66,7 +66,7 @@ public class StubConditionsAndActionsTest {
             .header("Authorize", "TEST_1", "TEST_2")
             .get("/multiplyHeaders");
 
-        expect().statusCode(404).get("/multiplyHeaders");
+        expect().statusCode(404).when().get("/multiplyHeaders");
     }
 
 
