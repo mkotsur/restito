@@ -1,6 +1,5 @@
 package guide;
 
-import com.jayway.restassured.RestAssured;
 import com.xebialabs.restito.server.StubServer;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.junit.After;
@@ -8,9 +7,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import io.restassured.RestAssured;
+import static io.restassured.RestAssured.*;
 
-import static com.jayway.restassured.RestAssured.expect;
-import static com.jayway.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.ensure.EnsureHttp.ensureHttp;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
@@ -41,7 +40,7 @@ public class ExpectedStubTest {
     @Test
     public void shouldPassWhenExpectedStubDidHappen() {
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
-        expect().statusCode(200).get("/asd");
+        expect().statusCode(200).when().get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 
@@ -66,7 +65,7 @@ public class ExpectedStubTest {
 
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
         whenHttp(server).match(get("/neverHappens")).then(ok()).mustHappen();
-        expect().statusCode(200).get("/asd");
+        expect().statusCode(200).when().get("/asd");
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 

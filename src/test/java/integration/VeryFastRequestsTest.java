@@ -4,7 +4,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 

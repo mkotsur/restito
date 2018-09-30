@@ -1,6 +1,6 @@
 package guide;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import com.xebialabs.restito.semantics.ActionSequence;
 import com.xebialabs.restito.semantics.Applicable;
 import com.xebialabs.restito.server.StubServer;
@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.jayway.restassured.RestAssured.given;
+import static io.restassured.RestAssured.given;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.builder.verify.VerifyHttp.verifyHttp;
 import static com.xebialabs.restito.semantics.Action.composite;

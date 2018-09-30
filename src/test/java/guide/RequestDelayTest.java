@@ -1,12 +1,12 @@
 package guide;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import com.xebialabs.restito.server.StubServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.delay;
 import static com.xebialabs.restito.semantics.Action.ok;
@@ -31,7 +31,7 @@ public class RequestDelayTest {
     @Test
     public void shouldIntroduceADelay() {
         whenHttp(server).match(get("/asd")).then(ok(), delay(2000)).mustHappen();
-        expect().statusCode(200).get("/asd").then().time(greaterThanOrEqualTo(2000L));
+        expect().statusCode(200).when().get("/asd").then().time(greaterThanOrEqualTo(2000L));
     }
 
 }

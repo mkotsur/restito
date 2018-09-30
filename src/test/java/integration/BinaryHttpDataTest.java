@@ -3,11 +3,11 @@ package integration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.charset;
 import static com.xebialabs.restito.semantics.Action.contentType;
@@ -53,19 +53,19 @@ public class BinaryHttpDataTest {
         expect()
                 .header("Content-Type", is(nullValue()))
                 .header("Content-Length", is(not(nullValue())))
-                .content(equalTo("Привіт, світ!"))
+                .body(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-8");
 
         expect()
                 .header("Content-Type", is(nullValue()))
                 .header("Content-Length", is(not(nullValue())))
-                .content(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
+                .body(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
                 .when().get("/my-file-utf-16");
 
         expect()
                 .header("Content-Type", is(nullValue()))
                 .header("Content-Length", is(not(nullValue())))
-                .content(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
+                .body(equalTo(new String("Привіт, світ!".getBytes(UTF_16))))
                 .when().get("/my-file-utf-16");
     }
 
@@ -80,7 +80,7 @@ public class BinaryHttpDataTest {
 
         expect()
                 .header("Content-Type", equalTo("application/text;charset=UTF-16"))
-                .content(equalTo("Привіт, світ!"))
+                .body(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-16");
     }
 
@@ -96,7 +96,7 @@ public class BinaryHttpDataTest {
 
         expect()
                 .header("Content-Type", equalTo("application/text;charset=UTF-16"))
-                .content(equalTo("Привіт, світ!"))
+                .body(equalTo("Привіт, світ!"))
                 .when().get("/my-file-utf-16");
     }
 

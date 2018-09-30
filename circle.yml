@@ -4,4 +4,4 @@ test:
 
 machine:
   java:
-    version: openjdk8
+    version: openjdk10

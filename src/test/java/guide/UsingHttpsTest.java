@@ -17,7 +17,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 

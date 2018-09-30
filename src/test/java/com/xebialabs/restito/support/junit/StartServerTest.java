@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import com.xebialabs.restito.builder.stub.StubHttp;
 import com.xebialabs.restito.semantics.Action;
 import com.xebialabs.restito.semantics.Condition;

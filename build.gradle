@@ -10,8 +10,8 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'idea'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '10'
+targetCompatibility = '10'
 
 repositories {
 	mavenCentral()
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	testCompile 'org.scala-lang:scala-library:2.11.11'
+	testCompile 'org.scala-lang:scala-library:2.12.7'
 
 	compile 'junit:junit:4.12'
 
@@ -35,11 +35,12 @@ dependencies {
 
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
 
-	testCompile ('com.jayway.restassured:rest-assured:2.8.0')
+	testCompile ('io.rest-assured:rest-assured:3.1.1')
 
-	testCompile "io.spray:spray-client_2.11:1.3.2"
-	testCompile "com.typesafe.akka:akka-actor_2.11:2.3.9"
-	testCompile "org.scalatest:scalatest_2.11:2.2.6"
+	testCompile "com.typesafe.akka:akka-actor_2.12:2.5.17"
+	testCompile "com.typesafe.akka:akka-stream_2.12:2.5.17"
+	testCompile "com.typesafe.akka:akka-http_2.12:10.1.5"
+	testCompile "org.scalatest:scalatest_2.12:3.0.5"
 }
 
 tasks.withType(JavaCompile) { compile ->
@@ -106,7 +107,7 @@ uploadArchives {
 					developers {
 						developer {
 							id 'mkotsur'
-							name 'Mykhailo Kotsur'
+							name 'Mike Kotsur'
 						}
 					}
 				}

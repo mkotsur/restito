@@ -3,11 +3,11 @@ package guide;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import com.xebialabs.restito.server.StubServer;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.ok;
 import static com.xebialabs.restito.semantics.Condition.get;
@@ -33,7 +33,7 @@ public class AutodiscoveryOfStubsContentTest {
         whenHttp(server).
                 match(get("/demo/path%20to%20data/data")).then(ok());
 
-        expect().content(containsString("from data.xml")).when().get("/demo/path to data/data");
+        expect().body(containsString("from data.xml")).when().get("/demo/path to data/data");
     }
 
 }

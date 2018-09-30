@@ -64,5 +64,5 @@ public class LargeHttpDataTest {
                 .header("Content-Type", is("application/xml"))
                 .header("Content-Length", is(not(nullValue())))
                 .when().get("/test-large-xml");
-    }s
+    }
 }

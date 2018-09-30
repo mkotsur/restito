@@ -5,12 +5,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.ok;
 import static com.xebialabs.restito.semantics.Condition.get;
@@ -56,19 +56,20 @@ public class StubServerTest {
     @Test
     public void shouldBePossibleToStubRootUri() {
         whenHttp(server).match(get("/")).then(ok()).mustHappen();
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
     }
 
     @Test
     public void shouldBePossibleToIterateThroughCallsWhileNewItemsAreAdded() {
         whenHttp(server).match(get("/")).then(ok()).mustHappen();
 
-        expect().statusCode(200).get("/");
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
+        expect().statusCode(200).when().get("/");
 
-        for (Call call : server.getCalls()) {
-            expect().statusCode(200).get("/");
-            expect().statusCode(200).get("/");
+        assertEquals(server.getCalls().size(), 2);
+        for (Call ignored : server.getCalls()) {
+            expect().statusCode(200).when().get("/");
+            expect().statusCode(200).when().get("/");
         }
     }
 
@@ -76,9 +77,9 @@ public class StubServerTest {
     public void shouldBePossibleToIterateThroughStubsAndModifyIt() {
         whenHttp(server).match(get("/")).then(ok());
 
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
 
-        for (Stub stub : server.getStubs()) {
+        for (Stub ignored : server.getStubs()) {
             whenHttp(server).match(get("/newstub")).then(ok());
         }
     }
@@ -96,7 +97,7 @@ public class StubServerTest {
     @Test
     public void shouldClearStubCalls() {
         whenHttp(server).match(get("/")).then(ok());
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
 
         assertEquals(1, server.getCalls().size());
 
@@ -108,7 +109,7 @@ public class StubServerTest {
     @Test
     public void shouldClearStubAndCalls() {
         whenHttp(server).match(get("/")).then(ok());
-        expect().statusCode(200).get("/");
+        expect().statusCode(200).when().get("/");
 
         assertEquals(1, server.getStubs().size());
         assertEquals(1, server.getCalls().size());
@@ -130,6 +131,6 @@ public class StubServerTest {
 
     @Test
     public void shouldReturn404WhenTheRequestIsNotCoveredByStubs() {
-        expect().statusCode(404).get("/");
+        expect().statusCode(404).when().get("/");
     }
 }

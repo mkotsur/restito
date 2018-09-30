@@ -1,7 +1,7 @@
 package integration
 
-import com.jayway.restassured.RestAssured
-import com.jayway.restassured.RestAssured.given
+import io.restassured.RestAssured
+import io.restassured.RestAssured.given
 import com.xebialabs.restito.builder.stub.StubHttp._
 import com.xebialabs.restito.semantics.Action._
 import com.xebialabs.restito.semantics.Condition
