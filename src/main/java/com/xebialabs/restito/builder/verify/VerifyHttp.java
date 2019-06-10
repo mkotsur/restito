@@ -88,7 +88,7 @@ public class VerifyHttp {
             Iterator<Call> callsIterator = filteredCalls.iterator();
             while (callsIterator.hasNext()) {
                 Call call = callsIterator.next();
-                if (!condition.getPredicate().test(call)) {
+                if (!condition.validate(call).isValid()) {
                     callsIterator.remove();
                 }
             }

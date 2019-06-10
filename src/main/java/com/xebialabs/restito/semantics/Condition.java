@@ -4,10 +4,17 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.jayway.jsonpath.JsonPath;
+import static io.vavr.API.*;
+
+import io.vavr.collection.Seq;
+import io.vavr.control.Either;
+import io.vavr.control.Validation;
 import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
 import org.slf4j.Logger;
@@ -31,24 +38,71 @@ public class Condition {
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    private Predicate<Call> predicate;
+    private Either<Predicate<Call>, Seq<Condition>> content;
+
+    private String label;
+
+    protected Condition(Predicate<Call> predicate, String label) {
+        this.label = label;
+        this.content = Either.left(predicate);
+    }
 
     protected Condition(Predicate<Call> predicate) {
-        this.predicate = predicate;
+        this.content = Either.left(predicate);
+    }
+
+    protected Condition(Seq<Condition> conditions) {
+        this.content = Either.right(conditions);
     }
 
     /**
      * Returns the predicate of condition
      */
-    public Predicate<Call> getPredicate() {
-        return predicate;
+    //TODO: return Optional or remove
+//    public Predicate<Call> getPredicate() {
+//        return predicate;
+//    }
+
+    /**
+     * Returns the label of condition
+     */
+    public Optional<String> getLabel() {
+        return Optional.ofNullable(label);
     }
 
     /**
      * Check if call satisfies the condition
      */
     public boolean check(Call input) {
-        return getPredicate().test(input);
+        return validate(input).isValid();
+    }
+
+    private String failureString() {
+        return String.format("Condition `%s@%s` failed.", label, hashCode());
+    }
+
+    /**
+     * Validates an input against the condition and returns:
+     * - Valid<Condition> if it matches
+     * - Invalid<Seq<String>>
+     */
+    public Validation<Seq<String>, Condition> validate(Call input) {
+
+        Function<Seq<Condition>, Validation<Seq<String>, Condition>> validateConditions = conditions -> {
+            var failedConditions = conditions.filter(c -> !c.validate(input).isValid());
+            return failedConditions.isEmpty() ? Validation.valid(this) : Validation.invalid(
+                    failedConditions.map(Condition::failureString)
+            );
+        };
+
+        Function<Predicate<Call>, Validation<Seq<String>, Condition>> validatePredicate = p -> p.test(input) ?
+                Validation.valid(this) :
+                Validation.invalid(io.vavr.collection.List.of(this.failureString()));
+
+        return content
+                .map(validateConditions)
+                .mapLeft(validatePredicate)
+                .getOrElseGet(Function.identity());
     }
 
     // Factory methods
@@ -66,26 +120,28 @@ public class Condition {
     private static ConditionWithApplicables methodWithUriAndAutoDiscovery(final Method m, String uri) {
         try {
             final URL resource = new SmartDiscoverer("restito").discoverResource(m, uri);
-            return new ConditionWithApplicables(composite(method(m), uri(uri)), resourceContent(resource));
+            return new ConditionWithApplicables(Seq(method(m), uri(uri)), resourceContent(resource));
         } catch (IllegalArgumentException e) {
             logger.debug("Can not auto-discover resource for URI [{}]", uri);
         }
 
-        return new ConditionWithApplicables(composite(method(m), uri(uri)), Action.noop());
+        return new ConditionWithApplicables(Seq(method(m), uri(uri)), Action.noop());
     }
 
     /**
      * Checks HTTP parameters. Also work with multi-valued parameters
      */
     public static Condition parameter(final String key, final String... parameterValues) {
-        return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues));
+        String label = String.format("parameter==%s", Arrays.toString(parameterValues));
+        return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues), label);
     }
 
     /**
      * URI exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURI()}
      */
     public static Condition uri(final String uri) {
-        return new Condition(input -> input.getUri().equals(uri));
+        String label = String.format("uri==%s", uri);
+        return new Condition(input -> input.getUri().equals(uri), label);
     }
 
     /**
@@ -143,7 +199,10 @@ public class Condition {
      * Not condition
      */
     public static Condition not(Condition c) {
-        return new Condition(Predicates.not(c.getPredicate()));
+        return c.content
+                .mapLeft(p -> new Condition(Predicates.not(p)))
+                .map(conditions -> new Condition(conditions.map(Condition::not)))
+                .getOrElseGet(Function.identity());
     }
 
     /**
@@ -260,16 +319,19 @@ public class Condition {
     public static Condition composite(Condition... conditions) {
         Condition init = alwaysTrue();
 
-        for (Condition condition : conditions) {
-            Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());
-            if (condition instanceof ConditionWithApplicables) {
-                init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());
-            } else {
-                init = Condition.custom(newPredicate);
-            }
-        }
+        var conditionsList = io.vavr.collection.List.of(conditions);
+        return new Condition(conditionsList);
 
-        return init;
+//        for (Condition condition : conditions) {
+//            Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());
+//            if (condition instanceof ConditionWithApplicables) {
+//                init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());
+//            } else {
+//                init = Condition.custom(newPredicate);
+//            }
+//        }
+//
+//        return init;
     }
 
 

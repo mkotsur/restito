@@ -83,7 +83,7 @@ public class ConditionWithApplicablesTest {
 
         ConditionWithApplicables condition = Condition.post("/blablabla.xml");
         condition.getApplicables().get(0).apply(response);
-        assertFalse(condition.getPredicate().test(call));
+        assertFalse(condition.validate(call).isValid());
     }
 
 }

@@ -88,7 +88,7 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return when.getPredicate().test(call) && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
+        return when.validate(call).isValid() && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
     }
 
     /**
