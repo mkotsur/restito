@@ -42,7 +42,7 @@ public class StubTest {
 
     @Test
     public void shouldExecuteApplyFunctionOnResponse() {
-        new Stub(mock(Condition.class), contentType("boo")).apply(response);
+        new Stub(Condition.alwaysTrue(), contentType("boo")).apply(response);
         verify(response, times(1)).setContentType("boo");
     }
 
