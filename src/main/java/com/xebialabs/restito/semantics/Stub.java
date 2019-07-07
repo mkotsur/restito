@@ -1,6 +1,8 @@
 package com.xebialabs.restito.semantics;
 
 import com.xebialabs.restito.builder.ensure.EnsureHttp;
+import io.vavr.collection.Seq;
+import io.vavr.control.Validation;
 import org.glassfish.grizzly.http.server.Response;
 
 import java.util.List;
@@ -89,6 +91,20 @@ public class Stub {
      */
     public boolean isApplicable(Call call) {
         return when.validate(call).isValid() && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
+    }
+
+    /**
+     * Checks whether the call satisfies condition of this stub
+     */
+    public Validation<Seq<String>, Call> isApplicable2(Call call) {
+        return when.validate(call)
+                .flatMap(c -> {
+                    if (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes) {
+                        return Validation.valid(call);
+                    }
+                    Seq<String> error = io.vavr.collection.List.of("Something is wrong with exceeded actions...");
+                    return Validation.invalid(error);
+                });
     }
 
     /**
