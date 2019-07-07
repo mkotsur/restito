@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
@@ -16,9 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static com.xebialabs.restito.semantics.Condition.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 public class ConditionTest {
@@ -338,6 +337,24 @@ public class ConditionTest {
         String expectedError1 = String.format("Condition `%s@%s` failed.", uri.getLabel().get(), uri.hashCode());
         String expectedError2 = String.format("Condition `%s@%s` failed.", parameter.getLabel().get(), parameter.hashCode());
         assertEquals(io.vavr.collection.List.of(expectedError1, expectedError2), validate.getError());
+    }
+
+    @Test
+    public void shouldReturnNoApplicableForASimpleConditionWithoutAction() {
+        assertEquals(alwaysTrue().getApplicable(), Option.none());
+    }
+
+    @Test
+    public void shouldReturnAnApplicableForASimpleConditionWithAction() {
+        assertTrue(get("http://google.com").getApplicable().isDefined());
+    }
+
+    @Test
+    public void shouldReturnAnApplicableForAComposedConditionWithAction() {
+        Condition conditionWithApplicables = get("http://google.com");
+        conditionWithApplicables.applicable = Option.of(Action.ok());
+        Condition cond = composite(alwaysTrue(), conditionWithApplicables);
+        assertTrue(cond.getApplicable().isDefined());
     }
 
     // Helpers

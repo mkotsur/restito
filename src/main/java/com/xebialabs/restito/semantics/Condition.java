@@ -14,6 +14,7 @@ import static io.vavr.API.*;
 
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
@@ -39,6 +40,8 @@ public class Condition {
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
     private Either<Predicate<Call>, Seq<Condition>> content;
+
+    protected Option<Applicable> applicable = Option.none();
 
     private String label;
 
@@ -68,6 +71,10 @@ public class Condition {
      */
     public Optional<String> getLabel() {
         return Optional.ofNullable(label);
+    }
+
+    public Option<Applicable> getApplicable() {
+        return applicable;
     }
 
     /**
@@ -311,16 +318,25 @@ public class Condition {
         return custom(Predicates.alwaysFalse());
     }
 
+    public Condition join(Condition condition) {
+
+        final Option<Applicable> actionOption = this.applicable.toArray().appendAll(condition.applicable).foldLeft(
+                Option.none(),
+                (o, a) -> Option.of(Action.composite(o.getOrElse(Action.noop()), a))
+        );
+        return new Condition(Seq(this, condition)) {{
+            applicable = actionOption;
+        }};
+    }
+
     /**
      * Joins many conditions with "and" operation
      */
     // see http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
     @SuppressWarnings("unchecked")
     public static Condition composite(Condition... conditions) {
-        Condition init = alwaysTrue();
-
         var conditionsList = io.vavr.collection.List.of(conditions);
-        return new Condition(conditionsList);
+        return conditionsList.foldLeft(alwaysTrue(), Condition::join);
 
 //        for (Condition condition : conditions) {
 //            Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());

@@ -1,8 +1,10 @@
 package com.xebialabs.restito.semantics;
 
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -13,24 +15,13 @@ import java.util.function.Predicate;
  */
 public class ConditionWithApplicables extends Condition {
 
-    private List<Applicable> applicables;
-
-    protected ConditionWithApplicables(Seq<Condition> conditions, Applicable... applicables) {
+    protected ConditionWithApplicables(Seq<Condition> conditions, Applicable applicable) {
         super(conditions);
-        this.applicables = Arrays.asList(applicables);
+        super.applicable = Option.of(applicable);
     }
 
-    public ConditionWithApplicables(Predicate<Call> predicate, Applicable... applicables) {
-        this(predicate, Arrays.asList(applicables));
-    }
-
-    protected ConditionWithApplicables(Predicate<Call> predicate, List<Applicable> applicables) {
+    public ConditionWithApplicables(Predicate<Call> predicate, Applicable applicable) {
         super(predicate);
-        this.applicables = applicables;
+        super.applicable = Option.of(applicable);
     }
-
-    public List<Applicable> getApplicables() {
-        return applicables;
-    }
-
 }

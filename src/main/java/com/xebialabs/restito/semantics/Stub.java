@@ -18,7 +18,7 @@ import static com.xebialabs.restito.semantics.Action.noop;
  */
 public class Stub {
 
-    private Condition when = Condition.custom(Predicates.alwaysTrue());
+    private Condition when;
 
     private Applicable action = noop();
 
@@ -94,12 +94,8 @@ public class Stub {
     /**
      * Executes all actions against the response.
      */
-    public Response apply(Response response) {
-        if (when instanceof ConditionWithApplicables) {
-            for (Applicable applicable : ((ConditionWithApplicables) when).getApplicables()) {
-                response = applicable.apply(response);
-            }
-        }
+    public Response apply(final Response response) {
+        Response appliedResponse = when.getApplicable().map(a -> a.apply(response)).getOrElse(response);
 
         Applicable chosenAction;
 
@@ -113,9 +109,9 @@ public class Stub {
             chosenAction = action;
         }
 
-        response = chosenAction.apply(response);
+        appliedResponse = chosenAction.apply(appliedResponse);
         appliedTimes++;
-        return response;
+        return appliedResponse;
     }
 
     public Stub withAction(Applicable action) {

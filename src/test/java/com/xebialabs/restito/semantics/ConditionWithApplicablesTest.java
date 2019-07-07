@@ -50,7 +50,7 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionHadBeenComposed() {
         new Stub(
-                Condition.composite(trueCondition, new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable)),
+                Condition.composite(trueCondition, new ConditionWithApplicables(Predicates.alwaysTrue(), ok200Applicable)),
                 Action.header("foo", "bar")
         ).apply(response);
 
@@ -68,7 +68,7 @@ public class ConditionWithApplicablesTest {
 
         ConditionWithApplicables condition = Condition.get("/demo/path%20to%20data/data.xml");
 
-        condition.getApplicables().get(0).apply(response);
+        condition.getApplicable().get().apply(response);
 
         verify(os).write("<content>from data.xml</content>".getBytes());
         verify(response).setContentType("application/xml");
@@ -82,7 +82,7 @@ public class ConditionWithApplicablesTest {
         when(call.getMethod()).thenReturn(Method.GET);
 
         ConditionWithApplicables condition = Condition.post("/blablabla.xml");
-        condition.getApplicables().get(0).apply(response);
+        condition.getApplicable().get().apply(response);
         assertFalse(condition.validate(call).isValid());
     }
 
