@@ -1,10 +1,8 @@
 package com.xebialabs.restito.resources;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
