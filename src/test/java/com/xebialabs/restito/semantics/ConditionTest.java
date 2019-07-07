@@ -324,22 +324,6 @@ public class ConditionTest {
     }
 
     @Test
-    public void shouldReturnReasonsWhyComplexConditionFailed() {
-        Condition uri = uri("https://google.com");
-        Condition parameter = parameter("foo", "bar");
-        Condition complex = composite(uri, parameter);
-        when(call.getUri()).thenReturn("https://yahoo.com");
-        when(call.getParameters()).thenReturn(Map.of());
-
-        Validation<Seq<String>, Condition> validate = complex.validate(call);
-        assertTrue(validate.isInvalid());
-
-        String expectedError1 = String.format("Condition `%s@%s` failed.", uri.getLabel().get(), uri.hashCode());
-        String expectedError2 = String.format("Condition `%s@%s` failed.", parameter.getLabel().get(), parameter.hashCode());
-        assertEquals(io.vavr.collection.List.of(expectedError1, expectedError2), validate.getError());
-    }
-
-    @Test
     public void shouldReturnNoApplicableForASimpleConditionWithoutAction() {
         assertEquals(alwaysTrue().applicable, Option.none());
     }

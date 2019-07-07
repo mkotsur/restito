@@ -39,7 +39,7 @@ public class Condition {
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    private Either<Predicate<Call>, ? extends Seq<Condition>> content;
+    Either<Predicate<Call>, ? extends Seq<Condition>> content;
 
     protected Option<Applicable> applicable = Option.none();
 
@@ -68,9 +68,6 @@ public class Condition {
         this.applicable = Option.of(applicable);
     }
 
-    /**
-     * Returns the predicate of condition
-     */
     //TODO: return Optional or remove
 //    public Predicate<Call> getPredicate() {
 //        return predicate;
@@ -94,7 +91,7 @@ public class Condition {
         return validate(input).isValid();
     }
 
-    private String failureString() {
+    String failureString() {
         return String.format("Condition `%s@%s` failed.", label, hashCode());
     }
 
@@ -104,24 +101,7 @@ public class Condition {
      * - Invalid<Seq<String>>
      */
     public Validation<Seq<String>, Condition> validate(Call input) {
-
-        Function<Seq<Condition>, Validation<Seq<String>, Condition>> validateConditions = conditions -> {
-            var failedConditions = conditions.filter(c ->
-                    !c.validate(input).isValid()
-            );
-            return failedConditions.isEmpty() ? Validation.valid(this) : Validation.invalid(
-                    failedConditions.map(Condition::failureString)
-            );
-        };
-
-        Function<Predicate<Call>, Validation<Seq<String>, Condition>> validatePredicate = p -> p.test(input) ?
-                Validation.valid(this) :
-                Validation.invalid(io.vavr.collection.List.of(this.failureString()));
-
-        return content
-                .map(validateConditions)
-                .mapLeft(validatePredicate)
-                .getOrElseGet(Function.identity());
+        return ConditionValidation.validate(this, input);
     }
 
     // Factory methods
@@ -320,14 +300,14 @@ public class Condition {
      * Always true
      */
     public static Condition alwaysTrue() {
-        return custom(Predicates.alwaysTrue());
+        return new Condition(Predicates.alwaysTrue(), "true!");
     }
 
     /**
      * Always false
      */
     public static Condition alwaysFalse() {
-        return custom(Predicates.alwaysFalse());
+        return new Condition(Predicates.alwaysFalse(), "false!");
     }
 
     public Condition join(Condition condition) {
