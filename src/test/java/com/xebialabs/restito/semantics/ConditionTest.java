@@ -327,7 +327,7 @@ public class ConditionTest {
     public void shouldReturnReasonsWhyComplexConditionFailed() {
         Condition uri = uri("https://google.com");
         Condition parameter = parameter("foo", "bar");
-        Condition complex = Condition.composite(uri, parameter);
+        Condition complex = composite(uri, parameter);
         when(call.getUri()).thenReturn("https://yahoo.com");
         when(call.getParameters()).thenReturn(Map.of());
 
@@ -341,12 +341,12 @@ public class ConditionTest {
 
     @Test
     public void shouldReturnNoApplicableForASimpleConditionWithoutAction() {
-        assertEquals(alwaysTrue().getApplicable(), Option.none());
+        assertEquals(alwaysTrue().applicable, Option.none());
     }
 
     @Test
-    public void shouldReturnAnApplicableForASimpleConditionWithAction() {
-        assertTrue(get("http://google.com").getApplicable().isDefined());
+    public void shouldReturnAnApplicableForAnAutodiscoveredConditionWithAction() {
+        assertTrue(get("/demo/path%20to%20data/data").applicable.isDefined());
     }
 
     @Test
@@ -354,7 +354,7 @@ public class ConditionTest {
         Condition conditionWithApplicables = get("http://google.com");
         conditionWithApplicables.applicable = Option.of(Action.ok());
         Condition cond = composite(alwaysTrue(), conditionWithApplicables);
-        assertTrue(cond.getApplicable().isDefined());
+        assertTrue(cond.applicable.isDefined());
     }
 
     // Helpers

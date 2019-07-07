@@ -39,7 +39,7 @@ public class Condition {
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    private Either<Predicate<Call>, Seq<Condition>> content;
+    private Either<Predicate<Call>, ? extends Seq<Condition>> content;
 
     protected Option<Applicable> applicable = Option.none();
 
@@ -58,6 +58,11 @@ public class Condition {
         this.content = Either.right(conditions);
     }
 
+    protected Condition(List<Condition> conditions, Applicable applicable) {
+        this.content = Either.right(io.vavr.collection.List.ofAll(conditions));
+        this.applicable = Option.of(applicable);
+    }
+
     /**
      * Returns the predicate of condition
      */
@@ -73,8 +78,8 @@ public class Condition {
         return Optional.ofNullable(label);
     }
 
-    public Option<Applicable> getApplicable() {
-        return applicable;
+    public Applicable getApplicable() {
+        return applicable.getOrElse(Action.noop());
     }
 
     /**
@@ -96,7 +101,9 @@ public class Condition {
     public Validation<Seq<String>, Condition> validate(Call input) {
 
         Function<Seq<Condition>, Validation<Seq<String>, Condition>> validateConditions = conditions -> {
-            var failedConditions = conditions.filter(c -> !c.validate(input).isValid());
+            var failedConditions = conditions.filter(c ->
+                    !c.validate(input).isValid()
+            );
             return failedConditions.isEmpty() ? Validation.valid(this) : Validation.invalid(
                     failedConditions.map(Condition::failureString)
             );
@@ -124,15 +131,15 @@ public class Condition {
     /**
      * Checks HTTP method, URI and enables AutoDiscovery
      */
-    private static ConditionWithApplicables methodWithUriAndAutoDiscovery(final Method m, String uri) {
+    private static Condition methodWithUriAndAutoDiscovery(final Method m, String uri) {
         try {
             final URL resource = new SmartDiscoverer("restito").discoverResource(m, uri);
-            return new ConditionWithApplicables(Seq(method(m), uri(uri)), resourceContent(resource));
+            return new Condition(List.of(method(m), uri(uri)), resourceContent(resource));
         } catch (IllegalArgumentException e) {
             logger.debug("Can not auto-discover resource for URI [{}]", uri);
         }
 
-        return new ConditionWithApplicables(Seq(method(m), uri(uri)), Action.noop());
+        return new Condition(Seq(method(m), uri(uri)));
     }
 
     /**
@@ -271,35 +278,35 @@ public class Condition {
     /**
      * Method GET with given URI
      */
-    public static ConditionWithApplicables get(final String uri) {
+    public static Condition get(final String uri) {
         return methodWithUriAndAutoDiscovery(Method.GET, uri);
     }
 
     /**
      * Method POST with given URI
      */
-    public static ConditionWithApplicables post(String uri) {
+    public static Condition post(String uri) {
         return methodWithUriAndAutoDiscovery(Method.POST, uri);
     }
 
     /**
      * Method PUT with given URI
      */
-    public static ConditionWithApplicables put(String uri) {
+    public static Condition put(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PUT, uri);
     }
 
     /**
      * Method DELETE with given URI
      */
-    public static ConditionWithApplicables delete(String uri) {
+    public static Condition delete(String uri) {
         return methodWithUriAndAutoDiscovery(Method.DELETE, uri);
     }
 
     /**
      * Method PATCH with given URI
      */
-    public static ConditionWithApplicables patch(String uri) {
+    public static Condition patch(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PATCH, uri);
     }
 
@@ -337,17 +344,6 @@ public class Condition {
     public static Condition composite(Condition... conditions) {
         var conditionsList = io.vavr.collection.List.of(conditions);
         return conditionsList.foldLeft(alwaysTrue(), Condition::join);
-
-//        for (Condition condition : conditions) {
-//            Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());
-//            if (condition instanceof ConditionWithApplicables) {
-//                init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());
-//            } else {
-//                init = Condition.custom(newPredicate);
-//            }
-//        }
-//
-//        return init;
     }
 
 

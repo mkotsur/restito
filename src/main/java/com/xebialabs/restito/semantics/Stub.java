@@ -95,7 +95,7 @@ public class Stub {
      * Executes all actions against the response.
      */
     public Response apply(final Response response) {
-        Response appliedResponse = when.getApplicable().map(a -> a.apply(response)).getOrElse(response);
+        Response appliedResponse = when.getApplicable().apply(response);
 
         Applicable chosenAction;
 

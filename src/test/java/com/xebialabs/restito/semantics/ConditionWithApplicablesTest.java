@@ -1,6 +1,8 @@
 package com.xebialabs.restito.semantics;
 
 import java.io.OutputStream;
+
+import io.vavr.control.Option;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -38,7 +40,9 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionTrue() {
         new Stub(
-                new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable),
+                new Condition(Predicates.alwaysTrue()) {{
+                    this.applicable = Option.of(ok200Applicable);
+                }},
                 Action.header("foo", "bar")
         ).apply(response);
 
@@ -50,7 +54,9 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionHadBeenComposed() {
         new Stub(
-                Condition.composite(trueCondition, new ConditionWithApplicables(Predicates.alwaysTrue(), ok200Applicable)),
+                Condition.composite(trueCondition, new Condition(Predicates.alwaysTrue()) {{
+                    this.applicable = Option.of(ok200Applicable);
+                }}),
                 Action.header("foo", "bar")
         ).apply(response);
 
@@ -66,9 +72,9 @@ public class ConditionWithApplicablesTest {
         OutputStream os = mock(OutputStream.class);
         when(response.getOutputStream()).thenReturn(os);
 
-        ConditionWithApplicables condition = Condition.get("/demo/path%20to%20data/data.xml");
+        Condition condition = Condition.get("/demo/path%20to%20data/data.xml");
 
-        condition.getApplicable().get().apply(response);
+        condition.getApplicable().apply(response);
 
         verify(os).write("<content>from data.xml</content>".getBytes());
         verify(response).setContentType("application/xml");
@@ -76,13 +82,12 @@ public class ConditionWithApplicablesTest {
 
     @Test
     public void shouldNotFailIfAutoDiscoveryIsNotPossible() throws Exception {
-
         Call call = mock(Call.class);
         when(call.getUri()).thenReturn("/blablabla.xml");
         when(call.getMethod()).thenReturn(Method.GET);
 
-        ConditionWithApplicables condition = Condition.post("/blablabla.xml");
-        condition.getApplicable().get().apply(response);
+        Condition condition = Condition.post("/blablabla.xml");
+        condition.getApplicable().apply(response);
         assertFalse(condition.validate(call).isValid());
     }
 
