@@ -54,6 +54,11 @@ public class Condition {
         this.content = Either.left(predicate);
     }
 
+    protected Condition(Predicate<Call> predicate, Applicable applicable) {
+        this.content = Either.left(predicate);
+        this.applicable = Option.of(applicable);
+    }
+
     protected Condition(Seq<Condition> conditions) {
         this.content = Either.right(conditions);
     }
