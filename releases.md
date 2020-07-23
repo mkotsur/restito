@@ -1,5 +1,8 @@
 Restito releases
 ============================================
+* 0.9.4
+    * (fix) Critical racing condition on Stub Server while registering the calls. See #74
+
 * 0.9.3
     * #68: Implement mulitply headers matching in expecting request (#69)
     * (fix) Severe encoding bug in Action.stringContent(String content). See #66
