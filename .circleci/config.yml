@@ -1,7 +1,9 @@
-test:
-  post:
-    - gradle javadoc
-
-machine:
-  java:
-    version: openjdk8
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8
+    steps:
+      - checkout
+      - run: ./gradlew test
+      - run: ./gradlew javadoc
