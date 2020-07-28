@@ -228,6 +228,10 @@ public class StubServer {
 
                 CallsHelper.logCall(call);
 
+                if (isRegisterCalls()) {
+                    calls.add(call);
+                }
+
                 boolean processed = false;
                 ListIterator<Stub> iterator = stubs.listIterator(stubs.size());
                 while (iterator.hasPrevious()) {
@@ -244,9 +248,6 @@ public class StubServer {
                 if (!processed) {
                     response.setStatus(HttpStatus.NOT_FOUND_404);
                     log.warn("Request {} hasn't been covered by any of {} stubs.", request.getRequestURI(), stubs.size());
-                }
-                if (isRegisterCalls()) {
-                    calls.add(call);
                 }
             }
         };
