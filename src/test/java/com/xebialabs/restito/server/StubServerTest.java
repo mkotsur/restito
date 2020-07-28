@@ -1,5 +1,7 @@
 package com.xebialabs.restito.server;
 
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Stub;
 import org.apache.mina.util.AvailablePortFinder;
 import org.junit.After;
 import org.junit.Before;
@@ -7,13 +9,14 @@ import org.junit.Test;
 
 import io.restassured.RestAssured;
 
-import com.xebialabs.restito.semantics.Call;
-import com.xebialabs.restito.semantics.Stub;
-
 import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.ok;
-import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static com.xebialabs.restito.semantics.Condition.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -132,5 +135,23 @@ public class StubServerTest {
     @Test
     public void shouldReturn404WhenTheRequestIsNotCoveredByStubs() {
         expect().statusCode(404).when().get("/");
+    }
+
+    @Test
+    public void reproduceRacingCondition() {
+        whenHttp(server)
+            .match(startsWithUri("/test-large"))
+            .then(resourceContent("large-content.json"));
+
+        for (int i = 0; i < 20000; i++) {
+            expect()
+                .header("Content-Type", is("application/json"))
+                .header("Content-Length", is(not(nullValue())))
+                .when().get("/test-large");
+
+            assertEquals(1, server.getCalls().size());
+
+            server.clearCalls();
+        }
     }
 }

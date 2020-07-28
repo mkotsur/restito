@@ -5,6 +5,7 @@ Restito releases
 
 * 1.0.1
     * (fix) Broken dependency
+    * (fix) Critical racing condition on Stub Server while registering the calls. See #74
 
 * 1.0.0
     * Gradle 7 and  Java 11 (#82) 
