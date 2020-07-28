@@ -1,4 +1,4 @@
- version = '0.9.3'  // Last released version
+version = '0.9.4'  // Last released version
 //version '0.1.0-SNAPSHOT'
 group 'com.xebialabs.restito'
 
