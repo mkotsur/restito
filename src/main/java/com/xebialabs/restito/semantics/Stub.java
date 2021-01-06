@@ -1,6 +1,8 @@
 package com.xebialabs.restito.semantics;
 
 import com.xebialabs.restito.builder.ensure.EnsureHttp;
+import io.vavr.collection.Seq;
+import io.vavr.control.Validation;
 import org.glassfish.grizzly.http.server.Response;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import static com.xebialabs.restito.semantics.Action.noop;
  */
 public class Stub {
 
-    private Condition when = Condition.custom(Predicates.alwaysTrue());
+    private Condition when;
 
     private Applicable action = noop();
 
@@ -88,18 +90,28 @@ public class Stub {
      * Checks whether the call satisfies condition of this stub
      */
     public boolean isApplicable(Call call) {
-        return when.getPredicate().test(call) && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
+        return when.validate(call).isValid() && (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes);
+    }
+
+    /**
+     * Checks whether the call satisfies condition of this stub
+     */
+    public Validation<Seq<String>, Call> isApplicable2(Call call) {
+        return when.validate(call)
+                .flatMap(c -> {
+                    if (actionSequence.size() == 0 || exceededAction != null || actionSequence.size() > appliedTimes) {
+                        return Validation.valid(call);
+                    }
+                    Seq<String> error = io.vavr.collection.List.of("Something is wrong with exceeded actions...");
+                    return Validation.invalid(error);
+                });
     }
 
     /**
      * Executes all actions against the response.
      */
-    public Response apply(Response response) {
-        if (when instanceof ConditionWithApplicables) {
-            for (Applicable applicable : ((ConditionWithApplicables) when).getApplicables()) {
-                response = applicable.apply(response);
-            }
-        }
+    public Response apply(final Response response) {
+        Response appliedResponse = when.getApplicable().apply(response);
 
         Applicable chosenAction;
 
@@ -113,9 +125,9 @@ public class Stub {
             chosenAction = action;
         }
 
-        response = chosenAction.apply(response);
+        appliedResponse = chosenAction.apply(appliedResponse);
         appliedTimes++;
-        return response;
+        return appliedResponse;
     }
 
     public Stub withAction(Applicable action) {

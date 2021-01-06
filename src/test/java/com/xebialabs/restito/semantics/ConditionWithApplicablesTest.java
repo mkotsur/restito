@@ -1,6 +1,5 @@
 package com.xebialabs.restito.semantics;
 
-import java.io.OutputStream;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -9,6 +8,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.io.OutputStream;
 
 import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 import static org.junit.Assert.assertFalse;
@@ -19,16 +20,6 @@ public class ConditionWithApplicablesTest {
     @Mock
     private Response response;
 
-    private static final Condition trueCondition = Condition.custom(Predicates.<Call>alwaysTrue());
-
-    private static final Applicable ok200Applicable = new Applicable() {
-        @Override
-        public Response apply(final Response r) {
-            r.setStatus(HttpStatus.OK_200);
-            return r;
-        }
-    };
-
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -38,7 +29,7 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionTrue() {
         new Stub(
-                new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable),
+                new Condition(Predicates.alwaysTrue(), Action.ok()),
                 Action.header("foo", "bar")
         ).apply(response);
 
@@ -50,7 +41,7 @@ public class ConditionWithApplicablesTest {
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionHadBeenComposed() {
         new Stub(
-                Condition.composite(trueCondition, new ConditionWithApplicables(Predicates.<Call>alwaysTrue(), ok200Applicable)),
+                Condition.composite(Condition.alwaysTrue(), new Condition(Predicates.alwaysTrue(), Action.ok())),
                 Action.header("foo", "bar")
         ).apply(response);
 
@@ -66,24 +57,23 @@ public class ConditionWithApplicablesTest {
         OutputStream os = mock(OutputStream.class);
         when(response.getOutputStream()).thenReturn(os);
 
-        ConditionWithApplicables condition = Condition.get("/demo/path%20to%20data/data.xml");
+        Condition condition = Condition.get("/demo/path%20to%20data/data.xml");
 
-        condition.getApplicables().get(0).apply(response);
+        condition.getApplicable().apply(response);
 
         verify(os).write("<content>from data.xml</content>".getBytes());
         verify(response).setContentType("application/xml");
     }
 
     @Test
-    public void shouldNotFailIfAutoDiscoveryIsNotPossible() throws Exception {
-
+    public void shouldNotFailIfAutoDiscoveryIsNotPossible() {
         Call call = mock(Call.class);
         when(call.getUri()).thenReturn("/blablabla.xml");
         when(call.getMethod()).thenReturn(Method.GET);
 
-        ConditionWithApplicables condition = Condition.post("/blablabla.xml");
-        condition.getApplicables().get(0).apply(response);
-        assertFalse(condition.getPredicate().test(call));
+        Condition condition = Condition.post("/blablabla.xml");
+        condition.getApplicable().apply(response);
+        assertFalse(condition.validate(call).isValid());
     }
 
 }

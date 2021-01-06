@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.vavr.collection.Seq;
+import io.vavr.control.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +50,10 @@ public class CallsHelper {
             log.info(" --> Body: ");
             log.info(call.getPostBody());
         }
+    }
+
+    public static void logValidation(Validation<Seq<String>, ?> validation) {
+        validation.getError().forEach(e -> log.info(" ⚠ Reason for not applying stub: {}", e));
     }
 
     private static Object[] va(Object... args) {

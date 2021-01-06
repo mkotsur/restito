@@ -4,10 +4,18 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.jayway.jsonpath.JsonPath;
+import static io.vavr.API.*;
+
+import io.vavr.collection.Seq;
+import io.vavr.control.Either;
+import io.vavr.control.Option;
+import io.vavr.control.Validation;
 import org.apache.mina.util.Base64;
 import org.glassfish.grizzly.http.Method;
 import org.slf4j.Logger;
@@ -31,24 +39,69 @@ public class Condition {
 
     private static final Logger logger = LoggerFactory.getLogger(Condition.class);
 
-    private Predicate<Call> predicate;
+    Either<Predicate<Call>, ? extends Seq<Condition>> content;
 
-    protected Condition(Predicate<Call> predicate) {
-        this.predicate = predicate;
+    protected Option<Applicable> applicable = Option.none();
+
+    private String label;
+
+    protected Condition(Predicate<Call> predicate, String label) {
+        this.label = label;
+        this.content = Either.left(predicate);
     }
 
+    protected Condition(Predicate<Call> predicate) {
+        this.content = Either.left(predicate);
+    }
+
+    protected Condition(Predicate<Call> predicate, Applicable applicable) {
+        this.content = Either.left(predicate);
+        this.applicable = Option.of(applicable);
+    }
+
+    protected Condition(Seq<Condition> conditions) {
+        this.content = Either.right(conditions);
+    }
+
+    protected Condition(List<Condition> conditions, Applicable applicable) {
+        this.content = Either.right(io.vavr.collection.List.ofAll(conditions));
+        this.applicable = Option.of(applicable);
+    }
+
+    //TODO: return Optional or remove
+//    public Predicate<Call> getPredicate() {
+//        return predicate;
+//    }
+
     /**
-     * Returns the predicate of condition
+     * Returns the label of condition
      */
-    public Predicate<Call> getPredicate() {
-        return predicate;
+    public Optional<String> getLabel() {
+        return Optional.ofNullable(label);
+    }
+
+    public Applicable getApplicable() {
+        return applicable.getOrElse(Action.noop());
     }
 
     /**
      * Check if call satisfies the condition
      */
     public boolean check(Call input) {
-        return getPredicate().test(input);
+        return validate(input).isValid();
+    }
+
+    String failureString() {
+        return String.format("Condition `%s@%s` failed.", label, hashCode());
+    }
+
+    /**
+     * Validates an input against the condition and returns:
+     * - Valid<Condition> if it matches
+     * - Invalid<Seq<String>>
+     */
+    public Validation<Seq<String>, Condition> validate(Call input) {
+        return ConditionValidation.validate(this, input);
     }
 
     // Factory methods
@@ -63,29 +116,31 @@ public class Condition {
     /**
      * Checks HTTP method, URI and enables AutoDiscovery
      */
-    private static ConditionWithApplicables methodWithUriAndAutoDiscovery(final Method m, String uri) {
+    private static Condition methodWithUriAndAutoDiscovery(final Method m, String uri) {
         try {
             final URL resource = new SmartDiscoverer("restito").discoverResource(m, uri);
-            return new ConditionWithApplicables(composite(method(m), uri(uri)), resourceContent(resource));
+            return new Condition(List.of(method(m), uri(uri)), resourceContent(resource));
         } catch (IllegalArgumentException e) {
             logger.debug("Can not auto-discover resource for URI [{}]", uri);
         }
 
-        return new ConditionWithApplicables(composite(method(m), uri(uri)), Action.noop());
+        return new Condition(Seq(method(m), uri(uri)));
     }
 
     /**
      * Checks HTTP parameters. Also work with multi-valued parameters
      */
     public static Condition parameter(final String key, final String... parameterValues) {
-        return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues));
+        String label = String.format("parameter==%s", Arrays.toString(parameterValues));
+        return new Condition(input -> Arrays.equals(input.getParameters().get(key), parameterValues), label);
     }
 
     /**
      * URI exactly equals to the value returned by {@link org.glassfish.grizzly.http.server.Request#getRequestURI()}
      */
     public static Condition uri(final String uri) {
-        return new Condition(input -> input.getUri().equals(uri));
+        String label = String.format("uri==%s", uri);
+        return new Condition(input -> input.getUri().equals(uri), label);
     }
 
     /**
@@ -143,7 +198,10 @@ public class Condition {
      * Not condition
      */
     public static Condition not(Condition c) {
-        return new Condition(Predicates.not(c.getPredicate()));
+        return c.content
+                .mapLeft(p -> new Condition(Predicates.not(p)))
+                .map(conditions -> new Condition(conditions.map(Condition::not)))
+                .getOrElseGet(Function.identity());
     }
 
     /**
@@ -205,35 +263,35 @@ public class Condition {
     /**
      * Method GET with given URI
      */
-    public static ConditionWithApplicables get(final String uri) {
+    public static Condition get(final String uri) {
         return methodWithUriAndAutoDiscovery(Method.GET, uri);
     }
 
     /**
      * Method POST with given URI
      */
-    public static ConditionWithApplicables post(String uri) {
+    public static Condition post(String uri) {
         return methodWithUriAndAutoDiscovery(Method.POST, uri);
     }
 
     /**
      * Method PUT with given URI
      */
-    public static ConditionWithApplicables put(String uri) {
+    public static Condition put(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PUT, uri);
     }
 
     /**
      * Method DELETE with given URI
      */
-    public static ConditionWithApplicables delete(String uri) {
+    public static Condition delete(String uri) {
         return methodWithUriAndAutoDiscovery(Method.DELETE, uri);
     }
 
     /**
      * Method PATCH with given URI
      */
-    public static ConditionWithApplicables patch(String uri) {
+    public static Condition patch(String uri) {
         return methodWithUriAndAutoDiscovery(Method.PATCH, uri);
     }
 
@@ -242,14 +300,25 @@ public class Condition {
      * Always true
      */
     public static Condition alwaysTrue() {
-        return custom(Predicates.alwaysTrue());
+        return new Condition(Predicates.alwaysTrue(), "true!");
     }
 
     /**
      * Always false
      */
     public static Condition alwaysFalse() {
-        return custom(Predicates.alwaysFalse());
+        return new Condition(Predicates.alwaysFalse(), "false!");
+    }
+
+    public Condition join(Condition condition) {
+
+        final Option<Applicable> actionOption = this.applicable.toArray().appendAll(condition.applicable).foldLeft(
+                Option.none(),
+                (o, a) -> Option.of(Action.composite(o.getOrElse(Action.noop()), a))
+        );
+        return new Condition(Seq(this, condition)) {{
+            applicable = actionOption;
+        }};
     }
 
     /**
@@ -258,18 +327,8 @@ public class Condition {
     // see http://stackoverflow.com/questions/1445233/is-it-possible-to-solve-the-a-generic-array-of-t-is-created-for-a-varargs-param
     @SuppressWarnings("unchecked")
     public static Condition composite(Condition... conditions) {
-        Condition init = alwaysTrue();
-
-        for (Condition condition : conditions) {
-            Predicate<Call> newPredicate = Predicates.and(init.getPredicate(), condition.getPredicate());
-            if (condition instanceof ConditionWithApplicables) {
-                init = new ConditionWithApplicables(newPredicate, ((ConditionWithApplicables) condition).getApplicables());
-            } else {
-                init = Condition.custom(newPredicate);
-            }
-        }
-
-        return init;
+        var conditionsList = io.vavr.collection.List.of(conditions);
+        return conditionsList.foldLeft(alwaysTrue(), Condition::join);
     }
 
 

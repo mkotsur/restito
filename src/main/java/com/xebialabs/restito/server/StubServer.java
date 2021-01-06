@@ -232,7 +232,9 @@ public class StubServer {
                 ListIterator<Stub> iterator = stubs.listIterator(stubs.size());
                 while (iterator.hasPrevious()) {
                     Stub stub = iterator.previous();
-                    if (!stub.isApplicable(call)) {
+                    var applicableValidation = stub.isApplicable2(call);
+                    if (!applicableValidation.isValid()) {
+                        CallsHelper.logValidation(applicableValidation);
                         continue;
                     }
 
