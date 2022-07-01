@@ -31,7 +31,7 @@ dependencies {
 
 	compile 'com.jayway.jsonpath:json-path:2.1.0'
 
-	compile 'org.apache.mina:mina-core:2.0.13'
+	compile 'org.apache.mina:mina-core:2.1.6'
 
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
 
