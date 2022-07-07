@@ -1,5 +1,8 @@
 Restito releases
 ============================================
+* 0.9.5
+  * (security) Update mina-core dependency. See #79
+
 * 0.9.4
     * (fix) Critical racing condition on Stub Server while registering the calls. See #74
 

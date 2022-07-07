@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.xebialabs.restito:restito:0.9.4' //  Restito dependency
+  implementation 'com.xebialabs.restito:restito:0.9.5' //  Restito dependency
 }
 
 mainClassName = "com.xebialabs.restito.examples.MyServer"
