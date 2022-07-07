@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.xebialabs.restito</groupId>
             <artifactId>restito</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>31.1-jre</version>
         </dependency>
     </dependencies>
 
