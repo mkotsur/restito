@@ -4,7 +4,7 @@ PAGES_BRANCH="gh-pages"
 PAGES_JAVADOC_PATH="javadoc/current"
 BUILD_JAVADOC_PATH="build/docs/javadoc"
 
-gradle javadoc
+./gradlew javadoc
 if [[ ! -d "${BUILD_JAVADOC_PATH}" ]]; then echo "Could not find generated javadoc."; exit 30; fi
 
 
