@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PAGES_BRANCH="gh-pages"
-PAGES_JAVADOC_PATH="javadoc/current"
+PAGES_JAVADOC_PATH="javadoc/0.9.x"
 BUILD_JAVADOC_PATH="build/docs/javadoc"
 
 ./gradlew javadoc
