@@ -51,6 +51,7 @@ javadoc {
 	if(JavaVersion.current() == JavaVersion.VERSION_11) {
 		options.addStringOption('Xdoclint:none', '-quiet')
 	}
+	options.addBooleanOption('html5', true)
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
