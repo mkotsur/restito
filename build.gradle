@@ -1,17 +1,17 @@
-// version = '0.9.3'  // Last released version
-version '0.1.0-SNAPSHOT'
+//version = '1.0.0'  // Last released version
+version '1.0.0-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'scala'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'idea'
 
-sourceCompatibility = '10'
-targetCompatibility = '10'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 repositories {
 	mavenCentral()
@@ -19,28 +19,22 @@ repositories {
 }
 
 dependencies {
-	testCompile 'org.scala-lang:scala-library:2.12.7'
+	testCompileOnly 'org.scala-lang:scala-library:2.12.16'
 
-	compile 'junit:junit:4.12'
+	testImplementation 'org.slf4j:slf4j-simple:1.7.21'
+	testImplementation 'org.mockito:mockito-core:1.10.19'
+	testImplementation 'org.hamcrest:hamcrest-all:1.3'
+	testImplementation('io.rest-assured:rest-assured:3.1.1')
+	testImplementation"com.typesafe.akka:akka-actor_2.12:2.5.17"
+	testImplementation"com.typesafe.akka:akka-stream_2.12:2.5.17"
+	testImplementation"com.typesafe.akka:akka-http_2.12:10.1.5"
+	testImplementation"org.scalatest:scalatest_2.12:3.0.5"
 
-	compile 'org.slf4j:slf4j-api:1.7.21'
-	testCompile 'org.slf4j:slf4j-simple:1.7.21'
-
-	testCompile 'org.mockito:mockito-core:1.10.17'
-	compile 'org.glassfish.grizzly:grizzly-http-server:2.3.25'
-
-	compile 'com.jayway.jsonpath:json-path:2.1.0'
-
-	compile 'org.apache.mina:mina-core:2.1.6'
-
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
-
-	testCompile ('io.rest-assured:rest-assured:3.1.1')
-
-	testCompile "com.typesafe.akka:akka-actor_2.12:2.5.17"
-	testCompile "com.typesafe.akka:akka-stream_2.12:2.5.17"
-	testCompile "com.typesafe.akka:akka-http_2.12:10.1.5"
-	testCompile "org.scalatest:scalatest_2.12:3.0.5"
+	implementation 'junit:junit:4.13.2'
+	implementation 'org.slf4j:slf4j-api:1.7.21'
+	implementation 'org.glassfish.grizzly:grizzly-http-server:2.3.25'
+	implementation 'com.jayway.jsonpath:json-path:2.1.0'
+	implementation 'org.apache.mina:mina-core:2.1.6'
 }
 
 tasks.withType(JavaCompile) { compile ->
@@ -54,7 +48,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 javadoc {
-	if(JavaVersion.current() == JavaVersion.VERSION_1_8) {
+	if(JavaVersion.current() == JavaVersion.VERSION_11) {
 		options.addStringOption('Xdoclint:none', '-quiet')
 	}
 }
@@ -69,49 +63,64 @@ artifacts {
 	archives javadocJar
 }
 
-signing {
-	required { gradle.taskGraph.hasTask('uploadArchives') }
-	sign configurations.archives
-}
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = 'restito'
+			from components.java
 
-uploadArchives {
-	if (project.hasProperty("sonatypeUsername")) {
-		repositories {
-			mavenDeployer {
-				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+			pom {
+				name = 'Restito'
+				description = 'Restito - testing framework for rest clients'
+				packaging = 'jar'
+				url = 'http://mkotsur.github.com/restito'
 
-				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-					authentication(userName: sonatypeUsername, password: sonatypePassword)
+				licenses {
+					license {
+						name = 'MIT'
+						url = 'https://raw.github.com/mkotsur/restito/master/LICENSE'
+					}
 				}
 
-				pom.project {
-					name 'Restito'
-					packaging 'jar'
-					description 'Restito - testing framework for rest clients'
-					url 'http://mkotsur.github.com/restito'
-
-					scm {
-						url 'scm:git@github.com:mkotsur/restito.git'
-						connection 'scm:git@github.com:mkotsur/restito.git'
-						developerConnection 'scm:git@github.com:mkotsur/restito.git'
+				developers {
+					developer {
+						id = 'mkotsur'
+						name = 'Mike Kotsur'
+						email = 'miccots@gmail.com'
 					}
-
-					licenses {
-						license {
-							name 'MIT'
-							url 'https://raw.github.com/mkotsur/restito/master/LICENSE'
-							distribution 'repo'
-						}
-					}
-
-					developers {
-						developer {
-							id 'mkotsur'
-							name 'Mike Kotsur'
-						}
-					}
+				}
+				scm {
+					url = 'scm:git@github.com:mkotsur/restito.git'
+					connection = 'scm:git@github.com:mkotsur/restito.git'
+					developerConnection = 'scm:git@github.com:mkotsur/restito.git'
 				}
 			}
 		}
 	}
+
+	repositories {
+		if (project.hasProperty("sonatypeUsername")) {
+			maven {
+				url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+				credentials {
+					username = sonatypeUsername
+					password = sonatypePassword
+				}
+				mavenContent {
+					releasesOnly()
+				}
+			}
+		}
+
+		mavenLocal {
+			mavenContent {
+				snapshotsOnly()
+			}
+		}
+	}
+
+}
+
+signing {
+	sign publishing.publications.mavenJava
 }

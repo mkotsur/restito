@@ -16,7 +16,7 @@ For more motivation, please read [Motivation](https://github.com/mkotsur/restito
 
 Developer's guide is the best place to start. FOR LOTS OF EXAMPLES CLICK [**-> HERE <-**](https://github.com/mkotsur/restito/blob/master/guide.md) :-)
 
-For more details you can also check [Restito's javadoc](http://mkotsur.github.com/restito/javadoc/current/).
+For more details you can also check [Restito's javadoc](http://mkotsur.github.io/restito/javadoc/current/).
 
 # Quick example:
 
@@ -59,6 +59,11 @@ public class SimpleRequestsTest {
 
 }
 ```
+
+# Version compatibility
+
+* Use 1.x if you run JDK 11+
+* Use 0.9.x if you run JDK 8+
 
 # Maven instructions
 
