@@ -60,6 +60,11 @@ public class SimpleRequestsTest {
 }
 ```
 
+# Version compatibility
+
+* Use 1.x if you run JDK 11+
+* Use 0.9.x if you run JDK 8+
+
 # Maven instructions
 
 ```
