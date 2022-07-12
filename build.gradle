@@ -37,7 +37,7 @@ dependencies {
 	implementation 'junit:junit:4.13.2'
 	implementation 'org.slf4j:slf4j-api:1.7.21'
 	implementation 'org.glassfish.grizzly:grizzly-http-server:2.3.25'
-	implementation 'com.jayway.jsonpath:json-path:2.1.0'
+	implementation 'com.jayway.jsonpath:json-path:2.7.0'
 	implementation 'org.apache.mina:mina-core:2.1.6'
 }
 
