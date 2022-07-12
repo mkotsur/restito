@@ -2,15 +2,14 @@ Restito - testing framework for rest clients [![Build Status](https://circleci.c
 [![Maven Central](https://img.shields.io/maven-central/v/com.xebialabs.restito/restito.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.xebialabs.restito%22)
 ============================================
 
-Restito is a tool which is inspired by [mockito](http://code.google.com/p/mockito/) and functionally is diametrically opposite to the [Rest Assured](http://code.google.com/p/rest-assured).
+Restito is a tool for validating your code's interactions with REST services. It provides the Middle Way between hammering real HTTP services from your tests (thus making them brittle) and mocking too much and not testing the HTTP communication layer at all.     
+Inspired by [mockito](http://code.google.com/p/mockito/) and [Rest Assured](https://github.com/rest-assured/rest-assured), Restito provides a handy DSL for:
+* Mimicking a behaviour of a REST server from your tests;
+* Recording your code's HTTP calls to the server and verifying them;
+* Integration with JUnit;
+* Avoiding boilerplate code.
 
-Restito provides a DSL to:
-
-* Mimic rest server behavior
-* Record HTTP calls to the server
-* Perform verification against happened calls
-
-Which means that it helps you to test an application which makes calls to some HTTP service. Restito sets up a [StubServer](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html) instance which responds to your application's [Calls](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Call.html) based on defined [Stubs](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Stub.html). A stub makes some [Action](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html) to response when [Condition](http://mkotsur.github.com/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) is respected.
+It helps you to test an application which makes calls to some HTTP service. Restito sets up a [StubServer](http://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/server/StubServer.html) instance which responds to your application's [Calls](http://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Call.html) based on defined [Stubs](http://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Stub.html). A stub makes some [Action](http://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Action.html) to response when [Condition](http://mkotsur.github.io/restito/javadoc/current/com/xebialabs/restito/semantics/Condition.html) is respected.
 
 For more motivation, please read [Motivation](https://github.com/mkotsur/restito/blob/master/guide.md#motivation) section of the [Developer's guide](https://github.com/mkotsur/restito/blob/master/guide.md).
 
@@ -62,8 +61,8 @@ public class SimpleRequestsTest {
 
 # Version compatibility
 
-* Use 1.x if you run JDK 11+
-* Use 0.9.x if you run JDK 8+
+* Use 1.x if you run JDK 11+;
+* Use [0.9.x](https://github.com/mkotsur/restito/tree/0.9.x) if you run JDK 8+
 
 # Maven instructions
 
