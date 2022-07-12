@@ -1,14 +1,18 @@
-//version = '1.0.0'  // Last released version
-version '1.0.0-SNAPSHOT'
+plugins {
+	id 'java-library'
+	id 'scala'
+	id 'maven-publish'
+	id 'signing'
+	id 'idea'
+}
+
+version = '1.0.0'  // Last released version
+// version '1.0.0-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
 
-apply plugin: 'java-library'
-apply plugin: 'scala'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-apply plugin: 'idea'
+
 
 sourceCompatibility = '11'
 targetCompatibility = '11'
@@ -37,26 +41,14 @@ dependencies {
 	implementation 'org.apache.mina:mina-core:2.1.6'
 }
 
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
 tasks.withType(JavaCompile) { compile ->
 	compile.options.compilerArgs << '-Xlint:deprecation'
 	compile.options.compilerArgs << '-Xlint:unchecked'
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
-}
-
-javadoc {
-	if(JavaVersion.current() == JavaVersion.VERSION_11) {
-		options.addStringOption('Xdoclint:none', '-quiet')
-	}
-	options.addBooleanOption('html5', true)
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
 }
 
 artifacts {

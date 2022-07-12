@@ -1,5 +1,17 @@
 Restito releases
 ============================================
+
+## 1.x (Java 11+)
+
+* 1.0.0
+    * Gradle 7 and  Java 11 (#82) 
+
+## 0.9.x (Java 8+)
+
+* 0.9.5
+  * (security) Update mina-core dependency. See #79
+* 0.9.4
+  * (fix) Critical racing condition on Stub Server while registering the calls. See #74 
 * 0.9.3
     * #68: Implement mulitply headers matching in expecting request (#69)
     * (fix) Severe encoding bug in Action.stringContent(String content). See #66
