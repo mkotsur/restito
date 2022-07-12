@@ -115,21 +115,3 @@ if (project.hasProperty("sonatypeUsername")) {
 		sign publishing.publications.mavenJava
 	}
 }
-
-
-//uploadArchives {
-//	if (project.hasProperty("sonatypeUsername")) {
-//		repositories {
-//			mavenDeployer {
-//
-//				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//					authentication(userName: sonatypeUsername, password: sonatypePassword)
-//				}
-//
-//
-
-//				}
-//			}
-//		}
-//	}
-//}
