@@ -63,55 +63,64 @@ artifacts {
 	archives javadocJar
 }
 
-if (project.hasProperty("sonatypeUsername")) {
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
-				artifactId = 'restito'
-				from components.java
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = 'restito'
+			from components.java
 
-				pom {
-					name = 'Restito'
-					description = 'Restito - testing framework for rest clients'
-					packaging = 'jar'
-					url = 'http://mkotsur.github.com/restito'
+			pom {
+				name = 'Restito'
+				description = 'Restito - testing framework for rest clients'
+				packaging = 'jar'
+				url = 'http://mkotsur.github.com/restito'
 
-					licenses {
-						license {
-							name = 'MIT'
-							url = 'https://raw.github.com/mkotsur/restito/master/LICENSE'
-						}
+				licenses {
+					license {
+						name = 'MIT'
+						url = 'https://raw.github.com/mkotsur/restito/master/LICENSE'
 					}
+				}
 
-					developers {
-						developer {
-							id = 'mkotsur'
-							name = 'Mike Kotsur'
-							email = 'miccots@gmail.com'
-						}
+				developers {
+					developer {
+						id = 'mkotsur'
+						name = 'Mike Kotsur'
+						email = 'miccots@gmail.com'
 					}
-					scm {
-						url = 'scm:git@github.com:mkotsur/restito.git'
-						connection = 'scm:git@github.com:mkotsur/restito.git'
-						developerConnection = 'scm:git@github.com:mkotsur/restito.git'
-					}
+				}
+				scm {
+					url = 'scm:git@github.com:mkotsur/restito.git'
+					connection = 'scm:git@github.com:mkotsur/restito.git'
+					developerConnection = 'scm:git@github.com:mkotsur/restito.git'
 				}
 			}
 		}
+	}
 
-		repositories {
+	repositories {
+		if (project.hasProperty("sonatypeUsername")) {
 			maven {
 				url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 				credentials {
 					username = sonatypeUsername
 					password = sonatypePassword
 				}
+				mavenContent {
+					releasesOnly()
+				}
 			}
 		}
 
+		mavenLocal {
+			mavenContent {
+				snapshotsOnly()
+			}
+		}
 	}
 
-	signing {
-		sign publishing.publications.mavenJava
-	}
+}
+
+signing {
+	sign publishing.publications.mavenJava
 }
