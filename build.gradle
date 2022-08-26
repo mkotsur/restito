@@ -34,9 +34,9 @@ dependencies {
 	testImplementation"com.typesafe.akka:akka-http_2.12:10.1.5"
 	testImplementation"org.scalatest:scalatest_2.12:3.0.5"
 
+	api 'org.glassfish.grizzly:grizzly-http-server:2.3.25'
 	implementation 'junit:junit:4.13.2'
 	implementation 'org.slf4j:slf4j-api:1.7.21'
-	implementation 'org.glassfish.grizzly:grizzly-http-server:2.3.25'
 	implementation 'com.jayway.jsonpath:json-path:2.7.0'
 	implementation 'org.apache.mina:mina-core:2.1.6'
 }
@@ -114,6 +114,8 @@ publishing {
 
 }
 
+/*
 signing {
 	sign publishing.publications.mavenJava
 }
+*/

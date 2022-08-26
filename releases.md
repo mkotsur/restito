@@ -3,6 +3,9 @@ Restito releases
 
 ## 1.x (Java 11+)
 
+* 1.0.1
+    * (fix) Broken dependency
+
 * 1.0.0
     * Gradle 7 and  Java 11 (#82) 
 
