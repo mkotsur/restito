@@ -6,8 +6,8 @@ plugins {
 	id 'idea'
 }
 
-// version = '1.0.0'  // Last released version
-version '1.0.1-SNAPSHOT'
+version = '1.0.1'  // Last released version
+// version '1.0.2-SNAPSHOT'
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
@@ -114,8 +114,6 @@ publishing {
 
 }
 
-/*
 signing {
 	sign publishing.publications.mavenJava
 }
-*/
