@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin:'application'
 
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 version = '1.0'
 
 
