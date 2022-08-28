@@ -2,7 +2,7 @@
 
 [ -z "$1" ] && echo 'Error: pass the new version' && exit 1
 
-CURRENT_VERSION=$(head -n 1 build.gradle | grep -o -e '\d\.\d\.\d')
+CURRENT_VERSION=$(< build.gradle grep "Last released version" | grep -o -e '\d\.\d\.\d')
 
 
 sed -i '' -e "s/$CURRENT_VERSION/$1/g" README.md
@@ -12,4 +12,4 @@ sed -i '' -e "s/$CURRENT_VERSION/$1/g" examples/standalone-server/build.gradle
 
 echo "Don't forget to create release notes. This is what has been done up till now"
 
-git log --pretty=oneline --abbrev-commit ${CURRENT_VERSION}...HEAD
+git log --pretty=oneline --abbrev-commit "${CURRENT_VERSION}"...HEAD
