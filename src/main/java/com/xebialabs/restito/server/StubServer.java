@@ -12,18 +12,21 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.Collections.unmodifiableList;
+
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * The HttpServer wrapper which is responsible for operations like starting and stopping and holding objects that describe server behavior.
@@ -32,6 +35,11 @@ public class StubServer {
 
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
+
+    private static final String SERVER_KEY_STORE = "keystore_server";
+    private static final String SERVER_KEY_STORE_PASS = "secret";
+    private static final String SERVER_CERTIFICATE_TRUST_STORE = "keystore_server_cert";
+    private static final String SERVER_CERTIFICATE_TRUST_STORE_PASS = "changeit";
 
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private final List<Stub> stubs = new CopyOnWriteArrayList<>();
@@ -45,6 +53,36 @@ public class StubServer {
 
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
+
+    /**
+     * Get the trust store for server's certificate.
+     * @return trust store
+     */
+    public static KeyStore getTrustStore() {
+        try (InputStream trustStore = StubServer.class.getResourceAsStream("/" + SERVER_CERTIFICATE_TRUST_STORE)) {
+            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+            store.load(trustStore, SERVER_CERTIFICATE_TRUST_STORE_PASS.toCharArray());
+            return store;
+        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the trust manager factory for server's certificate.
+     * @return trust manager factory
+     */
+    public static TrustManagerFactory getTrustManagerFactory() {
+        KeyStore store = getTrustStore();
+
+        try {
+            TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            factory.init(store);
+            return factory;
+        } catch (NoSuchAlgorithmException | KeyStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Creates a server based on stubs that are used to determine behavior.
@@ -143,35 +181,29 @@ public class StubServer {
     }
 
     private SSLContextConfigurator getSslConfig() throws IOException {
-        if(SSLContextConfigurator.DEFAULT_CONFIG.validateConfiguration(true))
-        {
+        SSLContextConfigurator.DEFAULT_CONFIG.retrieve(System.getProperties()); // refresh in case of changes
+        if (SSLContextConfigurator.DEFAULT_CONFIG.validateConfiguration(true)) {
             return SSLContextConfigurator.DEFAULT_CONFIG;
         }
-        SSLContextConfigurator defaultConfig = SSLContextConfigurator.DEFAULT_CONFIG;
-        String keystore_server = createCertificateStore("keystore_server");
-        String truststore_server = createCertificateStore("truststore_server");
-        defaultConfig.setKeyStoreFile(keystore_server);
-        defaultConfig.setKeyStorePass("secret");
-        defaultConfig.setTrustStoreFile(truststore_server);
-        defaultConfig.setTrustStorePass("secret");
-        return defaultConfig;
+        SSLContextConfigurator sslConfig = new SSLContextConfigurator();
+        byte[] keystore_server = readCertificateStore(SERVER_KEY_STORE);
+        sslConfig.setKeyStoreBytes(keystore_server);
+        sslConfig.setKeyStorePass(SERVER_KEY_STORE_PASS);
+        return sslConfig;
     }
 
     /**
-     * Copy the Certificate store to the temporary directory, as it needs to be in a real file, not inside a jar for Grizzly to pick it up.
+     * Read the certificate store as bytes for Grizzly to pick it up.
+     *
      * @param resourceName The Store to copy
-     * @return The absolute path to the temporary keystore.
+     * @return The keystore in bytes.
      * @throws IOException If the store could not be copied.
      */
-    private String createCertificateStore(String resourceName) throws IOException {
+    private byte[] readCertificateStore(String resourceName) throws IOException {
         URL resource = StubServer.class.getResource("/" + resourceName);
-        File store = File.createTempFile(resourceName, "store");
         try (InputStream input = resource.openStream()) {
-            Files.copy(input, store.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } finally {
-            store.deleteOnExit();
+            return input.readAllBytes();
         }
-        return store.getAbsolutePath();
     }
 
     /**
