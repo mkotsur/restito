@@ -2,6 +2,8 @@ package guide;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -95,24 +97,101 @@ public class UsingHttpsTest {
         ensureHttp(server).gotStubsCommitmentsDone();
     }
 
+    @Test
+    public void shouldFailWhenServerRequiresAuthentication() throws IOException {
+        server.clientAuth(Files.readAllBytes(Path.of("build/resources/test/keystore_server_test_cert")), "changeit").run();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen(0);
+
+        try {
+            sslReadyHttpClient().execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+            fail("Request should have failed as server requires client authentication");
+        } catch (Exception e) {
+            assertThat(e, isA(IOException.class));
+        }
+
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    @Test
+    public void shouldPassWhenSendingCertificateToServerRequiringAuthentication() throws GeneralSecurityException, IOException {
+        // client authentication
+        server.clientAuth(Files.readAllBytes(Path.of("build/resources/test/keystore_server_test_cert")), "changeit").run();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
+
+        InputStream clientKeyStore = getClass().getResourceAsStream("/keystore_server_test");
+        String clientKeyStorePass = "secret";
+        HttpResponse execute = sslReadyHttpAuthClient(clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+
+        assertThat(execute.getStatusLine().getStatusCode(), equalTo(200));
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
+    @Test
+    public void shouldFailSendingNonAllowedCertificate() throws IOException {
+        // client authentication
+        server.clientAuth(Files.readAllBytes(Path.of("build/resources/test/keystore_server_test_cert")), "changeit").run();
+        whenHttp(server).match(get("/asd")).then(ok()).mustHappen(0);
+
+        // sending a client certificate that is not allowed
+        InputStream clientKeyStore = StubServer.class.getResourceAsStream("keystore_server");
+        String clientKeyStorePass = "secret";
+
+        try {
+            sslReadyHttpAuthClient(clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+            fail("Request should have failed as server does not accept this client certificate");
+        } catch (Exception e) {
+            assertThat(e, isA(IOException.class));
+        }
+
+        ensureHttp(server).gotStubsCommitmentsDone();
+    }
+
     /**
      * Helper which returns HTTP client configured for https session
      */
     private HttpClient sslReadyHttpClient() throws GeneralSecurityException {
-        return sslReadyHttpClient(StubServer.getTrustStore());
+        return sslReadyHttpClient(StubServer.getTrustStore(), null, null);
+    }
+
+    /**
+     * Helper which returns HTTP client configured for https session with custom trust store
+     */
+    private HttpClient sslReadyHttpClient(KeyStore trustStore) throws GeneralSecurityException {
+        return sslReadyHttpClient(trustStore, null, null);
+    }
+
+    /**
+     * Helper which returns HTTP client configured for https session with client authentication
+     */
+    private HttpClient sslReadyHttpAuthClient(InputStream keyStore, String keyStorePass) throws GeneralSecurityException {
+        return sslReadyHttpClient(StubServer.getTrustStore(), keyStore, keyStorePass);
     }
 
     /**
      * Helper which returns HTTP client configured for https session
      *
      * @param trustStore trust store containing server's certificate
+     * @param keyStore key store for client authentication
+     * @param keyStorePass key store password
      */
-    private HttpClient sslReadyHttpClient(KeyStore trustStore) throws GeneralSecurityException {
+    private HttpClient sslReadyHttpClient(KeyStore trustStore,
+                                          InputStream keyStore, String keyStorePass) throws GeneralSecurityException {
         SSLContextBuilder sslContextBuilder = SSLContexts.custom();
 
         // verifying server's identity
         if (trustStore != null) {
             sslContextBuilder.loadTrustMaterial(trustStore, null);
+        }
+
+        // client authentication
+        if (keyStore != null) {
+            try {
+                KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+                store.load(keyStore, keyStorePass.toCharArray());
+                sslContextBuilder.loadKeyMaterial(store, keyStorePass.toCharArray());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         final SSLContext context = sslContextBuilder.build();

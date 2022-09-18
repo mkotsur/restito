@@ -51,6 +51,13 @@ public class StubServer {
      */
     public boolean secured;
 
+    /**
+     * Whether the server requires client authentication in HTTPS mode.
+     */
+    private boolean clientAuth;
+    private byte[] clientAuthTrustStore;
+    private String clientAuthTrustStorePass;
+
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
 
@@ -72,6 +79,7 @@ public class StubServer {
      * Get the trust manager factory for server's certificate.
      * @return trust manager factory
      */
+    @SuppressWarnings("unused")
     public static TrustManagerFactory getTrustManagerFactory() {
         KeyStore store = getTrustStore();
 
@@ -169,7 +177,7 @@ public class StubServer {
             if (secured) {
                 for (NetworkListener networkListener : simpleServer.getListeners()) {
                     networkListener.setSecure(true);
-                    SSLEngineConfigurator sslEngineConfig = new SSLEngineConfigurator(getSslConfig(), false, false, false);
+                    SSLEngineConfigurator sslEngineConfig = new SSLEngineConfigurator(getSslConfig(), false, clientAuth, clientAuth);
                     networkListener.setSSLEngineConfig(sslEngineConfig);
                 }
             }
@@ -186,9 +194,15 @@ public class StubServer {
             return SSLContextConfigurator.DEFAULT_CONFIG;
         }
         SSLContextConfigurator sslConfig = new SSLContextConfigurator();
+        // key store for server certificate
         byte[] keystore_server = readCertificateStore(SERVER_KEY_STORE);
         sslConfig.setKeyStoreBytes(keystore_server);
         sslConfig.setKeyStorePass(SERVER_KEY_STORE_PASS);
+        // trust store for client authentication
+        if (clientAuth) {
+            sslConfig.setTrustStoreBytes(clientAuthTrustStore);
+            sslConfig.setTrustStorePass(clientAuthTrustStorePass);
+        }
         return sslConfig;
     }
 
@@ -227,6 +241,20 @@ public class StubServer {
     public StubServer secured() {
         if (!simpleServer.isStarted()) {
             this.secured = true;
+        }
+        return this;
+    }
+
+    /**
+     * Sets the Server to require client authentication (implies Secure mode).
+     * If it is already running, ignores the call.
+     */
+    public StubServer clientAuth(byte[] trustStore, String trustStorePass) {
+        if (!simpleServer.isStarted()) {
+            secured();
+            this.clientAuth = true;
+            this.clientAuthTrustStore = trustStore;
+            this.clientAuthTrustStorePass = trustStorePass;
         }
         return this;
     }

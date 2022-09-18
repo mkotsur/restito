@@ -75,7 +75,9 @@ See [SpecificVsRandomPortTest](https://github.com/mkotsur/restito/blob/master/sr
 
 When you need to use HTTPS, this is just one configuration call...
 
-See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/UsingHttpsTest.java).
+See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/UsingHttpsTest.java)
+for full example and advanced usage like configuring client to trust server's certification or
+client authentication (a.k.a., Mutual TLS or mTLS).
 
 ```java
     server = new StubServer().secured().run();
