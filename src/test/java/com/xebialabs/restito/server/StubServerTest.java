@@ -2,6 +2,8 @@ package com.xebialabs.restito.server;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import org.apache.mina.util.AvailablePortFinder;
 import org.junit.After;
 import org.junit.Before;
@@ -143,8 +145,18 @@ public class StubServerTest {
             .match(startsWithUri("/test-large"))
             .then(resourceContent("large-content.json"));
 
-        for (int i = 0; i < 20000; i++) {
+//        RestAssuredConfig config = RestAssured.config.httpClient(
+//                HttpClientConfig
+//                        .httpClientConfig()
+//                        .dontReuseHttpClientInstance()
+//                        .setParam("CONNECTION_MANAGER_TIMEOUT", 1000)
+//        );
+
+        for (int i = 0; i < 200; i++) {
+            System.out.println("Attempt " + i);
             expect()
+//                    .with()
+//                    .config(config)
                 .header("Content-Type", is("application/json"))
                 .header("Content-Length", is(not(nullValue())))
                 .when().get("/test-large");

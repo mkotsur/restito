@@ -39,7 +39,7 @@ public class StubServer {
     private boolean registerCalls = true;
 
     /**
-     * Whether or not the server should run in HTTPS mode.
+     * Whether the server should run in HTTPS mode.
      */
     public boolean secured;
 

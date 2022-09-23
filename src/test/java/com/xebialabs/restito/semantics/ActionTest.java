@@ -31,7 +31,7 @@ public class ActionTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        when(response.getWriter()).thenReturn(mock(Writer.class));
+//        when(response.getWriter()).thenReturn(mock(Writer.class));
         when(response.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(response.getCharacterEncoding()).thenReturn("UTF-8");
     }

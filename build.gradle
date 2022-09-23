@@ -28,7 +28,7 @@ dependencies {
 	testImplementation 'org.slf4j:slf4j-simple:1.7.21'
 	testImplementation 'org.mockito:mockito-core:1.10.19'
 	testImplementation 'org.hamcrest:hamcrest-all:1.3'
-	testImplementation('io.rest-assured:rest-assured:3.1.1')
+	testImplementation('io.rest-assured:rest-assured:5.2.0')
 	testImplementation"com.typesafe.akka:akka-actor_2.12:2.5.17"
 	testImplementation"com.typesafe.akka:akka-stream_2.12:2.5.17"
 	testImplementation"com.typesafe.akka:akka-http_2.12:10.1.5"
@@ -44,6 +44,16 @@ dependencies {
 java {
 	withSourcesJar()
 	withJavadocJar()
+}
+
+test {
+	testLogging {
+		events "PASSED", "SKIPPED", "FAILED"
+	}
+
+//	filter {
+//		includeTestsMatching "*StubServerTest"
+//	}
 }
 
 tasks.withType(JavaCompile) { compile ->
