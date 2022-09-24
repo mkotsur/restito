@@ -35,6 +35,10 @@ public class StubServer {
     private static final String SERVER_PRIVATE_KEYSTORE = "keystore_server";
     private static final String SERVER_PRIVATE_KEYSTORE_PASS = "secret";
 
+    static final String SERVER_CERT_KEYSTORE = "keystore_server_cert";
+
+    static final String SERVER_CERT_KEYSTORE_PASS = "changeit";
+
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private final List<Stub> stubs = new CopyOnWriteArrayList<>();
     private final HttpServer simpleServer;
@@ -176,7 +180,7 @@ public class StubServer {
      * @return The keystore in bytes.
      * @throws IOException If the store could not be copied.
      */
-    private byte[] readCertificateStore(String resourceName) throws IOException {
+    private static byte[] readCertificateStore(String resourceName) throws IOException {
         URL resource = StubServer.class.getResource("/" + resourceName);
         try (InputStream input = resource.openStream()) {
             return input.readAllBytes();

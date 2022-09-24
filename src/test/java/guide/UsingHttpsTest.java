@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.net.ssl.SSLHandshakeException;
 
+import com.xebialabs.restito.server.StubServerTls;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -37,13 +38,6 @@ import static org.junit.Assert.fail;
 
 public class UsingHttpsTest {
     private StubServer server;
-
-    /**
-     * Keystore that contains a trusted certificate that matches
-     * Stub server's default private key.
-     */
-    private final String defaultCertKeystore = "keystore_server_cert";
-    private final String defaultCertKeystorePass = "changeit";
 
     /**
      * Keystore that contains an alternative private key used in this test only.
@@ -77,7 +71,8 @@ public class UsingHttpsTest {
         server.run();
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
 
-        HttpResponse execute = sslReadyHttpClient(loadKeystore(defaultCertKeystore, defaultCertKeystorePass), null, null).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+        HttpResponse execute = sslReadyHttpClient(StubServerTls.defaultTrustStore(), null, null)
+                .execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
 
         assertThat(execute.getStatusLine().getStatusCode(), equalTo(200));
         ensureHttp(server).gotStubsCommitmentsDone();
@@ -120,7 +115,7 @@ public class UsingHttpsTest {
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen(0);
 
         try {
-            sslReadyHttpClient(loadKeystore(defaultCertKeystore, defaultCertKeystorePass), null, null).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+            sslReadyHttpClient(StubServerTls.defaultTrustStore(), null, null).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
 
             fail("Request should have failed as server requires client authentication");
         } catch (Exception e) {
@@ -138,7 +133,7 @@ public class UsingHttpsTest {
 
         InputStream clientKeyStore = testPrivateKeystoreURL.openStream();
         String clientKeyStorePass = "secret";
-        HttpResponse execute = sslReadyHttpClient(loadKeystore(defaultCertKeystore, defaultCertKeystorePass), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+        HttpResponse execute = sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
 
         assertThat(execute.getStatusLine().getStatusCode(), equalTo(200));
         ensureHttp(server).gotStubsCommitmentsDone();
@@ -155,7 +150,7 @@ public class UsingHttpsTest {
         String clientKeyStorePass = "secret";
 
         try {
-            sslReadyHttpClient(loadKeystore(defaultCertKeystore, defaultCertKeystorePass), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+            sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
             fail("Request should have failed as server does not accept this client certificate");
         } catch (Exception e) {
             assertThat(e, isA(IOException.class));
