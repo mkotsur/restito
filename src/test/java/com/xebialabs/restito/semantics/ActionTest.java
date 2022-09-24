@@ -1,28 +1,20 @@
 package com.xebialabs.restito.semantics;
 
-import java.io.OutputStream;
-import java.io.Writer;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.xebialabs.restito.semantics.Action.charset;
-import static com.xebialabs.restito.semantics.Action.composite;
-import static com.xebialabs.restito.semantics.Action.header;
-import static com.xebialabs.restito.semantics.Action.resourceContent;
-import static com.xebialabs.restito.semantics.Action.status;
-import static com.xebialabs.restito.semantics.Action.stringContent;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.io.OutputStream;
 
+import static com.xebialabs.restito.semantics.Action.*;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ActionTest {
 
     @Mock
@@ -30,8 +22,6 @@ public class ActionTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
-//        when(response.getWriter()).thenReturn(mock(Writer.class));
         when(response.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(response.getCharacterEncoding()).thenReturn("UTF-8");
     }

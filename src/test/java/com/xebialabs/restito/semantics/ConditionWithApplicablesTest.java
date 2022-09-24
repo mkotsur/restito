@@ -4,16 +4,16 @@ import java.io.OutputStream;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.glassfish.grizzly.http.util.Constants.DEFAULT_HTTP_CHARACTER_ENCODING;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ConditionWithApplicablesTest {
 
     @Mock
@@ -28,12 +28,6 @@ public class ConditionWithApplicablesTest {
             return r;
         }
     };
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        when(response.getCharacterEncoding()).thenReturn(DEFAULT_HTTP_CHARACTER_ENCODING);
-    }
 
     @Test
     public void shouldApplyApplicablesDefinedInConditionWhenConditionTrue() {
@@ -78,7 +72,6 @@ public class ConditionWithApplicablesTest {
     public void shouldNotFailIfAutoDiscoveryIsNotPossible() throws Exception {
 
         Call call = mock(Call.class);
-        when(call.getUri()).thenReturn("/blablabla.xml");
         when(call.getMethod()).thenReturn(Method.GET);
 
         ConditionWithApplicables condition = Condition.post("/blablabla.xml");

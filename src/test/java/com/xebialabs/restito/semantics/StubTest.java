@@ -1,10 +1,10 @@
 package com.xebialabs.restito.semantics;
 
 import org.glassfish.grizzly.http.server.Response;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Function;
 
@@ -16,17 +16,13 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
+@RunWith(MockitoJUnitRunner.class)
 public class StubTest {
 
     private static Condition ALWAYS_TRUE = Condition.custom(Predicates.alwaysTrue());
 
     @Mock
     Response response;
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void shouldBeApplicableWhenConditionIsTrue() {
