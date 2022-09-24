@@ -53,6 +53,21 @@ public class UsingHttpsTest {
     private final String testCertKeystore = "keystore_server_test_cert";
     private final String testCertKeystorePass = "changeit";
 
+    /**
+     * Keystore that contains a private key and certificate used
+     * for client authentication in this test.
+     */
+    private final String testClientPrivateKeystore = "keystore_client_test";
+    private final String testClientPrivateKeystorePass = "secret";
+    private final URL testClientPrivateKeystoreURL = getClass().getResource("/" + testClientPrivateKeystore);
+
+    /**
+     * Keystore that contains a trusted certificate that matches
+     * the certificate used for client authentication in this test.
+     */
+    private final String testClientCertKeystore = "keystore_client_test_cert";
+    private final String testClientCertKeystorePass = "changeit";
+
     @Before
     public void start() {
         server = new StubServer().secured();
@@ -111,7 +126,8 @@ public class UsingHttpsTest {
 
     @Test
     public void shouldFailWhenServerRequiresAuthentication() throws IOException, URISyntaxException {
-        server.clientAuth(loadKeystoreAsBytes(testCertKeystore), testCertKeystorePass).run();
+        // client authentication
+        server.clientAuth(loadKeystoreAsBytes(testClientCertKeystore), testClientCertKeystorePass).run();
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen(0);
 
         try {
@@ -128,11 +144,11 @@ public class UsingHttpsTest {
     @Test
     public void shouldPassWhenSendingCertificateToServerRequiringAuthentication() throws GeneralSecurityException, IOException, URISyntaxException {
         // client authentication
-        server.clientAuth(loadKeystoreAsBytes(testCertKeystore), testCertKeystorePass).run();
+        server.clientAuth(loadKeystoreAsBytes(testClientCertKeystore), testClientCertKeystorePass).run();
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen();
 
-        InputStream clientKeyStore = testPrivateKeystoreURL.openStream();
-        String clientKeyStorePass = "secret";
+        InputStream clientKeyStore = testClientPrivateKeystoreURL.openStream();
+        String clientKeyStorePass = testClientPrivateKeystorePass;
         HttpResponse execute = sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
 
         assertThat(execute.getStatusLine().getStatusCode(), equalTo(200));
@@ -142,12 +158,13 @@ public class UsingHttpsTest {
     @Test
     public void shouldFailSendingNonAllowedCertificate() throws IOException, URISyntaxException {
         // client authentication
-        server.clientAuth(loadKeystoreAsBytes(testPrivateKeystore), testPrivateKeystorePass).run();
+        server.clientAuth(loadKeystoreAsBytes(testClientCertKeystore), testClientCertKeystorePass).run();
         whenHttp(server).match(get("/asd")).then(ok()).mustHappen(0);
 
         // sending a client certificate that is not allowed
-        InputStream clientKeyStore = StubServer.class.getResourceAsStream("keystore_server");
-        String clientKeyStorePass = "secret";
+        // using the alternative key/cert for server as client's
+        InputStream clientKeyStore = testPrivateKeystoreURL.openStream();
+        String clientKeyStorePass = testPrivateKeystorePass;
 
         try {
             sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));

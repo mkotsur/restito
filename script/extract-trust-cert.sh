@@ -8,8 +8,8 @@ KEY_STORE_PASS=secret
 TRUST_STORE_PASS=changeit
 STORE_TYPE=pkcs12
 
-keystores=(src/main/resources/keystore_server src/test/resources/keystore_server_test)
-keyaliases=(servercert serverkey)
+keystores=(src/main/resources/keystore_server src/test/resources/keystore_server_test src/test/resources/keystore_client_test)
+keyaliases=(servercert serverkey clientcert)
 
 i=0
 while [[ $i -lt ${#keystores[@]} ]]; do
