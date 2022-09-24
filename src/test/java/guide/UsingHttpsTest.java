@@ -47,7 +47,7 @@ public class UsingHttpsTest {
     private final URL testPrivateKeystoreURL = getClass().getResource("/" + testPrivateKeystore);
 
     /**
-     * Keystore that contains a trusted certificate that matches
+     * Keystore that contains a public key certificate that matches
      * an alternative private key used only in this test.
      */
     private final String testCertKeystore = "keystore_server_test_cert";
