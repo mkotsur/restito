@@ -15,18 +15,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.Collections.unmodifiableList;
-
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * The HttpServer wrapper which is responsible for operations like starting and stopping and holding objects that describe server behavior.
@@ -36,10 +32,8 @@ public class StubServer {
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
-    private static final String SERVER_KEY_STORE = "keystore_server";
-    private static final String SERVER_KEY_STORE_PASS = "secret";
-    private static final String SERVER_CERTIFICATE_TRUST_STORE = "keystore_server_cert";
-    private static final String SERVER_CERTIFICATE_TRUST_STORE_PASS = "changeit";
+    private static final String SERVER_PRIVATE_KEYSTORE = "keystore_server";
+    private static final String SERVER_PRIVATE_KEYSTORE_PASS = "secret";
 
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private final List<Stub> stubs = new CopyOnWriteArrayList<>();
@@ -47,7 +41,7 @@ public class StubServer {
     private boolean registerCalls = true;
 
     /**
-     * Whether or not the server should run in HTTPS mode.
+     * Whether the server should run in HTTPS mode.
      */
     public boolean secured;
 
@@ -60,37 +54,6 @@ public class StubServer {
 
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
-
-    /**
-     * Get the trust store for server's certificate.
-     * @return trust store
-     */
-    public static KeyStore getTrustStore() {
-        try (InputStream trustStore = StubServer.class.getResourceAsStream("/" + SERVER_CERTIFICATE_TRUST_STORE)) {
-            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
-            store.load(trustStore, SERVER_CERTIFICATE_TRUST_STORE_PASS.toCharArray());
-            return store;
-        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Get the trust manager factory for server's certificate.
-     * @return trust manager factory
-     */
-    @SuppressWarnings("unused")
-    public static TrustManagerFactory getTrustManagerFactory() {
-        KeyStore store = getTrustStore();
-
-        try {
-            TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            factory.init(store);
-            return factory;
-        } catch (NoSuchAlgorithmException | KeyStoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Creates a server based on stubs that are used to determine behavior.
@@ -195,9 +158,9 @@ public class StubServer {
         }
         SSLContextConfigurator sslConfig = new SSLContextConfigurator();
         // key store for server certificate
-        byte[] keystore_server = readCertificateStore(SERVER_KEY_STORE);
+        byte[] keystore_server = readCertificateStore(SERVER_PRIVATE_KEYSTORE);
         sslConfig.setKeyStoreBytes(keystore_server);
-        sslConfig.setKeyStorePass(SERVER_KEY_STORE_PASS);
+        sslConfig.setKeyStorePass(SERVER_PRIVATE_KEYSTORE_PASS);
         // trust store for client authentication
         if (clientAuth) {
             sslConfig.setTrustStoreBytes(clientAuthTrustStore);
