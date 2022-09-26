@@ -26,9 +26,11 @@ dependencies {
 	testCompileOnly 'org.scala-lang:scala-library:2.12.16'
 
 	testImplementation 'org.slf4j:slf4j-simple:1.7.21'
-	testImplementation 'org.mockito:mockito-core:1.10.19'
+	
+	testImplementation 'org.mockito:mockito-core:4.8.0'
 	testImplementation 'org.hamcrest:hamcrest:2.2'
-	testImplementation('io.rest-assured:rest-assured:3.1.1')
+	testImplementation 'io.rest-assured:rest-assured:5.2.0'
+
 	testImplementation"com.typesafe.akka:akka-actor_2.12:2.5.17"
 	testImplementation"com.typesafe.akka:akka-stream_2.12:2.5.17"
 	testImplementation"com.typesafe.akka:akka-http_2.12:10.1.5"
@@ -44,6 +46,13 @@ dependencies {
 java {
 	withSourcesJar()
 	withJavadocJar()
+}
+
+test {
+	testLogging {
+		events "PASSED", "SKIPPED", "FAILED"
+		exceptionFormat 'full'
+	}
 }
 
 tasks.withType(JavaCompile) { compile ->

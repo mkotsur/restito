@@ -140,6 +140,7 @@ public class StubServer {
      */
     public StubServer run() {
         simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(), "/");
+        simpleServer.getListeners().forEach(l -> l.getKeepAlive().setMaxRequestsCount(0));
         try {
             if (secured) {
                 for (NetworkListener networkListener : simpleServer.getListeners()) {
