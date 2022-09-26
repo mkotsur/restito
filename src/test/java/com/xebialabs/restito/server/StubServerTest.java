@@ -2,21 +2,25 @@ package com.xebialabs.restito.server;
 
 import com.xebialabs.restito.semantics.Call;
 import com.xebialabs.restito.semantics.Stub;
+import io.restassured.RestAssured;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.mina.util.AvailablePortFinder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.restassured.RestAssured;
+import java.io.IOException;
 
-import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
-import static com.xebialabs.restito.semantics.Action.ok;
-import static com.xebialabs.restito.semantics.Action.resourceContent;
-import static com.xebialabs.restito.semantics.Condition.*;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static com.xebialabs.restito.semantics.Action.*;
+import static com.xebialabs.restito.semantics.Condition.get;
+import static com.xebialabs.restito.semantics.Condition.startsWithUri;
+import static io.restassured.RestAssured.expect;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -138,20 +142,23 @@ public class StubServerTest {
     }
 
     @Test
-    public void reproduceRacingCondition() {
+    public void reproduceRacingCondition() throws IOException {
         whenHttp(server)
-            .match(startsWithUri("/test-large"))
-            .then(resourceContent("large-content.json"));
+                .match(startsWithUri("/test-large"))
+                .then(resourceContent("large-content.json"), header("Connection", "close"));
+
+        CloseableHttpClient client = HttpClients.custom().build();
 
         for (int i = 0; i < 20000; i++) {
-            expect()
-                .header("Content-Type", is("application/json"))
-                .header("Content-Length", is(not(nullValue())))
-                .when().get("/test-large");
-
-            assertEquals(1, server.getCalls().size());
-
-            server.clearCalls();
+            final HttpGet request = new HttpGet("http://localhost:" + server.getPort()+"/test-large");
+            System.out.println("Attempt " + i);
+            try (var response = client.execute(request)) {
+                assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
+                assertThat(response.getFirstHeader("Content-Type").getValue(), is("application/json"));
+                assertThat(response.getFirstHeader("Content-Length").getValue(), is(not(nullValue())));
+                assertEquals(1, server.getCalls().size());
+                server.clearCalls();
+            }
         }
     }
 }

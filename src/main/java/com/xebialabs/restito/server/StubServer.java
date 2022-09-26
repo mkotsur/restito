@@ -39,7 +39,7 @@ public class StubServer {
     private boolean registerCalls = true;
 
     /**
-     * Whether or not the server should run in HTTPS mode.
+     * Whether the server should run in HTTPS mode.
      */
     public boolean secured;
 
@@ -127,6 +127,7 @@ public class StubServer {
      */
     public StubServer run() {
         simpleServer.getServerConfiguration().addHttpHandler(stubsToHandler(), "/");
+        simpleServer.getListeners().forEach(l -> l.getKeepAlive().setMaxRequestsCount(0));
         try {
             if (secured) {
                 for (NetworkListener networkListener : simpleServer.getListeners()) {

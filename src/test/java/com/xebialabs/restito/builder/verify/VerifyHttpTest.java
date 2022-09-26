@@ -1,15 +1,15 @@
 package com.xebialabs.restito.builder.verify;
 
+import com.xebialabs.restito.semantics.Call;
+import com.xebialabs.restito.semantics.Condition;
 import com.xebialabs.restito.semantics.Predicates;
+import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.Method;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.xebialabs.restito.semantics.Call;
-import com.xebialabs.restito.semantics.Condition;
-import com.xebialabs.restito.server.StubServer;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 
@@ -19,6 +19,7 @@ import static com.xebialabs.restito.semantics.Condition.method;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class VerifyHttpTest {
 
     @Mock
@@ -29,7 +30,6 @@ public class VerifyHttpTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
         when(getCall.getMethod()).thenReturn(Method.GET).getMock();
         when(postCall.getMethod()).thenReturn(Method.POST).getMock();
     }

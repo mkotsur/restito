@@ -1,37 +1,27 @@
 package com.xebialabs.restito.semantics;
 
+import org.glassfish.grizzly.http.Method;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import org.glassfish.grizzly.http.Method;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import static com.xebialabs.restito.semantics.Condition.delete;
-import static com.xebialabs.restito.semantics.Condition.endsWithUri;
-import static com.xebialabs.restito.semantics.Condition.get;
-import static com.xebialabs.restito.semantics.Condition.method;
-import static com.xebialabs.restito.semantics.Condition.post;
-import static com.xebialabs.restito.semantics.Condition.put;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.xebialabs.restito.semantics.Condition.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ConditionTest {
 
     @Mock
     private Call call;
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void shouldWorkWithCustomPredicate() {
