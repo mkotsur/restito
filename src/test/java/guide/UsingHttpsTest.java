@@ -164,10 +164,9 @@ public class UsingHttpsTest {
         // sending a client certificate that is not allowed
         // using the alternative key/cert for server as client's
         InputStream clientKeyStore = testPrivateKeystoreURL.openStream();
-        String clientKeyStorePass = testPrivateKeystorePass;
 
         try {
-            sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, clientKeyStorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
+            sslReadyHttpClient(StubServerTls.defaultTrustStore(), clientKeyStore, testPrivateKeystorePass).execute(new HttpGet("https://localhost:" + server.getPort() + "/asd"));
             fail("Request should have failed as server does not accept this client certificate");
         } catch (Exception e) {
             assertThat(e, isA(IOException.class));
