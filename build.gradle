@@ -6,8 +6,9 @@ plugins {
 	id 'idea'
 }
 
-// version = '1.0.1'  // Last released version
-version '1.1.0'
+// version = '1.1.0'  // Last released version
+version '1.1.1-SNAPSHOT'
+
 group 'com.xebialabs.restito'
 
 defaultTasks 'build'
