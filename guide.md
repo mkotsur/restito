@@ -5,7 +5,7 @@ One test can be better then dozen lines of documentation, so there are tests in 
 * [Motivation](#motivation)
 * [Starting and stopping stub server](#starting_and_stopping_stub_server)
     * [Specific vs random port](#specific_vs_random_port)
-    * [Using HTTPS](#using_https)
+    * [Configuring TLS for HTTPS and client authentication](#using_tls)
     * [Junit integration](#junit_integration)
 * [Stubbing server behavior](#stubbing_server_behavior)
     * [Stub conditions](#stub_conditions)
@@ -70,16 +70,24 @@ If you want to specify port explicitly, then you can do something like that:
 
 See [SpecificVsRandomPortTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/SpecificVsRandomPortTest.java).
 
-<a name="using_https"></a>
-#Using HTTPS
+<a name="using_tls"></a>
+#Using TLS
 
-When you need to use HTTPS, this is just one configuration call...
-
-See [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/UsingHttpsTest.java).
+Restito comes with a built-in self-signed certificate (to override it use `javax.net.ssl.keyStore` and `javax.net.ssl.keyStorePassword`), so using HTTPS is just one configuration call:
 
 ```java
-    server = new StubServer().secured().run();
+var server = new StubServer().secured().run();
 ```
+
+You can also configure mutual authentication like this:
+
+```java
+server.clientAuth(keystoreBytes, keystorePass).run();
+```
+
+Check [UsingHttpsTest](https://github.com/mkotsur/restito/blob/master/src/test/java/guide/UsingHttpsTest.java)
+for full examples of confguration, assertions and advanced usage like configuring client to trust server's certification or
+[client authentication](https://en.wikipedia.org/wiki/Mutual_authentication) (a.k.a., Mutual TLS or mTLS).
 
 <a name="junit_integration"></a>
 #Junit integration

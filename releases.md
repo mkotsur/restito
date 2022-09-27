@@ -3,6 +3,10 @@ Restito releases
 
 ## 1.x (Java 11+)
 
+* 1.1.0
+    * Expose trust store for server's certificate
+    * Add support for client authentication
+
 * 1.0.1
     * (fix) Broken dependency
     * (fix) Critical racing condition on Stub Server while registering the calls. See #74

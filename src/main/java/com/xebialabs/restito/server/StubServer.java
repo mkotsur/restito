@@ -12,12 +12,11 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,6 +32,13 @@ public class StubServer {
     @SuppressWarnings("WeakerAccess")
     public final static int DEFAULT_PORT = 6666;
 
+    private static final String SERVER_PRIVATE_KEYSTORE = "keystore_server";
+    private static final String SERVER_PRIVATE_KEYSTORE_PASS = "secret";
+
+    static final String SERVER_CERT_KEYSTORE = "keystore_server_cert";
+
+    static final String SERVER_CERT_KEYSTORE_PASS = "changeit";
+
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private final List<Stub> stubs = new CopyOnWriteArrayList<>();
     private final HttpServer simpleServer;
@@ -42,6 +48,13 @@ public class StubServer {
      * Whether the server should run in HTTPS mode.
      */
     public boolean secured;
+
+    /**
+     * Whether the server requires client authentication in HTTPS mode.
+     */
+    private boolean clientAuth;
+    private byte[] clientAuthTrustStore;
+    private String clientAuthTrustStorePass;
 
     private Logger log = LoggerFactory.getLogger(StubServer.class);
 
@@ -132,7 +145,7 @@ public class StubServer {
             if (secured) {
                 for (NetworkListener networkListener : simpleServer.getListeners()) {
                     networkListener.setSecure(true);
-                    SSLEngineConfigurator sslEngineConfig = new SSLEngineConfigurator(getSslConfig(), false, false, false);
+                    SSLEngineConfigurator sslEngineConfig = new SSLEngineConfigurator(getSslConfig(), false, clientAuth, clientAuth);
                     networkListener.setSSLEngineConfig(sslEngineConfig);
                 }
             }
@@ -144,35 +157,35 @@ public class StubServer {
     }
 
     private SSLContextConfigurator getSslConfig() throws IOException {
-        if(SSLContextConfigurator.DEFAULT_CONFIG.validateConfiguration(true))
-        {
+        SSLContextConfigurator.DEFAULT_CONFIG.retrieve(System.getProperties()); // refresh in case of changes
+        if (SSLContextConfigurator.DEFAULT_CONFIG.validateConfiguration(true)) {
             return SSLContextConfigurator.DEFAULT_CONFIG;
         }
-        SSLContextConfigurator defaultConfig = SSLContextConfigurator.DEFAULT_CONFIG;
-        String keystore_server = createCertificateStore("keystore_server");
-        String truststore_server = createCertificateStore("truststore_server");
-        defaultConfig.setKeyStoreFile(keystore_server);
-        defaultConfig.setKeyStorePass("secret");
-        defaultConfig.setTrustStoreFile(truststore_server);
-        defaultConfig.setTrustStorePass("secret");
-        return defaultConfig;
+        SSLContextConfigurator sslConfig = new SSLContextConfigurator();
+        // key store for server certificate
+        byte[] keystore_server = readCertificateStore(SERVER_PRIVATE_KEYSTORE);
+        sslConfig.setKeyStoreBytes(keystore_server);
+        sslConfig.setKeyStorePass(SERVER_PRIVATE_KEYSTORE_PASS);
+        // trust store for client authentication
+        if (clientAuth) {
+            sslConfig.setTrustStoreBytes(clientAuthTrustStore);
+            sslConfig.setTrustStorePass(clientAuthTrustStorePass);
+        }
+        return sslConfig;
     }
 
     /**
-     * Copy the Certificate store to the temporary directory, as it needs to be in a real file, not inside a jar for Grizzly to pick it up.
+     * Read the certificate store as bytes for Grizzly to pick it up.
+     *
      * @param resourceName The Store to copy
-     * @return The absolute path to the temporary keystore.
+     * @return The keystore in bytes.
      * @throws IOException If the store could not be copied.
      */
-    private String createCertificateStore(String resourceName) throws IOException {
+    private static byte[] readCertificateStore(String resourceName) throws IOException {
         URL resource = StubServer.class.getResource("/" + resourceName);
-        File store = File.createTempFile(resourceName, "store");
         try (InputStream input = resource.openStream()) {
-            Files.copy(input, store.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } finally {
-            store.deleteOnExit();
+            return input.readAllBytes();
         }
-        return store.getAbsolutePath();
     }
 
     /**
@@ -196,6 +209,20 @@ public class StubServer {
     public StubServer secured() {
         if (!simpleServer.isStarted()) {
             this.secured = true;
+        }
+        return this;
+    }
+
+    /**
+     * Sets the Server to require client authentication (implies Secure mode).
+     * If it is already running, ignores the call.
+     */
+    public StubServer clientAuth(byte[] trustStore, String trustStorePass) {
+        if (!simpleServer.isStarted()) {
+            secured();
+            this.clientAuth = true;
+            this.clientAuthTrustStore = trustStore;
+            this.clientAuthTrustStorePass = trustStorePass;
         }
         return this;
     }

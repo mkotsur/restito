@@ -32,7 +32,7 @@ import static org.glassfish.grizzly.http.util.HttpStatus.NO_CONTENT_204;
 import static org.glassfish.grizzly.http.util.HttpStatus.OK_200;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.emptyString;
 
 /**
  * Demonstrates use of {@link ActionSequence#sequence(Applicable...)}.
@@ -67,7 +67,7 @@ public class SequencedSubActionsTest {
         // Second action from sequence:
         given().get("/foo").then().assertThat().body(equalTo("Hello, again!"));
         // Noop action:
-        given().get("/foo").then().assertThat().body(isEmptyString());
+        given().get("/foo").then().assertThat().body(is(emptyString()));
 
         verifyHttp(server).times(3,
                 method(Method.GET),
@@ -91,7 +91,7 @@ public class SequencedSubActionsTest {
                 ));
 
         given().get("/foo").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("Hello Restito."));
-        given().get("/bar").then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(isEmptyString());
+        given().get("/bar").then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(is(emptyString()));
         given().get("/foo").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("Hello, again!"));
         given().get("/bar").then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("body"));
         given().get("/bar").then().assertThat().statusCode(is(FORBIDDEN_403.getStatusCode())).body(equalTo("admin required"));
@@ -125,8 +125,8 @@ public class SequencedSubActionsTest {
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED"));
         given().post("/foo").then().assertThat().statusCode(is(409)).body(equalTo("status=CONFLICT"));
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED2"));
-        given().post("/foo").then().assertThat().statusCode(is(404)).body(isEmptyString());
-        given().post("/foo").then().assertThat().body(isEmptyString());
+        given().post("/foo").then().assertThat().statusCode(is(404)).body(is(emptyString()));
+        given().post("/foo").then().assertThat().body(is(emptyString()));
 
         verifyHttp(server).times(5,
                 method(Method.POST),
@@ -146,8 +146,8 @@ public class SequencedSubActionsTest {
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED"));
         given().post("/foo").then().assertThat().statusCode(is(409)).body(equalTo("status=CONFLICT"));
         given().post("/foo").then().assertThat().statusCode(is(201)).body(equalTo("status=CREATED2"));
-        given().post("/foo").then().assertThat().statusCode(is(404)).body(isEmptyString());
-        given().post("/foo").then().assertThat().body(isEmptyString());
+        given().post("/foo").then().assertThat().statusCode(is(404)).body(is(emptyString()));
+        given().post("/foo").then().assertThat().body(is(emptyString()));
 
         verifyHttp(server).times(5,
                 method(Method.POST),
@@ -183,23 +183,23 @@ public class SequencedSubActionsTest {
                 then(status(NO_CONTENT_204));
 
         given().get("/foo")
-                .then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(is(emptyString()));
         given().body("INITIAL VALUE").post("/foo")
-                .then().assertThat().statusCode(is(CREATED_201.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(CREATED_201.getStatusCode())).body(is(emptyString()));
         given().body("UPDATED VALUE").put("/foo")
-                .then().assertThat().statusCode(is(BAD_REQUEST_400.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(BAD_REQUEST_400.getStatusCode())).body(is(emptyString()));
         given().get("/foo")
                 .then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("INITIAL VALUE"));
         given().body("INITIAL VALUE, AGAIN").post("/foo")
-                .then().assertThat().statusCode(is(CONFLICT_409.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(CONFLICT_409.getStatusCode())).body(is(emptyString()));
         given().body("UPDATED VALUE").put("/foo")
-                .then().assertThat().statusCode(is(NO_CONTENT_204.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(NO_CONTENT_204.getStatusCode())).body(is(emptyString()));
         given().get("/foo")
                 .then().assertThat().statusCode(is(OK_200.getStatusCode())).body(equalTo("UPDATED VALUE"));
         given().delete("/foo")
-                .then().assertThat().statusCode(is(NO_CONTENT_204.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(NO_CONTENT_204.getStatusCode())).body(is(emptyString()));
         given().get("/foo")
-                .then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(isEmptyString());
+                .then().assertThat().statusCode(is(NOT_FOUND_404.getStatusCode())).body(is(emptyString()));
     }
 
 }
