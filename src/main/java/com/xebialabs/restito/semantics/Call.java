@@ -51,7 +51,7 @@ public class Call {
         try {
             call.postBody = request.getPostBody(999999).toStringContent(Charset.defaultCharset());
         } catch (IOException e) {
-            throw new RuntimeException("Problem reading Post Body of HTTP call");
+            throw new RuntimeException("Problem reading Post Body of HTTP call", e);
         }
 
         return call;

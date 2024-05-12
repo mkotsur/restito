@@ -122,7 +122,7 @@ public class Action implements Applicable {
 
             return mainAction;
         } catch (IOException e) {
-            throw new RuntimeException("Can not read resource for restito stubbing.");
+            throw new RuntimeException("Can not read resource for restito stubbing.", e);
         }
     }
 
@@ -144,7 +144,7 @@ public class Action implements Applicable {
             try {
                 response.getOutputStream().write(content);
             } catch (IOException e) {
-                throw new RuntimeException("Can not write resource content for restito stubbing.");
+                throw new RuntimeException("Can not write resource content for restito stubbing.", e);
             }
             return response;
         });
