@@ -4,6 +4,10 @@ Restito releases
 ## 1.x (Java 11+)
 
 * 1.1.0
+  * Passing through the cause exception
+
+
+* 1.1.0
     * Expose trust store for server's certificate
     * Add support for client authentication
 
